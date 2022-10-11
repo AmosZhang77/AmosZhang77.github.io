@@ -1,52 +1,60 @@
-import React from 'react';
-import clsx from 'clsx';
-import styles from './styles.module.css';
+import React from "react";
+import clsx from "clsx";
+import styles from "./styles.module.css";
 
 type FeatureItem = {
   title: string;
-  Svg: React.ComponentType<React.ComponentProps<'svg'>>;
+  Svg: React.ComponentType<React.ComponentProps<"svg">>;
   description: JSX.Element;
 };
 
 const FeatureList: FeatureItem[] = [
   {
-    title: 'Easy to Use',
-    Svg: require('@site/static/img/undraw_docusaurus_mountain.svg').default,
+    title: "个人前端开发经验整理",
+    Svg: require("@site/static/img/undraw_docusaurus_mountain.svg").default,
     description: (
       <>
-        Docusaurus was designed from the ground up to be easily installed and
-        used to get your website up and running quickly.
+        个人开发中遇到的问题，并且判断可能有用的会整理进来。有体系文档的这里不会重复整理体系，只会记录自己的一些经验（菜鸡个人维护有多垃圾，你们懂的）。
       </>
     ),
   },
   {
-    title: 'Focus on What Matters',
-    Svg: require('@site/static/img/undraw_docusaurus_tree.svg').default,
+    title: "由爱驱动",
+    Svg: require("@site/static/img/undraw_docusaurus_tree.svg").default,
     description: (
       <>
-        Docusaurus lets you focus on your docs, and we&apos;ll do the chores. Go
-        ahead and move your docs into the <code>docs</code> directory.
+        无聊时整理，擅长停更挂机。理论上不答疑。内容有问题，或者有更好的方法，欢迎指教。下一个爱人又何必是人。
       </>
     ),
   },
   {
-    title: 'Powered by React',
-    Svg: require('@site/static/img/undraw_docusaurus_react.svg').default,
+    title: "适合人群",
+    Svg: require("@site/static/img/undraw_docusaurus_react.svg").default,
     description: (
       <>
-        Extend or customize your website layout by reusing React. Docusaurus can
-        be extended while reusing the same header and footer.
+        水平和本文作者差不多差的。欢迎菜鸡互啄，共同进步。联系方式：
+        moonyellow@126.com
+      </>
+    ),
+  },
+  {
+    title: "价值观（请尽量忽略此条，手动狗头）",
+    Svg: require("@site/static/img/undraw_docusaurus_react.svg").default,
+    description: (
+      <>
+        我要将青春献给人类生存发展的伟大事业。--- I will dedicate my youth to
+        the great cause of human survival and development.
       </>
     ),
   },
 ];
 
-function Feature({title, Svg, description}: FeatureItem) {
+function Feature({ title, Svg, description }: FeatureItem) {
   return (
-    <div className={clsx('col col--4')}>
-      <div className="text--center">
+    <div className={clsx("col col--3")}>
+      {/*<div className="text--center">
         <Svg className={styles.featureSvg} role="img" />
-      </div>
+      </div>*/}
       <div className="text--center padding-horiz--md">
         <h3>{title}</h3>
         <p>{description}</p>
