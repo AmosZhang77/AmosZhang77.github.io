@@ -14,7 +14,7 @@ const FeatureList: FeatureItem[] = [
     Svg: require("@site/static/img/undraw_docusaurus_mountain.svg").default,
     description: (
       <>
-        个人开发中遇到的问题，并且判断可能有用的会整理进来。有体系文档的这里不会重复整理体系，只会记录自己的一些经验（菜鸡个人维护有多垃圾，你们懂的）。
+        个人开发中遇到的问题，并且判断可能有用的会整理进来。有体系文档的这里不会重复整理，只会记录自己的一些经验（菜鸡个人维护有多垃圾，你们懂的）。
       </>
     ),
   },

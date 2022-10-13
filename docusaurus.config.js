@@ -19,13 +19,15 @@ const config = {
   organizationName: "AmosZhang77", // Usually your GitHub org/user name.
   // organizationName: '', // Usually your GitHub org/user name.
   projectName: "AmosZhang77.github.io", // Usually your repo name.
-  deploymentBranch: "gh-pages",
+  deploymentBranch: "gh-pages", // 用于发布的分支，每次发布会被打包后的文件替代
   // Even if you don't use internalization, you can use this field to set useful
   // metadata like html lang. For example, if your site is Chinese, you may want
   // to replace "en" with "zh-Hans".
   i18n: {
     defaultLocale: "zh-Hans",
     locales: ["zh-Hans"],
+    // defaultLocale: "en",
+    // locales: ["en"],
   },
 
   presets: [
@@ -37,8 +39,11 @@ const config = {
           sidebarPath: require.resolve("./sidebars.js"),
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
-          editUrl:
-            "https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/",
+          // editUrl:
+          //   "https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/",
+          // 设置为undefined全局禁用编辑链接
+          editUrl: undefined,
+          showLastUpdateTime:true
         },
         /*blog: {
           showReadingTime: true,
@@ -85,7 +90,7 @@ const config = {
             title: "Docs",
             items: [
               {
-                label: "Tutorial",
+                label: "Document",
                 to: "/docs/intro",
               },
             ],
@@ -94,20 +99,20 @@ const config = {
             title: "Community",
             items: [
               {
-                label: "Stack Overflow",
+                label: "github",
                 href: "https://stackoverflow.com/questions/tagged/docusaurus",
               },
-              {
+             /* {
                 label: "Discord",
                 href: "https://discordapp.com/invite/docusaurus",
               },
               {
                 label: "Twitter",
                 href: "https://twitter.com/docusaurus",
-              },
+              },*/
             ],
           },
-          {
+          /*{
             title: "More",
             items: [
               {
@@ -119,7 +124,7 @@ const config = {
                 href: "https://github.com/facebook/docusaurus",
               },
             ],
-          },
+          },*/
         ],
         copyright: `MIT Licensed | Copyright © ${new Date().getFullYear()}-present 张君歆 （Amos Zhang）.`,
       },
@@ -138,7 +143,7 @@ const config = {
         hashed: true,
         // For Docs using Chinese, The `language` is recommended to set to:
         // ```
-        // language: ["en", "zh"],
+        language: ["en", "zh"],
         // ```
       },
     ],

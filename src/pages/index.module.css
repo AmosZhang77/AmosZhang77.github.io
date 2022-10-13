@@ -16,8 +16,18 @@
   }
 }
 
+.btnBox{
+  display: flex;
+  justify-content: center;
+}
+
 .buttons {
   display: flex;
   align-items: center;
   justify-content: center;
+  margin-right: 32px;
+}
+
+.logoImg{
+  height: 16vw;
 }
