@@ -12,8 +12,4 @@ const VideoMD: React.FC<any> = () => {
 
 export default VideoMD;
 
-// document.querySelector("body").addEventListener('mousemove', function(){
-//  console.log(1)
-//  })
-
 

@@ -1,0 +1,280 @@
+### 变量声明
+
+定义变量： $+变量名称，与js不同的地方，使用变量名称也要用$
+
+sass 中函数和变量申明不会自动提升，要先定义再用！
+
+```scss
+$color: red; // 声明
+.className {
+  color: $color; // 使用
+}
+```
+
+### &
+
+代表父
+
+```scss
+div:nth-child(1) {
+  color: black;
+
+  &:hover {
+    // &代表父亲，即div:nth-child(1)
+    color: red;
+  }
+
+  & > .child {
+    // &> div:nth-child(1)的子选择器（不是后代选择器，必须是直接的子元素）
+  }
+}
+```
+
+### @mixin
+
+@minin 声明样式块，样式块能接受参数，
+
+```scss
+@mixin transform($params) {
+  // 括号里面的是接受参数
+  -webkit-transform: $params;
+  -ms-transform: $params;
+  -o-transform: $params;
+  transform: $params;
+}
+
+@mixin size($width: 100px, $height: 24px) {
+  // 如未接受到参数，使用默认参数，默认参数写法
+  width: $width;
+  height: $height;
+}
+
+div {
+  @include size; // 使用mixin样式块
+  @include transform(
+    translateX(20px)
+  ); // translateX(20px)参数传进去，类似字符串
+}
+```
+
+```scss
+@mixin box-shadow($shadows...) {
+  // 不知道多少个参数，都需要用
+  -moz-box-shadow: $shadows;
+  -webkit-box-shadow: $shadows;
+  box-shadow: $shadows;
+}
+
+.shadows {
+  // 一堆参数可以一起传进去。空格也可以，类似字符串
+  @include box-shadow(0px 4px 5px #666, 2px 6px 10px #999);
+}
+```
+
+编译成：
+
+```css
+.shadowed {
+  -moz-box-shadow: 0px 4px 5px #666, 2px 6px 10px #999;
+  -webkit-box-shadow: 0px 4px 5px #666, 2px 6px 10px #999;
+  box-shadow: 0px 4px 5px #666, 2px 6px 10px #999;
+}
+```
+
+### 数组、集合、函数、继承
+
+import ScssBase1 from "./scssBase1.tsx";
+
+<div>
+  <ScssBase1 />
+</div>
+
+```html
+<template>
+  <div class="outBox">
+    <h1>h1-20px-blue</h1>
+    <div>div-16px-blue</div>
+  </div>
+</template>
+```
+
+```scss
+//定义数组
+$pxArr: 12px 14px 16px 18px;
+
+@function pxFn($px, $default) {
+  //函数定义@function
+  @return $px/$default * 10 + px; //函数返回值，这里16px/20px,系统会智能的把px约分掉，而不是报错，
+  // 结果没有单位，要注意！可以在这里后面直接加px也可以加+px
+}
+
+/*map object*/
+//map定义集合，集合中键值对中的值可以是数组
+$mapList: (
+  color1: red,
+  color2: green,
+  color3: blue,
+);
+
+h1 {
+  font-size: pxFn(20px, 10px); //函数调用 // 20px
+  color: map-get($mapList, color3); //获得集合某个键的值，map-get是一个方法
+}
+
+div {
+  @extend h1; //继承h1的样式@extend // color: blue
+  font-size: nth(
+    $pxArr,
+    3
+  ); //获得数组中的第三个元素nth(数组名,第几个元素从1开始)，nth是一个方法 // 16px
+}
+```
+
+### 块参数传递
+
+import ScssBase2 from "./scssBase2.tsx";
+
+<div>
+  <ScssBase2 />
+</div>
+
+```html
+<template>
+  <div class="outBox">
+    <div class="move"></div>
+  </div>
+</template>
+```
+
+```scss
+@mixin keyframes($name) {
+  @keyframes #{$name} {
+    @content;
+  }
+  @-webkit-keyframes #{$name} {
+    @content; //用于一次性传一大堆可能被错误解析的参数，
+  }
+  @-moz-keyframes #{$name} {
+    @content;
+  }
+  @-ms-keyframes #{$name} {
+    @content;
+  }
+}
+
+@include keyframes(demo) {
+  from {
+    width: 20px;
+  }
+  to {
+    width: 400px;
+  }
+}
+
+// 引用@mixin样式块普通的写法是@include keyframes(demo),mixin内的name替换成demo字符串
+// 如果用于@content就在@include keyframes(demo)后面加一个花括号。花括号内容传到@content位置
+
+.outBox {
+  padding: 20px;
+  height: 100px;
+  position: relative;
+  // 关键帧
+  .move {
+    width: 100px;
+    height: 100px;
+    background: red;
+    position: absolute;
+    animation: demo 8s infinite;
+    //animation-delay:3s;
+    //animation-direction: reverse;
+  }
+}
+```
+
+### 跳出嵌套
+
+@at-root
+
+用来跳出选择器嵌套。默认所有的嵌套，继承所有上级选择器，用这个就可以跳出所有上级选择器的嵌套。
+
+可能用于在写结构化 css 时，减少内层元素的权重和过深的嵌套
+
+没有跳出语句的情况：
+
+```scss
+.parent-1 {
+  color: #f00;
+
+  .child {
+    width: 100px;
+  }
+}
+```
+
+编译成 css 后：
+
+```css
+.parent-1 {
+  color: #f00;
+}
+
+.parent-1 .child {
+  width: 100px;
+}
+```
+
+单个选择器跳出嵌套：
+
+```scss
+.parent-2 {
+  color: #f00;
+  @at-root .child {
+    width: 200px;
+  }
+}
+```
+
+编译成 css 后：
+
+```css
+.parent-2 {
+  color: #f00;
+}
+
+.child {
+  width: 200px; /*跳出外层嵌套*/
+}
+```
+
+多个选择器跳出：
+
+```scss
+.parent-3 {
+  background: #f00;
+  @at-root {
+    .child1 {
+      width: 300px;
+    }
+
+    .child2 {
+      width: 400px;
+    }
+  }
+}
+```
+
+编译成 css 后：
+
+```css
+.parent-3 {
+  background: #f00;
+}
+
+.child1 {
+  width: 300px; /*跳出外层嵌套*/
+}
+
+.child2 {
+  width: 400px; /*跳出外层嵌套*/
+}
+```

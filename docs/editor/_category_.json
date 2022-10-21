@@ -1,0 +1,8 @@
+{
+  "label": "edit",
+  "position": 11,
+  "link": {
+    "type": "generated-index",
+    "description": "编辑器"
+  }
+}

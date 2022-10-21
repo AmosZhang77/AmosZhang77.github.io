@@ -1,0 +1,93 @@
+.lightRing {
+  $boxWidth: 400px; // 容器宽度
+  $boxHeight: 300px; // 容器高度
+  $lightColorMain: rgba(0, 255, 0, 1); // 光圈主颜色
+  $lightColorSub: rgba(0, 0, 0, 0); // 光圈副颜色，一般就用默认的
+  $lightWidth: 4px; // 光圈宽度
+  $lightTime: 0.6s; // 光圈过一条边的时间
+  $lightBorderRadius: $lightWidth/2; // 光圈倒角
+
+  background-color: #555;
+  overflow: hidden;
+  width: $boxWidth;
+  height: $boxHeight;
+  position: relative;
+  margin: 50px;
+  border: none;
+
+  & > span {
+    position: absolute;
+    display: block;
+    z-index: 10;
+    border-radius: $lightBorderRadius;
+  }
+
+  & > span:nth-child(1) {
+    @keyframes span1 {
+      0% {
+        left: -$boxWidth;
+      }
+      100% {
+        left: $boxWidth;
+      }
+    }
+    height: $lightWidth;
+    width: $boxWidth;
+    top: 0;
+    background: linear-gradient(to right, $lightColorSub, $lightColorMain);
+    animation: span1 2*$lightTime linear infinite;
+    animation-delay: 0s;
+  }
+
+  & > span:nth-child(2) {
+    @keyframes span2 {
+      0% {
+        top: -$boxHeight;
+      }
+      100% {
+        top: $boxHeight;
+      }
+    }
+    height: $boxHeight;
+    width: $lightWidth;
+    right: 0;
+    background: linear-gradient(to bottom, $lightColorSub, $lightColorMain);
+    animation: span2 2*$lightTime linear infinite;
+    animation-delay: $lightTime;
+  }
+
+  & > span:nth-child(3) {
+    @keyframes span3 {
+      0% {
+        left: $boxWidth;
+      }
+      100% {
+        left: -$boxWidth;
+      }
+    }
+
+    height: $lightWidth;
+    width: $boxWidth;
+    bottom: 0;
+    background: linear-gradient(to left, $lightColorSub, $lightColorMain);
+    animation: span3 2*$lightTime linear infinite;
+    animation-delay: 0s;
+  }
+
+  & > span:nth-child(4) {
+    @keyframes span4 {
+      0% {
+        bottom: -$boxHeight;
+      }
+      100% {
+        bottom: $boxHeight;
+      }
+    }
+    height: $boxHeight;
+    width: $lightWidth;
+    left: 0;
+    background: linear-gradient(to top, $lightColorSub, $lightColorMain);
+    animation: span4 2*$lightTime linear infinite;
+    animation-delay: $lightTime;
+  }
+}

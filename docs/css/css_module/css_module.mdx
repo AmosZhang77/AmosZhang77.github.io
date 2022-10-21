@@ -1,0 +1,76 @@
+---
+title: CSS module
+sidebar_position: 3
+description: CSS module
+---
+
+CSS Modules 允许使用:global(.className)的语法，凡是这样声明的class，都不会被编译成哈希字符串。类似声明一个全局规则。
+
+（如果在less sass中，外层包裹class，那就不是全局作用域，而是内层的全局作用域， 在包裹class内部都起效）
+
+类似于 vue /deep/ 样式穿透的功能
+
+App.css加入一个全局class。
+
+```js
+
+import React from 'react';
+import style from './App.css';
+
+export default () => {
+  return (
+    <h1 className={style.title}>
+      Hello World
+    </h1>
+  );
+};
+```
+
+```css
+.title {
+  color: red;
+}
+
+:global(.title) {
+/ / 这个title的样式不会加哈希值，相当于对内部都有效（css中是对全局有效，less，sass中有嵌套，所以是内部） color: green;
+}
+```
+
+className={style.title} 写法会使html 和 css 中会被加入相同的哈希值
+
+编译结果:
+
+```html
+<h1 class="_3zyde4l1yATCOkgn-DBWEL">
+  Hello World
+</h1>
+```
+
+```css
+.title {
+  color: green;
+}
+
+_3zyde4l1yATCOkgn-DBWEL {
+  color: red;
+}
+```
+
+:global{} 可以包多个，表示多个都是不要加哈希
+
+```less
+.noticeListBtn {
+  position: relative;
+
+  :global {
+    .box1 {
+      color: red;
+    }
+
+    .box2 {
+      color: blue;
+    }
+  }
+}
+```
+

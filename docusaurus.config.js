@@ -43,7 +43,7 @@ const config = {
           //   "https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/",
           // 设置为undefined全局禁用编辑链接
           editUrl: undefined,
-          showLastUpdateTime:true
+          showLastUpdateTime: true,
         },
         /*blog: {
           showReadingTime: true,
@@ -102,7 +102,7 @@ const config = {
                 label: "github",
                 href: "https://stackoverflow.com/questions/tagged/docusaurus",
               },
-             /* {
+              /* {
                 label: "Discord",
                 href: "https://discordapp.com/invite/docusaurus",
               },
@@ -130,7 +130,9 @@ const config = {
       },
       prism: {
         theme: lightCodeTheme,
+        // theme: darkCodeTheme,
         darkTheme: darkCodeTheme,
+        // additionalLanguages: ['scss'],
       },
     }),
   themes: [
@@ -148,6 +150,11 @@ const config = {
       },
     ],
   ],
+
+  // 安装支持sass插件：yarn add --save docusaurus-plugin-sass sass
+  // 安装支持less插件：yarn add docusaurus-plugin-less
+  // 支持less sass 都需要文件名加. 例如lightRing.module.scss
+  plugins: ["docusaurus-plugin-sass", "docusaurus-plugin-less"],
 };
 
 module.exports = config;

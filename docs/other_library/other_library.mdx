@@ -1,0 +1,70 @@
+---
+title: other library
+sidebar_position: 1
+hide_table_of_contents: true
+description: 其他的库资源资源 地址收集
+---
+
+## 其他的库资源资源 地址收集
+
+### 日期时间处理 
+https://github.com/moment/moment
+
+### vue 文档项目 
+https://vuepress.vuejs.org/zh/
+
+### 项目代码量统计 
+https://github.com/AlDanial/cloc
+
+安装cloc之前要安装perl垫片ActiveState Perl 5.6.1或者 Strawberry Perl（我用了ActiveState）
+
+（https://strawberryperl.com/ 或者 https://www.activestate.com/products/perl/）
+
+npm install -g cloc
+
+### 高级表格 ag-grid
+
+高级功能需要收费
+
+https://github.com/ag-grid/ag-grid
+
+### 高级表格 tanstack
+
+高级功能需要一定自行开发量，github排名最高，开发团队和ag-grid是合作伙伴
+
+https://tanstack.com/table/v8
+
+### 统计文件夹命令 cloc filename
+
+### XSS攻击 防御 dompurify
+
+```shell
+npm install dompurify
+```
+
+```js
+import DOMPurify from 'dompurify';
+
+var clean = DOMPurify.sanitize(dirty);
+
+let text = '<img/src=1 onerror=alert(1)>' // 用户填写的可能有风险的内容
+
+// 没有防护的时候，
+return (
+  <div
+    dangerouslySetInnerHTML={{ __html: text.replace(/\n/g, '<br />') }} // 将换行符替换成br，为了显示换行
+  />
+)
+
+// 用法
+return (
+  <div
+    dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(text.replace(/\n/g, '<br />')) }}
+  />
+)
+```
+
+移动端调试功能
+vconsole
+
+通过环境判断决定是否启用vconsole，比如开发环境，或者线上环境

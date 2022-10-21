@@ -1,0 +1,31 @@
+/*map object*/
+//map定义集合，集合中键值对中的值可以是数组
+$mapList: (
+  color1: red,
+  color2: green,
+  color3: blue,
+);
+$pxArr: 12px 14px 16px 18px;
+
+@function pxFn($px, $default) {
+  //函数定义@function
+  @return $px/$default * 10 + px; //函数返回值，这里16px/20px,系统会智能的把px约分掉，而不是报错，
+  // 结果没有单位，要注意！可以在这里后面直接加px也可以加+px
+}
+
+.outBox {
+  padding: 20px;
+
+  h1 {
+    font-size: pxFn(24px, 12px); //函数调用
+    color: map-get($mapList, color3); //获得集合某个键的值，map-get是一个方法
+  }
+
+  div {
+    @extend h1; //继承h1的样式@extend
+    font-size: nth(
+      $pxArr,
+      3
+    ); //获得数组中的第三个元素nth(数组名,第几个元素从1开始)，nth是一个方法 // 16px
+  }
+}
