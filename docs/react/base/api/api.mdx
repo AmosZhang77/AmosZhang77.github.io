@@ -1,0 +1,44 @@
+### 标签属性由对象解构得到
+
+```js
+class PieReact extends React.Component {
+  state = {
+    boolean: true
+  };
+
+  render () {
+    const fullStyle = {
+      width: '100vw',
+      height: '100vh'
+    }
+    return (
+      <div>
+        <div width='100vw' height='100vh'>标签中的属性</div>
+        <div {...fullStyle}>标签中的属性通过对象展开，达到上面标签一样的效果。{...fullStyle}外层的{} 表示要解析js了</div>
+        <div {...this.state.boolean ? fullStyle : {}}>控制标签中的属性有无</div>
+
+      </div>
+    )
+  }
+}
+
+```
+
+### cloneElement
+
+React.cloneElement
+children可能是组件使用者传入的一个按钮，给按钮添加事件，并且不在其组件结构外侧加结构（可以保证其样式布局结构不改变）
+
+在使用cloneElement之前要用React.isValidElement判断一下
+```jsx
+
+<>
+  {React.isValidElement(children)
+    ? React.cloneElement(children, {
+      onClick: openModal,
+    })
+    : children}
+  <Popup>弹窗</Popup>
+</> 
+
+```

@@ -1,0 +1,40 @@
+PureComponent 只有一个生命周期，shouldComponentUpdate
+
+### props
+
+react props 在传给子组件时会把框架本身要用的４个键名(key,ref,__self,__source)过滤掉，导致这四个参数无法通过pros传到子组件。 props传参的时候千万注意，不要用这4个键名！
+
+```js
+
+```
+
+组件唯一性，安全性，$$typeof: REACT_ELEMENT_TYPE //SYMBOL
+
+jsx在babel编译时，按照编译规则，'<''>'中小写的会编译成字符串，大写的保留变量（可在babel.io下，try it out 直接试用）
+
+```jsx
+function a() { // 编译时不可能把小写的函数名编译成大写的，所以此处自定义组件首字母必须大写。
+  return <span>a</span>
+}
+
+<div>
+  <span>1</span>
+  <A/>
+</div>
+```
+
+编译成
+
+```js
+"use strict";
+
+function a () { // 如果写成小写，因为下面当成组件时小写会被编译成字符串，而不是变量，
+  // 所以逻辑上，小写的组件无法被用到jsx标签中。
+  return /*#__PURE__*/React.createElement("span", null, "a");
+}
+
+/*#__PURE__*/
+React.createElement("div", null,
+  /*#__PURE__*/React.createElement("span", null, "1"),
+  /*#__PURE__*/React.createElement(A, null));
+```

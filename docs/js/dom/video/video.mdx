@@ -1,0 +1,131 @@
+### video 标签
+
+import V from "./video.tsx";
+
+<div>
+  {/* <video muted autoplay src={mp4src} controls width={`${1080/scale}px`} height={`${1920/scale}px`}/> */}
+  <V />
+</div>
+
+poster： 预览图
+
+controls：是否要底部控制栏
+
+```html
+<video src="/video/laugh.mp4" controls width="400px" poster="img/logo.jpg">
+  设置标签宽度就可以，如果都设置控制条会掉
+</video>
+<!-- video 标签内部 填充source标签用以做兼容，浏览器会选择最先出现的可播放的格式-->
+
+<video controls>
+  <!--controls需要操作版面时设置-->
+  <!--mpe4 webm ogg
+    浏览器会自动解析符合当前浏览器格式的音视频路径，解析能兼容的最先出现的-->
+  <source src="video/c.mp4" type="video/mp4" />
+  <source src="video/c.webm" type="video/webm" />
+  <source src="video/c.ogg" type="video/ogg" />
+  您的浏览器不支持Video标签!
+  <!--浏览器不支持当前视频格式//当格式都不支持时，会显示标签里面的提示语-->
+</video>
+-->
+```
+
+```js
+window.onload = function () {
+  var btns = document.querySelectorAll("button");
+  /*获取video标签*/
+  var video = document.querySelector("video");
+
+  /*播放*/
+  btns[0].onclick = function () {
+    video.play();
+  };
+  /*暂停*/
+  btns[1].onclick = function () {
+    video.pause();
+  };
+
+  /*是否静音*/
+  btns[2].onclick = function () {
+    video.muted = video.muted ? false : true; //给video.muted赋值true或false选择是否静音
+  };
+
+  /*声音+*/
+  /* 0~1的值，超过范围会出错。这里是小数计算会有偏差，0.9+0.1可能会大于1，所以
+  方法1：需要预先判断加0.1<1才赋值
+  */
+  btns[3].onclick = function () {
+    /* 0~1的值*/
+    if (video.volume + 0.1 < 1) {
+      video.volume += 0.1;
+    } else {
+      video.volume = 1;
+    }
+  };
+
+  /*声音- */
+  btns[4].onclick = function () {
+    /* 0~1的值,方法2：try catch,catch后面e一定要写，否则会报错，做try里面的，出错的话做catch里面的，也可以用finish*/
+    try {
+      video.volume -= 0.1;
+    } catch (e) {
+      video.volume = 0;
+    }
+  };
+
+  btns[5].onclick = function () {
+    /** 屏幕最大化操作不能裸奔运行，必须放在一个用户的操作上(事件)
+     * 直接js调用无效果*/
+    if (video.requestFullScreen) {
+      //w3c
+      video.requestFullScreen();
+    } else if (video.webkitRequestFullScreen) {
+      //兼容chrome
+      video.webkitRequestFullScreen();
+    } else if (videoEl.mozRequestFullScreen) {
+      videoEl.mozRequestFullScreen();
+    } //兼容火狐
+  };
+};
+
+// timeupdate视频播放时间位置变化事件，播放的时候会不断地激活
+video.ontimeupdate = function () {
+  // video.currentTime视频当前放到的时间位置，单位为秒
+  let currentPlayTime = video.currentTime;
+
+  // video.duration视频总长，单位为秒
+  document.getElementById("time").innerHTML = beforeTime + "/" + video.duration;
+  // 00:01 | 22:25
+
+  let playedPercent = video.currentTime / video.duration;
+};
+```
+
+### audio 标签
+
+import A from "./audio.tsx";
+
+<div>
+  {/* <video muted autoplay src={mp4src} controls width={`${1080/scale}px`} height={`${1920/scale}px`}/> */}
+  <A />
+</div>
+
+```html
+<audio
+  class="audio"
+  src="music/hai.mp3"
+  controls
+  width="200px"
+  height="80px"
+></audio>
+```
+
+```js
+let audio = document.querySelector(".audio");
+// timeupdate音频播放时间位置变化事件，播放的时候会不断地激活（同video）
+audio.ontimeupdate = function () {
+  let currentPlayTime = video.currentTime; // 当前播放的时间点，秒数（同video）
+  // audio.duration视频总长，单位为秒（同video）
+  let playedPercent = video.currentTime / video.duration;
+};
+```

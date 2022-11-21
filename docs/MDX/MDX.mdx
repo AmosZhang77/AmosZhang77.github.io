@@ -6,7 +6,22 @@ description: MDX在本项目中的技巧
 
 引入 react 组件：
 
-1. 'import' 语句后面必须要有空格
+1. 'import' 语句后面必须要有空格，否则组件不会渲染
+
+```javascript
+import ScssBase1 from "./scssBase1.tsx"; // 不会渲染ScssBase1
+<div>
+  <ScssBase1 />
+</div>
+```
+
+```javascript
+import ScssBase1 from "./scssBase1.tsx"; // 可以渲染ScssBase1
+
+<div>
+  <ScssBase1 />
+</div>
+```
 
 2. 组件外面必须包一个标签，并且最外层只能有一个标签
 
@@ -108,6 +123,8 @@ Use the power of React to create interactive blog posts.
 
 ### 标签样式组件
 
+用字符串模板的单引号包住标签，不但能够不让mdx意外解析`<`，而且能以标签样式高亮为标签
+
 ```mdxjs title="index.mdx"
 `我是标签`
 ```
@@ -178,7 +195,7 @@ import imgSrc from "./images/shadowDom.png";
 [MDX](https://mdxjs.com)
 ```
 
-<https://mdxjs.com>
+`<https://mdxjs.com>`
 // or
 [MDX](https://mdxjs.com)
 

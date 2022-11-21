@@ -1,5 +1,5 @@
 import React from "react";
-import styles from "./lightRing.module.less";
+import  "./center1.scss";
 // import styles from "./lightRing.module.scss";
 
 const Center1: React.FC<any> = () => {

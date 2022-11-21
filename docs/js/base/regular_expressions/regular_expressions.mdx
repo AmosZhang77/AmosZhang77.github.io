@@ -1,0 +1,26 @@
+## 正则
+
+### 判断中文正则
+
+```js
+// /[\u4e00-\u9fa5]/g
+const str = '中文 is 啦啦啦'
+const r = str.replace(/[\u4e00-\u9fa5]/g, 'aaa') // 将中文替换为aaa
+console.log(r) // aaaaaa is aaaaaaaaa
+```
+
+### 保留小数点后两位正则
+
+/^[1-9]\d*\.?\d{0,2}$/.test(num1) 这样用正则必须外面再包个括号，否则^符号会报语法错误
+```js
+const num1 = 123.456
+const num2 = 123.45
+console.log(/^[1-9]\d*\.?\d{0,2}$/.test(num1)) // false
+console.log(/^[1-9]\d*\.?\d{0,2}$/.test(num2)) // true
+```
+
+```js
+const num1 = 123.456
+const reg1 = new RegExp(/^[1-9]\d*\.?\d{0,2}$/)
+console.log(reg1.test(num1)) // false
+```

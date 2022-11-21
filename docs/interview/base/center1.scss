@@ -5,11 +5,15 @@
 }
 
 .c {
-  position: absolute;
   height: 300px;
+  width: 400px;
+  background-color: red;
+
+  // 关键css
+  position: absolute;
   top: 0;
   bottom: 0;
   right: 0;
   left: 0;
-  background-color: red;
+  margin: auto;
 }

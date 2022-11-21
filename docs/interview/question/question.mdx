@@ -5,14 +5,56 @@ sum(2,3)(1,3)() === 9
 sum(2,3)(0,1)(1,3)() === 10
 sum(2,3)() === 5
 ```
-写出sum
 
-<interview-byteDance/>
+写出 sum
 
-写出一个函数入参为n，返回值如下
+import ByteDance2 from "./byteDance.tsx";
 
-n=1 时  ['()']
+<div>
+  <ByteDance2 />
+</div>
+
+写出一个函数入参为 n，返回值如下
+
+n=1 时 ['()']
 
 n=2 时 ['()()','(())']
 
 n=3 时 ['()()()','(())()','()(())','(()())']
+
+```javascript
+let arr = []
+
+const fn = (n) => {
+  let str = ''
+  for (let i = 0; i < n - 1; i++) {
+    str = str + '()'
+  }
+  // console.log('str', str)
+  for (let j = 0; j <= str.length; j = j + 2) {
+    let str1 = str.slice(0, j)
+    let str2 = str.slice(j)
+    let halfStr = str1 + '(' + str2
+    // console.log('halfStr',halfStr)
+    for (let k = j; k <= halfStr.length; k = k + 2) {
+      let str1 = halfStr.slice(0, k + 1)
+      let str2 = halfStr.slice(k + 1)
+      let str = str1 + ')' + str2
+      // console.log('str',str)
+      arr.push(str)
+    }
+  }
+  arr = Array.from(new Set(arr))
+}
+fn(3)
+console.log(arr)
+arr = []
+fn(4)
+console.log(arr)
+```
+
+import ByteDance3 from "./byteDance2.tsx";
+
+<div>
+    <ByteDance3 />
+</div>

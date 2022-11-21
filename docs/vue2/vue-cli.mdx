@@ -1,0 +1,40 @@
+2.5.17 vue-cli构建的项目，默认vue拿的按照一般是看node_module的vue的package.json，
+
+但是这个版本构建出的项目里面有build文件夹下面有webpack.base.conf.js这个配置，所以优先这个配置。
+
+最后使用的是dist/vue.esm.js，所以此版本调试用修改node_module里这个文件来调试
+
+```js
+alias: {
+'vue$': 'vue/dist/vue.esm.js',
+'@': resolve('src'),
+}
+```
+
+
+```js
+export function proxy (target: Object, sourceKey: string, key: string) {
+  sharedPropertyDefinition.get = function proxyGetter () {
+    return this[sourceKey][key]
+  }
+  sharedPropertyDefinition.set = function proxySetter (val) {
+    this[sourceKey][key] = val
+  }
+  Object.defineProperty(target, key, sharedPropertyDefinition)
+}
+
+// vm是vue对象，参2可能为_data,_props等，key是需要代理的属性或者方法
+// 如此访问this的某个属性key就代理到对应this._props，this._data
+proxy(vm, `_props`, key)
+```
+
+noop 空函数，避免因为是undefined导致调用时错误
+```JS
+new Watcher(vm, updateComponent, noop, {
+  before () {
+    if (vm._isMounted) {
+      callHook(vm, 'beforeUpdate')
+    }
+  }
+}, true /* isRenderWatcher */)
+```
