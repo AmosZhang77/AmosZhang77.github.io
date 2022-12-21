@@ -31,7 +31,14 @@ function HomepageHeader() {
             >
               Blog
             </Link>
-
+          </div>
+          <div className={styles.buttons}>
+            <Link
+                className="button button--secondary button--lg"
+                to="/blog/introduce"
+            >
+              找伴侣专用,请点击
+            </Link>
           </div>
         </div>
 

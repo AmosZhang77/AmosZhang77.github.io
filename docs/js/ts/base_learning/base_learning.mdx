@@ -1,10 +1,24 @@
 ### ts 基础学习
 
 安装，编译
+
 ```shell
 npm i typescript -g
-// tsc helloworld.ts // 这样不会就近找配置文件
+
+# tsc helloworld.ts # 这样不会就近找配置文件
+
 tsc
+
+tsc -watch # 能持续监听，如有变化就编译
+```
+
+如需要自动编译监听运行 ts，也可选用 ts-node
+
+```shell
+npm i ts-node -g
+
+# 编译，运行，并输出结果
+ts-node helloworld.ts
 ```
 
 tsconfig.json 文件，ts 配置文件
@@ -328,13 +342,12 @@ username2 = null;
 ```
 
 noImplicitAny
-禁止隐式申明any
+禁止隐式申明 any
 
 ```typescript
-let a
-console.log(a.b) // 不会隐私申明为any，ts报错，获取b属性可能会获取不到
+let a;
+console.log(a.b); // 不会隐私申明为any，ts报错，获取b属性可能会获取不到
 ```
-
 
 #### 1.12 包装对象（Wrapper Object）
 
@@ -456,6 +469,9 @@ print("Jack");
 #### 2.5 默认参数
 
 ```typescript
+// 默认参数逻辑上包含可选参数，所以写默认参数的时候没有必要写可选参数的method后面的 ?
+
+// function ajax(url: string, method?: string = "GET") {
 function ajax(url: string, method: string = "GET") {
   console.log(url, method);
 }
@@ -503,18 +519,18 @@ attr(true); // 会报错
 console.log(obj);
 ```
 
-用以下泛型方法，可以实现a 和b是活的类型，但是总是相同，不是交叉的效果。如果想要，ab类型总是交叉不同呢（a是string，b必须是number，反之亦然）
+用以下泛型方法，可以实现 a 和 b 是活的类型，但是总是相同，不是交叉的效果。如果想要，ab 类型总是交叉不同呢（a 是 string，b 必须是 number，反之亦然）
 
 ```typescript
 let obj: any = {};
 type Person = string | number;
-function attr<T extends Person> (a:T,b:T): void {
+function attr<T extends Person>(a: T, b: T): void {
   // 这里虽然val:any托底，但是实际语法只是上面的重载，超出上面两种类型会报错
   if (typeof a === "string" && typeof b === "number") {
-  obj.age = a;
-} else {
-  obj.name = b;
-}
+    obj.age = a;
+  } else {
+    obj.name = b;
+  }
 }
 attr("Jack", "Rose"); // 想要报错，但不报错
 
@@ -524,6 +540,7 @@ attr("Jack", 9); // 想要不报错,但报错
 ```
 
 下面用了联合类型，还差一点，没有实现需求
+
 ```typescript
 let obj: any = {};
 function attr(a: string | number, b: string | number): void {
@@ -555,11 +572,11 @@ function attr(a: any, b: any): void {
     obj.name = b;
   }
 }
-attr("Jack","Rose"); // 报错
+attr("Jack", "Rose"); // 报错
 
-attr(9,7); // 报错
+attr(9, 7); // 报错
 
-attr("Jack",9); // 不报错
+attr("Jack", 9); // 不报错
 
 console.log(obj);
 ```
@@ -581,7 +598,6 @@ attr(9, 7); // 报错
 
 attr("Jack", 9); // 不报错
 ```
-
 
 ### 3. 类
 
@@ -687,49 +703,53 @@ let a = new Animal("Jack");
 a.changeName("Rose");
 ```
 
-#### 3.5 继承
-
-子类继承父类后子类的实例就拥有了父类中的属性和方法，可以增强代码的可复用性
-将子类公用的方法抽象出来放在父类中，自己的特殊逻辑放在子类中重写父类的逻辑
-super 可以调用父类上的方法和属性
+#### 3.5 实现 implements 关键词
 
 ```typescript
-class Person {
-  name: string; //定义实例的属性，默认省略 public 修饰符
-  age: number;
-  constructor(name: string, age: number) {
-    //构造函数
-    this.name = name;
-    this.age = age;
-  }
-  getName(): string {
-    return this.name;
-  }
-  setName(name: string): void {
-    this.name = name;
-  }
+// implements关键词+接口，可以用于约束类需要实现的功能--对类的行为进行一些抽象
+// 类只能继承一个类，如果想从几个类中拿一些功能，用implements可以实现
+interface Radio {
+  switchRadio(): void;
 }
-class Student extends Person {
-  no: number;
-  constructor(name: string, age: number, no: number) {
-    super(name, age);
-    this.no = no;
-  }
-  getNo(): number {
-    return this.no;
-  }
+
+interface Battery {
+  checkBatteryStatus();
 }
-let s1 = new Student("Jack", 10, 1);
-console.log(s1);
+
+// implements实现，用了此关键词，class内必须实现Radio接口的内容，此处是switchRadio
+class Car implements Radio {
+  switchRadio() {}
+}
+
+// 可用于提炼出都要实现的功能，至于怎么实现在class中分别定义
+class Phone implements Radio {
+  switchRadio() {}
+}
+
+// 可以约束需要同时实现的多个接口，用逗号隔开
+class Cellphone2 implements Radio, Battery {
+  switchRadio() {}
+  checkBatteryStatus() {}
+}
+
+// 接口继承接口之后也能实现上面的需要约束多个接口的需求
+interface RadioWithBattery extends Radio {
+  checkBatteryStatus();
+}
+
+class Cellphone implements RadioWithBattery {
+  switchRadio() {}
+  checkBatteryStatus() {}
+}
 ```
 
 #### 3.6 类里面的修饰符
 
 ```typescript
 class Father {
-  public name: string; //类里面 子类 其它任何地方外边都可以访问
-  protected age: number; //类里面 子类 都可以访问,其它任何地方不能访问
-  private money: number; //类里面可以访问， 子类和其它任何地方都不可以访问
+  public name: string; // public关键词修饰，类里面、子类、用类创建对象后的对象都可以访问，外部都可以访问
+  protected age: number; // protected关键词修饰，类里面、子类 都可以访问,用类创建对象后的对象，外部其它任何地方不能访问
+  private money: number; // private关键词修饰，类里面可以访问，子类和其它任何地方都不可以访问
   constructor(name: string, age: number, money: number) {
     //构造函数
     this.name = name;
@@ -748,14 +768,15 @@ class Child extends Father {
     super(name, age, money);
   }
   desc() {
+    // private属性，子类 不能访问到 money
     console.log(`${this.name} ${this.age} ${this.money}`);
   }
 }
 
 let child = new Child("Jack", 10, 1000);
 console.log(child.name); // Jack
-console.log(child.age); // undefined
-console.log(child.money); // undefined
+console.log(child.age); // undefined // protected属性，外部 不能访问到 age
+console.log(child.money); // undefined // private属性，外部 不能访问到 money
 ```
 
 #### 3.7 静态属性 静态方法
@@ -787,7 +808,7 @@ console.log(Child.getClassName()); // 静态方法子类可以继承
 ```
 
 ```typescript
-export {}
+export {};
 class Father {
   public name: string;
   constructor(name: string) {
@@ -800,50 +821,108 @@ class Child extends Father {
 
   constructor(name: string, age: number) {
     super(name);
-    this.age = age
+    this.age = age;
   }
   desc() {
     console.log(`${this.name} ${this.age}`);
   }
 }
-const c1 = new Child('Jack', 18)
+const c1 = new Child("Jack", 18);
 ```
 
 编译配置 compilerOption.module = commonjs，编译出结果
+
 ```javascript
 "use strict";
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (c, b) { // 拷贝静态属性
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (c, b) { c.__proto__ = b; }) ||
-            function (c, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) c[p] = b[p]; };
-        return extendStatics(c, b);
+var __extends =
+  (this && this.__extends) ||
+  (function () {
+    var extendStatics = function (c, b) {
+      // 拷贝静态属性
+      extendStatics =
+        Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array &&
+          function (c, b) {
+            c.__proto__ = b;
+          }) ||
+        function (c, b) {
+          for (var p in b)
+            if (Object.prototype.hasOwnProperty.call(b, p)) c[p] = b[p];
+        };
+      return extendStatics(c, b);
     };
     return function (c, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(c, b);
-        function __() { this.constructor = c; }
-        c.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __()); // 逗号语法返回值是最后一句话的值
+      if (typeof b !== "function" && b !== null)
+        throw new TypeError(
+          "Class extends value " + String(b) + " is not a constructor or null"
+        );
+      extendStatics(c, b);
+      function __() {
+        this.constructor = c;
+      }
+      c.prototype =
+        b === null
+          ? Object.create(b)
+          : ((__.prototype = b.prototype), new __()); // 逗号语法返回值是最后一句话的值
     };
-})();
+  })();
 exports.__esModule = true;
 var Father = /** @class */ (function () {
-    function Father() {
-    }
-    return Father;
-}());
+  function Father() {}
+  return Father;
+})();
 var Child = /** @class */ (function (_super) {
-    __extends(Child, _super); // 继承静态属性
-    function Child() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    return Child;
-}(Father));
-
+  __extends(Child, _super); // 继承静态属性
+  function Child() {
+    return (_super !== null && _super.apply(this, arguments)) || this;
+  }
+  return Child;
+})(Father);
 ```
 
-#### 3.8 抽象类
+#### 3.8 js 原生继承 extends 关键词在 ts 下的使用
+
+子类继承父类后子类的实例就拥有了父类中的属性和方法，可以增强代码的可复用性
+将子类公用的方法抽象出来放在父类中，自己的特殊逻辑放在子类中重写父类的逻辑
+super 可以调用父类上的方法和属性
+
+```typescript
+class Person {
+  name: string; //定义实例的属性，默认省略 public 修饰符
+  age: number;
+  constructor(name: string, age: number) {
+    //构造函数
+    this.name = name;
+    this.age = age;
+  }
+  getName(): string {
+    return this.name;
+  }
+  setName(name: string): void {
+    this.name = name;
+  }
+}
+class Student extends Person {
+  no: number;
+  constructor(name: string, age: number, no: number) {
+    super(name, age);
+    this.no = no;
+  }
+  getNo(): number {
+    return this.no;
+  }
+
+  // 重写父类方法
+  getName(): string {
+    // super. 调用父类方法
+    return "child" + super.getName();
+  }
+}
+let s1 = new Student("Jack", 10, 1);
+console.log(s1);
+```
+
+#### 3.9 抽象类
 
 抽象描述一种抽象的概念，无法被实例化，只能被继承
 无法创建抽象类的实例
@@ -853,7 +932,7 @@ var Child = /** @class */ (function (_super) {
 // 抽象类
 abstract class Animal3 {
   name: string;
-  
+
   // 抽象方法
   abstract speak();
 }
@@ -869,21 +948,22 @@ cat.speak();
 ```typescript
 type O = {
   name: string;
-}
-interface E extends O { // 扩展接口
-  age: numbeer
+};
+interface E extends O {
+  // 扩展接口
+  age: number;
 }
 const a: E = {
-  name:'Jack',
+  name: "Jack",
   age: 18,
-}
+};
 ```
 
 ```typescript
 // 必须包含name,其他类型随意都可以
 interface T {
   name: string;
-  [key: string]: any // 其他类型随意都可以，这里的key 可以不写做key，比如key1，xxx
+  [key: string]: any; // 其他类型随意都可以，这里的key 可以不写做key，比如key1，xxx
 }
 ```
 
@@ -892,48 +972,150 @@ let a: number = 1
 a as any as string = 'a' // 不合理的断言会报错，双重断言可以解决
 ```
 
-### 
-```typescript
+### 别名 关键词 type
 
+```typescript
 // 别名 声明一个类型
-type Sum = ((aa: number, bb: number) => number) | string
+type Sum = ((aa: number, bb: number) => number) | string;
 
 // 接口 定义函数是冒号隔开函数返回值，不是箭头
 interface Sum {
-    (a: number, b: number):number
+  (a: number, b: number): number;
 }
 interface Sum {
-  (a: number, b: number):number | string // 这样写法是错误的，赋值string会报错，接口无法写又是函数又是string，别名可以用联合类型
+  (a: number, b: number): number | string; // 这样写法是错误的，赋值string会报错，接口无法写又是函数又是string，别名可以用联合类型
 }
 // 区别 interface 可以继承  可以被类来实现
 // type仅仅是一个别名 一般在定义联合类型 ，定义临时变量时可以使用
-let sum2: Sum = (a: number, b: number): number => a + b
-
-
+let sum2: Sum = (a: number, b: number): number => a + b;
 ```
 
+### 泛型 generics
 
 ```typescript
-
 // <T> 申明泛型T
 // 泛型 , 用来在代码执行时传入的类型，来确定结果
 function createArray<T>(len: number, value: T): T[] {
-    let result = [];
-    for (let i = 0; i < len; i++) {
-        result.push(value);
-    }
-    return result
+  let result = [];
+  for (let i = 0; i < len; i++) {
+    result.push(value);
+  }
+  return result;
 }
-let arr = createArray(3, 'HELLO');
+let arr = createArray(3, "HELLO");
 
 // 多个泛型  元组的交换 [boolean,number] = [number,boolean]
 const swap = <T, K>(tuple: [T, K]): [K, T] => {
-    return [tuple[1], tuple[0]]
-}
-swap<number, number>([1, 2]) // 不报错
-swap<string, number>(['string', 2]) // 不报错
-swap([1, 2]) // 不报错，灵活的泛型，根据使用时的类型推断函数内的类型
-export { }
+  return [tuple[1], tuple[0]];
+};
+swap<number, number>([1, 2]); // 不报错
+swap<string, number>(["string", 2]); // 不报错
+swap([1, 2]); // 不报错，灵活的泛型，根据使用时的类型推断函数内的类型
+export {};
 ```
 
+### 用 ts 的 extends 约束泛型
 
+约束必须带 length 属性
+
+```typescript
+interface IWithLength {
+  length: number;
+}
+
+// 用extends 约束泛型必须含有length属性，
+// 函数中使用泛型
+function echoWithLength<T extends IWithLength>(arg: T): T {
+  // 这样就不会ts报没有length的错了
+  console.log(arg.length);
+  return arg;
+}
+
+const str = echoWithLength("str");
+const obj = echoWithLength({ length: 10, width: 10 });
+const arr2 = echoWithLength([1, 2, 3]);
+```
+
+#### 用在类中使用泛型约束
+
+```typescript
+class Queue<T> {
+  private data = [];
+  push(item: T) {
+    return this.data.push(item);
+  }
+  pop(): T {
+    return this.data.shift();
+  }
+}
+
+// 约束前
+const queue = new Queue();
+queue.push(1);
+queue.push("str");
+
+// new出来的的对象中可能推入任何值，如手动设定成any或者允许自动定义any类型，使用方法，在运行中会产生ts检查不到
+console.log(queue.pop().toFixed()); // 手动或自动设为any，能消除ts报错，但运行时会产生错误
+console.log(queue.pop().length);
+
+/*
+class Queue<T> {
+  private data = [];
+  push(item: T) {
+    return this.data.push(item)
+  }
+  pop(): T {
+    return this.data.shift()
+  }
+}*/
+
+const queue2 = new Queue<number>();
+queue2.push(1);
+console.log(queue2.pop().toFixed()); // 使用数字有字符串没有的toFixed
+// console.log(queue2.pop().length) // ts报错，没有length，能很好约束。保证在ts不报错的情况下，运行也不报错
+
+const queue3 = new Queue<string>();
+queue3.push("str");
+console.log(queue3.pop().length); // 使用字符串有数字没有的length
+// console.log(queue2.pop().toFixed()) // ts报错，没有toFixed，能很好约束。保证在ts不报错的情况下，运行也不报错
+```
+
+#### 用在 interface 中使用泛型约束
+
+```typescript
+interface KeyPair<T, U> {
+  key: T;
+  value: U;
+}
+
+// 使用的时候灵活地传入使用时需要的泛型
+let kp1: KeyPair<number, string> = { key: 123, value: "str" };
+let kp2: KeyPair<string, number> = { key: "test", value: 123 };
+
+let arr: number[] = [1, 2, 3];
+let arrTwo: Array<number> = [1, 2, 3];
+```
+
+#### 在函数中使用泛型约束
+
+```typescript
+// 未用泛型时,函数定义适用局限性大
+interface IPlusOrg {
+(a: number, b: number) : number
+}
+
+// 圆括号中的是入参,冒号后的是返回值
+interface IPlus<T> {
+(a: T, b: T) : T
+}
+function plus(a: number, b: number): number {
+return a + b;
+}
+function connect(a: string, b: string): string {
+return a + b
+}
+
+// 函数定义加入了泛型更灵活,一个IPlus接口可以满足以下两个函数的需求
+const a: IPlus<number> = plus
+const b: IPlus<string> = connect
+```

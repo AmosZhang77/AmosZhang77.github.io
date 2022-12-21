@@ -1,0 +1,356 @@
+### sortablejs 拖拽
+
+表格拖拽，表单时间比较规则验证，相同输入验证
+
+row-key 的唯一性保证拖拽之后数据不会错乱
+
+```vue
+import Sortable from 'sortablejs'
+
+<template>
+  <el-dialog
+    :visible.sync="visible"
+    width="1200px"
+    :close-on-click-modal="false"
+    :modal-append-to-body="false"
+    destroy-on-close
+  >
+    <el-form
+      ref="formModel"
+      :model="formModel"
+      :rules="rules"
+      label-width="140px"
+    >
+      <el-form-item prop="startTime" :rules="rules.startTime" label="开始时间">
+        <el-date-picker
+          v-model="formModel.startTime"
+          value-format="yyyy-MM-dd HH:mm:ss"
+          type="date"
+          placeholder="选择日期"
+        />
+      </el-form-item>
+
+      <el-button type="primary" @click="addOne"
+        ><tr-svg-icon
+          class="bussiness"
+          icon-class="add"
+        />新增一条表单</el-button
+      >
+
+      <el-table
+        ref="table"
+        :data="formModel.projectPlanMilestonesDTOList"
+        highlight-current-row
+        :class="{ activeListTable: visible }"
+        hide-index
+        height="calc(100vh - 297px)"
+        row-key="locId"
+      >
+        <el-table-column label="排序" align="center" min-width="40">
+          <template>
+            <!--设置拖拽元素class，与配置须相同，为了其他位置不成为拖拽的启动按钮，只有拖拽指定-->
+            <tr-svg-icon icon-class="drag" title="拖拽图标" class="drag" />
+          </template>
+        </el-table-column>
+
+        <!--table要设定唯一的row-key，否则拖拽换位置会时数据会错乱-->
+        <el-table-column label="序号" align="center" min-width="40">
+          <template slot-scope="scope">
+            <div>
+              {{ scope.$index + 1 }}
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column label="里程碑名称" align="center" min-width="160">
+          <template slot-scope="scope">
+            <!--可变数量表单验证prop和rules设定，prop定位需要验证的数据，rules定位rules对象对应校验属性-->
+            <el-form-item
+              :prop="`projectPlanMilestonesDTOList[${scope.$index}].milestonesName`"
+              :rules="rules.projectPlanMilestonesDTOList.milestonesName"
+              label-width="0"
+            >
+              <!--vue用于处理空格过必填验证的方法，v-model.trim-->
+              <el-input
+                v-if="edit"
+                v-model.trim="scope.row.milestonesName"
+                placeholder="模板名称"
+                maxlength="100"
+              />
+            </el-form-item>
+          </template>
+        </el-table-column>
+        <el-table-column label="计划完成时间" align="center" min-width="140">
+          <template slot-scope="scope">
+            <el-form-item
+              :prop="`projectPlanMilestonesDTOList[${scope.$index}].expectedFinishTime`"
+              :rules="rules.projectPlanMilestonesDTOList.expectedFinishTime"
+              label-width="0"
+            >
+              <el-date-picker
+                v-if="edit"
+                v-model="scope.row.expectedFinishTime"
+                value-format="yyyy-MM-dd HH:mm:ss"
+                type="date"
+                placeholder="选择日期"
+                maxlength="120"
+                @blur="validate"
+              />
+              <el-tooltip v-else :content="scope.row.expectedFinishTime">
+                <div class="lineEndPoint">
+                  {{ scope.row.expectedFinishTime }}
+                </div>
+              </el-tooltip>
+            </el-form-item>
+          </template>
+        </el-table-column>
+        <el-table-column
+          label="操作"
+          prop="milestonesName"
+          align="center"
+          min-width="80"
+        >
+          <template slot-scope="scope">
+            <el-button @click="delOne(scope.row)">删除</el-button>
+          </template>
+        </el-table-column>
+      </el-table></el-form
+    >
+  </el-dialog>
+</template>
+
+<script>
+export default {
+  name: "AddMilestone",
+  data() {
+    const defaultTemplateMilestones = [];
+
+    for (let i = 1; i < 6; i += 1) {
+      defaultTemplateMilestones.push({
+        importanceFlag: false,
+
+        // 初始时候也用前端自建id
+        locId: `${i}`,
+        milestonesName: `请修改里程碑名称`,
+        // orderNum: 0,
+        startEndStatus: 0,
+        workDays: 5,
+      });
+    }
+    const defaultFormModel = {
+      templateName: "",
+      templateUsage: "",
+      owner: "",
+      planType: "",
+      projectPlanMilestonesDTOList: [],
+    };
+
+    // 验证不重名自定义rule
+    const validateMilestonesNameRule = (rule, value, callback) => {
+      if (
+        this.formModel.projectPlanMilestonesDTOList.reduce(
+          (o, n) => (n.milestonesName === value ? o + 1 : o),
+          0
+        ) > 1
+      ) {
+        callback(new Error("里程碑名不能相同"));
+      } else {
+        callback();
+      }
+    };
+
+    // 时间必须比下一项可变table表单早的验证rule
+    const validateExpectedFinishTimeRule = (rule, value, callback) => {
+      console.log("rule.field", rule.field);
+
+      // i没找到直接取的方法，从rule.field里曲线获得
+      const i = Number(
+        rule.field.slice(rule.field.indexOf("[") + 1, rule.field.indexOf("]"))
+      );
+      const thisOne = dayjs(value).valueOf();
+      const nextOne = dayjs(
+        this.formModel.projectPlanMilestonesDTOList[i + 1]
+          ?.expectedFinishTime ?? 0
+      ).valueOf();
+
+      if (value != null && String(value).trim() !== "") {
+        if (
+          this.formModel.projectPlanMilestonesDTOList[i + 1] &&
+          thisOne > nextOne
+        ) {
+          callback(new Error(timeErrorMessage));
+        } else {
+          callback();
+        }
+      } else {
+        callback(new Error("请填时间！！！！"));
+      }
+    };
+
+    return {
+      visible: false,
+
+      // 因为新增的肯定没有数据库id，所以前端表单id统一用前端自建id，处理起来更简洁。而不是拉下来时拼接提交的时候再切回原样。
+      // 后端的id就让它自己来的时候和提交的时候都自然的带着
+      localIndex: 1000,
+      defaultTemplateMilestones,
+      defaultFormModel,
+      formModel: {
+        id: 0,
+        startTime: undefined,
+
+        // 这里和重置的时候，给表单的表单赋值时如果多层需要cloneDeep，否则将来default值会被意外修改
+        projectPlanMilestonesDTOList: cloneDeep(this.defaultTemplateMilestones),
+      },
+
+      rules: {
+        startTime: [{ required: true, message: "请选则日期" }],
+        mark: [{ required: true, message: "请输入" }],
+        owner: [{ required: true, message: "请选择" }],
+        planType: [{ required: true, message: "请选择" }],
+        projectPlanMilestonesDTOList: {
+          milestonesName: [
+            { required: true, message: "请输入里程碑名称" },
+            { validator: validateMilestonesNameRule, trigger: "blur" },
+          ],
+          expectedFinishTime: [
+            { required: true, message: "请选择时间" },
+            { validator: validateExpectedFinishTimeRule, trigger: "blur" },
+          ],
+        },
+      },
+    };
+  },
+  methods: {
+    rowDrop() {
+      // 此时找到的元素是要拖拽元素的父容器 一次以上使用组件时需要保证选中打开弹框的那个组件，通过activeListTable
+      const tbody = document.querySelector(
+        ".activeListTable .el-table__body-wrapper tbody"
+      );
+      const _this = this;
+
+      Sortable.create(tbody, {
+        //  指定可被拖拽而移动的单元整体
+        draggable: ".activeListTableOuter .el-table__row",
+
+        // 设置只接受拖拽操作事件的dom（一般为一个拖拽图标），不指定的则为整行都能拖拽
+        handle: ".drag",
+        onEnd({ newIndex, oldIndex }) {
+          const currRow = _this.formModel.projectPlanMilestonesDTOList.splice(
+            oldIndex,
+            1
+          )[0];
+
+          _this.formModel.projectPlanMilestonesDTOList.splice(
+            newIndex,
+            0,
+            currRow
+          );
+          _this.validate();
+        },
+      });
+    },
+    addOne() {
+      // 前端表单id都用前端自建id
+      this.localIndex += 1;
+      this.formModel.templateMilestones.push({
+        importanceFlag: false,
+        locId: `${String(this.localIndex)}`,
+        milestonesName: `请输入里程碑`,
+        // orderNum: 0,
+        startEndStatus: 0,
+        workDays: 5,
+      });
+      this.$nextTick(() => {
+        this.$refs.formModel.validate();
+      });
+    },
+    delOne(item) {
+      const i = this.formModel.projectPlanMilestonesDTOList.reduce(
+        (o, n, i) => (n.locId === item.locId ? i : o),
+        0
+      );
+
+      this.formModel.projectPlanMilestonesDTOList.splice(i, 1);
+      this.validate();
+    },
+    async handleSubmit() {
+      this.$refs.formModel.validate(async (valid, ...re) => {
+        if (valid) {
+          this.finishSave();
+        } else {
+          let count = 0;
+
+          // 处理时间排序验证不通过也需要可以保存的情况
+          if (re.length && re.length > 0) {
+            for (const [key, value] of Object.entries(re[0])) {
+              // console.log(key + ':' + value)
+              if (key.indexOf("expectedFinishTime") > -1) {
+                if (!(value[0].message.indexOf(timeErrorMessage) > -1)) {
+                  // console.log(value[0].message, timeErrorMessage, value[0].message.indexOf(timeErrorMessage))
+
+                  count += 1;
+                }
+              } else count += 1;
+            }
+          }
+
+          // 存在排序错误以外的错误
+          if (count > 0) {
+            return false;
+          } else {
+            // return false
+            this.finishSave();
+          }
+        }
+      });
+    },
+    async finishSave() {
+      const p = cloneDeep(this.formModel);
+
+      p.projectPlanMilestonesDTOList.forEach((item, i) => {
+        item.orderNum = i;
+      });
+
+      if (this.editTemplate) {
+        await updateProjectPlanMilestones(p);
+      } else {
+        await createProjectPlanTemplate(p);
+      }
+      this.$message.success("保存成功");
+      this.refresh();
+      this.visible = false;
+
+      // 这里和初始化的时候给表单的表单赋初始值时如果多层需要cloneDeep，否则将来default值会被意外修改
+      this.formModel.projectPlanMilestonesDTOList = cloneDeep(
+        this.defaultFormModel
+      );
+    },
+    validate() {
+      this.$nextTick(() => {
+        this.$refs.formModel.validate();
+      });
+    },
+  },
+};
+</script>
+```
+
+### table 单元格错乱
+
+因为 vue 同 dom 算法优化原因，在 el-table-column 上用 v-if 会使 vue 误判优化 dom 性能导致错位，给'<'el-table-column key='a''>'加上不同 key 就能解决
+
+### el-dialog 嵌套
+
+嵌套 el-dialog 内部 dialog 会有显示问题，需要将内部 dialog 设置到 body 上
+
+```vue
+<template>
+  <el-dialog
+    :visible.sync="visible"
+    :modal-append-to-body="true"
+    :append-to-body="true"
+  >
+    111
+  </el-dialog>
+</template>
+```

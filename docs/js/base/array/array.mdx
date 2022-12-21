@@ -47,3 +47,28 @@ arr2 = arr1.slice();
 ```javascript
 arr2 = [...arr1];
 ```
+
+### sort
+注意：入参函数返回值不是boolean！返回为正数换位置，为负数不换位置，
+
+自定义表达式可以按条件返回1 或者 -1，不要返回true false
+
+-1不换位置保持原位，1换位置
+```javascript
+const list = [
+  {
+    name: "1",
+    val: 1,
+  },
+  {
+    name: "2",
+    val: 2,
+  },
+  {
+    name: "3",
+    val: 3,
+  },
+];
+arr2 = list.sort((a,b)=>b-a); // 从大到小排
+arr2 = list.sort((a,b)=>a-b); // 从小到小排
+```

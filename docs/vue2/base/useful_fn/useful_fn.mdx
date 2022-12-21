@@ -1,18 +1,81 @@
-### vue-cli创建的项目中怎么判断是开发环境还是发布环境？
+### vue-cli 创建的项目中怎么判断是开发环境还是发布环境？
 
 process.env.NODE_ENV 能拿到当前环境
 
-### 判断是用new关键字使用框架的
+### 判断是用 new 关键字使用框架的
 
 ```js
-function Vue (options) {
-  if (process.env.NODE_ENV !== 'production' &&
+function Vue(options) {
+  if (
+    process.env.NODE_ENV !== "production" &&
     !(this instanceof Vue) // 检查this的构造函数是否是vue，
     // 因为如果用new运行此函数，this的原型链构造函数指向vue
   ) {
-    warn('Vue is a constructor and should be called with the `new` keyword')
+    warn("Vue is a constructor and should be called with the `new` keyword");
   }
-  this._init(options)
+  this._init(options);
 }
 ```
 
+### 两个以上 v-model 语法糖
+
+v-model 只能用于组件单个值的双向绑定，需要多个值也可以可以存在一个大对象中变相实现。除此之外，语法糖实现多个双向绑定的方法
+
+```vue
+// 父组件 给自的需要双向绑定的加.sync
+<parent-com>
+<child :val1.sync="value1" :val2.sync="value2"/>
+</parent-com>
+<script>
+export default {
+  name: "LifeCycleState",
+  data() {
+    return {
+      value1: "",
+      value2: "",
+    };
+  },
+};
+</script>
+```
+
+```vue
+// 子组件
+
+<div>
+<input type="text" @input="input1" v-model="locVal1">
+<input type="text" @input="input2" v-model="locVal2">
+
+</div>
+<script>
+export default {
+  name: "model",
+  props: {
+    val1: {
+      type: String | Number,
+      default: undefined
+    },
+    val2: {
+      type: String | Number,
+      default: undefined
+    }
+  },
+  data() {
+    return {
+      locVal1: "",
+      locVal2: "",
+    };
+  },
+  methods: {
+    input1(val){
+      // this.$emit('input', val) v-model的语法糖是input
+      // 多个双向绑定时语法糖时update: <父组件传过来绑定的变量>
+      this.$emit('update:val1', val)
+    },
+    input2(val){
+      this.$emit('update:val2', val)
+    }
+  }
+}
+</script>
+```
