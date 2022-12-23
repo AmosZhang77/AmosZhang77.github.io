@@ -32,16 +32,17 @@ function HomepageHeader() {
               Blog
             </Link>
           </div>
+        </div>
+        <div className={styles.btnBox2}>
           <div className={styles.buttons}>
             <Link
                 className="button button--secondary button--lg"
                 to="/blog/introduce"
             >
-              找伴侣专用,请点击
+              相亲专用，请点击
             </Link>
           </div>
         </div>
-
       </div>
     </header>
   );

@@ -354,3 +354,122 @@ export default {
   </el-dialog>
 </template>
 ```
+
+### el-select 自动展开
+
+隐藏属性 automatic-dropdown，为 true 时可以自动展开
+
+```vue
+<!--@after-enter="opened" 这里必须要在打开弹框后聚焦select，select的自动下拉功能才会有效-->
+<el-popover v-model="visible" trigger="manual" @after-enter="opened">
+
+<!--隐藏属性 automatic-dropdown 可以使下拉自动打开，必须聚焦才有效果-->
+  <el-select :automatic-dropdown="true">
+    <el-option>选项1</el-option>
+    <el-option>选项2</el-option>
+  </el-select>
+</el-popover>
+
+<script>
+
+export default {
+  name: 'FinishFilterPopover',
+  methods: {
+    opened() {
+      this.$refs.selectRef.focus()
+    },
+  }
+}
+</script>
+```
+
+关键词高亮
+
+```vue
+<el-select
+  v-model.trim="keyWord"
+  class="searchInput"
+  filterable
+  remote
+  clearable
+  placeholder="请输入编号/项目/分支名"
+  :remote-method="remoteMethod"
+  :loading="searchLoading"
+  width="420"
+  @change="change"
+>
+  <template v-if="searchOptions.length > 0">
+    <div class="optionTitle">编号</div>
+  <!-- el-option中千万不要写 :label="item.keyWord" 否则自定义的option v-html会被再次覆盖，无法做高亮-->
+
+    <el-option
+      v-for="item in searchOptions"
+      :key="item.keyWord"
+      :value="item.keyWord"
+    >
+      <span v-html="showData(item.keyWord)" />
+    </el-option>
+  </template>
+</el-select>
+
+<script>
+export default {
+  name: "selectHighLight",
+  data() {
+    return {
+      searchInputSave: '', // select搜索框中的字，不是v-modal
+      keyWord: '', // select选择后会变化的值，是v-modal
+      searchOptions: [],
+      searchLoading: false,
+    };
+  },
+  methods: {
+
+    // 忽略大小写的匹配高亮
+    showData(val){
+      const strKeyWord = this.searchInputSave // 需要匹配的关键词
+
+      // i代表忽略大小写，g代表全局匹配，不加g可以理解为str.replace('Ab')，加g为replaceAll('Ab')，此处'Ab'不区分大小写（正则不能放在replaceAll中）
+      return val?.replace(
+        new RegExp('(' + strKeyWord + ')', 'ig'), // filterValue为搜索字段
+
+        // $1代表正则中第一个小括号"()"本次的匹配结果,$2为第二个，以此类推；
+        `<span style='color: red'>$1</span>`
+      )
+    },
+
+   // 不忽略大小写的匹配高亮
+   showData2(val){
+      const strKeyWord = this.searchInputSave // 需要匹配的关键词
+
+      return val?.replace(
+        new RegExp(this.searchInputSave, 'g'), // filterValue为搜索字段
+        `<span style='color: red'>${this.searchInputSave}</span>`
+      )
+    },
+    change(val) {
+      // 选择之后再拉下拉框，但是不输入不会触发remoteMethod，所以这里需要同步一下
+      this.searchInputSave = val
+    },
+    async remoteMethod(val) {
+
+      //
+      this.searchInputSave = val
+      if (val !== '') {
+        this.searchLoading = true
+        try {
+          const res = await remoteReq(val)
+
+          this.searchOptions = res?.data ?? []
+        } finally {
+          this.searchLoading = false
+        }
+      } else {
+        this.searchOptions = []
+      }
+    },
+
+  },
+};
+</script>
+```

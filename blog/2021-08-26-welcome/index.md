@@ -2,26 +2,15 @@
 slug: welcome
 title: Welcome
 authors: [AmosZhang]
-tags: [facebook, hello, docusaurus]
+tags: [ hello ]
 ---
 
-[Docusaurus blogging features](https://docusaurus.io/docs/blog) are powered by the [blog plugin](https://docusaurus.io/docs/api/plugins/@docusaurus/plugin-content-blog).
+### 欢迎来到张君歆（AmosZhang）的个人技术站
 
-Simply add Markdown files (or folders) to the `blog` directory.
+如果本站的资料能对您有所帮助我会感到非常荣幸
 
-Regular blog authors can be added to `authors.yml`.
+技术资料均在顶部Notes菜单中，blog菜单只是个简单的类博客信息页面，无留言评论等一切其他功能。
 
-The blog post date can be extracted from filenames, such as:
+顶部右边有非常友好的整站搜索功能，对中文亦有良好的支持
 
-- `2019-05-30-welcome.md`
-- `2019-05-30-welcome/index.md`
-
-A blog post folder can be convenient to co-locate blog post images:
-
-![Docusaurus Plushie](./docusaurus-plushie-banner.jpeg)
-
-![](./docusaurus-plushie-banner.jpeg)
-
-The blog supports tags as well!
-
-**And if you don't want a blog**: just delete this directory, and use `blog: false` in your Docusaurus config.
+如有需要请用邮件联系本人  moonyellow@126.com
