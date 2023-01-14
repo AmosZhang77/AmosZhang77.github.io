@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkmy_website=self.webpackChunkmy_website||[]).push([[9666],{1005:e=>{e.exports=JSON.parse('{"title":"edit","description":"\u7f16\u8f91\u5668","slug":"/category/edit","permalink":"/docs/category/edit","navigation":{"previous":{"title":"MDX","permalink":"/docs/MDX/"},"next":{"title":"vscode","permalink":"/docs/editor/vscode/"}}}')}}]);
