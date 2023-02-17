@@ -13,15 +13,17 @@ str.includes(searchString[, position])
 ```js
 /**
  * 参数
- searchString
- 要在此字符串中搜索的字符串。
+ searchString searchArray
+ 要判断字符串中是否包含其他字符串。
+ 在数组中找是否包含元某一个元素。
+ 返回true 或者false
 
  position 可选
  从当前字符串的哪个索引位置开始搜寻子字符串，默认值为 0。
  */
-str.includes(searchString[, position
-])
-
+const str = abcd
+str.includes('c', position) // true
+['a','b','c'].includes('c', position) // true
 ```
 
 区分大小写 includes() 方法是区分大小写的。例如，下面的表达式会返回 false ：
@@ -61,5 +63,15 @@ Math.floor(15.7784514000 * 100) / 100   // 输出结果为 15.77
 const a = 123
 const b = 456
 const c = String(a) + String(b) // '123456'
-const c = `${a}${b}` // '123456' 模板字符串更方便
+const d = `${a}${b}` // '123456' 模板字符串更方便
+```
+
+
+### 数字加逗号转字符串
+
+```js
+function numToStr (num){
+  return  Number(12345678.22).toLocaleString()
+}
+numToStr(12345678.22) //12,345,678.22
 ```

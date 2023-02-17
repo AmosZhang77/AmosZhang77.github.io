@@ -7,16 +7,19 @@ description: 其他的库资源资源 地址收集
 
 ## 其他的库资源资源 地址收集
 
-### 日期时间处理 
+### 日期时间处理
+
 https://github.com/moment/moment
 
-### vue 文档项目 
+### vue 文档项目
+
 https://vuepress.vuejs.org/zh/
 
-### 项目代码量统计 
+### 项目代码量统计
+
 https://github.com/AlDanial/cloc
 
-安装cloc之前要安装perl垫片ActiveState Perl 5.6.1或者 Strawberry Perl（我用了ActiveState）
+安装 cloc 之前要安装 perl 垫片 ActiveState Perl 5.6.1 或者 Strawberry Perl（我用了 ActiveState）
 
 （https://strawberryperl.com/ 或者 https://www.activestate.com/products/perl/）
 
@@ -30,13 +33,13 @@ https://github.com/ag-grid/ag-grid
 
 ### 高级表格 tanstack
 
-高级功能需要一定自行开发量，github排名最高，开发团队和ag-grid是合作伙伴
+高级功能需要一定自行开发量，github 排名最高，开发团队和 ag-grid 是合作伙伴
 
 https://tanstack.com/table/v8
 
 ### 统计文件夹命令 cloc filename
 
-### XSS攻击 防御 dompurify
+### XSS 攻击 防御 dompurify
 
 ```shell
 # 安装 dompurify
@@ -44,28 +47,60 @@ npm install dompurify
 ```
 
 ```js
-import DOMPurify from 'dompurify';
+import DOMPurify from "dompurify";
 
 var clean = DOMPurify.sanitize(dirty);
 
-let text = '<img/src=1 onerror=alert(1)>' // 用户填写的可能有风险的内容
+let text = "<img/src=1 onerror=alert(1)>"; // 用户填写的可能有风险的内容
 
 // 没有防护的时候，这里其他用户浏览器中会意外执行某一用户填写风险脚本
 return (
   <div
-    dangerouslySetInnerHTML={{ __html: text.replace(/\n/g, '<br />') }} // 将换行符替换成br，为了显示换行
+    dangerouslySetInnerHTML={{ __html: text.replace(/\n/g, "<br />") }} // 将换行符替换成br，为了显示换行
   />
-)
+);
 
 // 用法。这里不会意外执行某一用户填写风险脚本
 return (
   <div
-    dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(text.replace(/\n/g, '<br />')) }}
+    dangerouslySetInnerHTML={{
+      __html: DOMPurify.sanitize(text.replace(/\n/g, "<br />")),
+    }}
   />
-)
+);
 ```
 
 移动端调试功能
 vconsole
 
-通过环境判断决定是否启用vconsole，比如开发环境，或者线上环境
+通过环境判断决定是否启用 vconsole，比如开发环境，或者线上环境
+
+### cross-env
+
+process.env.NODE_ENV 能拿到当前环境变量里中的 NODE_ENV 变量，可以通过配置 package.json 中的 script 命令配置临时环境变量，
+
+例如
+
+```json
+{
+  "scripts": {
+    "build:test": "cross-env NODE_ENV=test umi build ",
+    "build:prod": "cross-env NODE_ENV=prod umi build ",
+    "build:prodbak": "cross-env NODE_ENV=prodbak umi build "
+  }
+}
+```
+
+windows不支持NODE_ENV=development的这样的设置方式。可以使用cross-env命令来实现全开发平台的兼容。
+要使用该命令的话，需要在项目中安装该命令：
+
+npm 安装方式
+```shell
+npm install --save-dev cross-env
+```
+
+### dotenv
+
+用于将一些列文件用于存储各个环境的对应一套环境变量
+.env.dev 文件
+.env.test 文件
