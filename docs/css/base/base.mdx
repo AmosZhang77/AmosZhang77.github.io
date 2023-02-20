@@ -59,8 +59,9 @@ flex容器的子元素如果没有指定宽度，子元元素会被孙子等元�
 
 或者设定子元素的宽度100%或者calc(100% - 100px)等都可以。（实际效果是flex弹性布局和设定宽度的结合，规则比较复杂，用到实际看）
 
-### sticky 小于
+### sticky 吸顶
 
+小于设定高度，小于此高度不在上移，吸顶效果
 ```css
 .title{
     position: sticky;
@@ -68,7 +69,8 @@ flex容器的子元素如果没有指定宽度，子元元素会被孙子等元�
 }
 ```
 
--webkit-input-placeholder 伪元素浏览器查看不到
+### 控制台查看 影子元素
+-webkit-input-placeholder 影子元素浏览器查看不到
 
 需要在控制台勾选 Show user agent shadow DOM
 
