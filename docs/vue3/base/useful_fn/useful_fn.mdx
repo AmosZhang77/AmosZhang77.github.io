@@ -1,0 +1,16 @@
+### vue3 写法获取 route
+
+```javascript
+import route from "@/router";
+const id = route.currentRoute.params.id;
+```
+
+### 拿ref 模板里面写了ref，直接定义同名ref就能拿到，框架会自动绑定到同名的formRef上
+```vue
+<template>
+    <el-form ref="formRef"/>
+</template>
+// 框架会自动绑定到同名的formRef上
+const formRef = ref(null)
+await formRef.value.validate()
+```

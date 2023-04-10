@@ -135,3 +135,13 @@ yrm use taobao
 ```shell
 npm config set sass_binary_site https://npm.taobao.org/mirrors/node-sass/
 ```
+
+## npx
+可以不用安装某个包而直接使用
+
+原来执行一个文件需要 node_modules/.bin/mocha --version
+或者放到package.json中的script中配置(原理：node打开新shell时会添加临时将node_modules/.bin/加入到环境变量，所以系统可以用bin里面的命令了)
+
+用npx就可以直接用 npx mocha --version
+
+

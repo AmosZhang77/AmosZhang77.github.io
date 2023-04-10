@@ -53,12 +53,12 @@ export default {
   props: {
     val1: {
       type: String | Number,
-      default: undefined
+      default: undefined,
     },
     val2: {
       type: String | Number,
-      default: undefined
-    }
+      default: undefined,
+    },
   },
   data() {
     return {
@@ -67,15 +67,33 @@ export default {
     };
   },
   methods: {
-    input1(val){
+    input1(val) {
       // this.$emit('input', val) v-model的语法糖是input
       // 多个双向绑定时语法糖时update: <父组件传过来绑定的变量>
-      this.$emit('update:val1', val)
+      this.$emit("update:val1", val);
     },
-    input2(val){
-      this.$emit('update:val2', val)
-    }
-  }
-}
+    input2(val) {
+      this.$emit("update:val2", val);
+    },
+  },
+};
 </script>
+```
+
+### 方法用箭头函数会遇到的问题
+
+```vuejs
+methods{
+  save: debounce(async () => {
+
+  // 这里this拿不到
+    this.saveLoading = true
+
+  }, 500),
+  save: debounce(async function() {
+
+  // 这里this能拿到
+    this.saveLoading = true
+  }, 500)
+}
 ```

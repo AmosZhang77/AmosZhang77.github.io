@@ -388,6 +388,53 @@ export default {
 </script>
 ```
 
+### table 单元格错乱
+
+因为 vue 同 dom 算法优化原因，在 el-table-column 上用 v-if 会使 vue 误判优化 dom 性能导致错位，给'<'el-table-column key='a''>'加上不同 key 就能解决
+
+### el-dialog 嵌套
+
+嵌套 el-dialog 内部 dialog 会有显示问题，需要将内部 dialog 设置到 body 上
+
+```vue
+<template>
+  <el-dialog
+    :visible.sync="visible"
+    :modal-append-to-body="true"
+    :append-to-body="true"
+  >
+    111
+  </el-dialog>
+</template>
+```
+
+### el-select 自动展开
+
+隐藏属性 automatic-dropdown，为 true 时可以自动展开
+
+```vue
+<!--@after-enter="opened" 这里必须要在打开弹框后聚焦select，select的自动下拉功能才会有效-->
+<el-popover v-model="visible" trigger="manual" @after-enter="opened">
+
+<!--隐藏属性 automatic-dropdown 可以使下拉自动打开，必须聚焦才有效果-->
+  <el-select :automatic-dropdown="true">
+    <el-option>选项1</el-option>
+    <el-option>选项2</el-option>
+  </el-select>
+</el-popover>
+
+<script>
+export default {
+  name: "FinishFilterPopover",
+  methods: {
+    opened() {
+      this.$refs.selectRef.focus();
+    },
+  },
+};
+</script>
+```
+
 关键词高亮
 
 ```vue
@@ -476,6 +523,4 @@ export default {
 </script>
 ```
 
-### 滚动公告组件
 
-https://github.com/wg5945/vue-marquee-tips

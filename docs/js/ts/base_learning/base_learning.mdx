@@ -148,15 +148,17 @@ enum Gender {
   BOY,
 }
 
-console.log(`Jack${Gender.BOY}`);
-console.log(`Rose${Gender.GIRL}`);
+// 默认枚举，不分配的情况，会自动分配 0 1 2 3
+console.log(`Rose${Gender.GIRL}`); // 0
+console.log(`Jack${Gender.BOY}`); // 1
 
+// 自定义枚举，
 enum Week {
   MONDAY = 1,
   TUESDAY = 2,
 }
 
-console.log(`今天是星期${Week.MONDAY}`);
+console.log(`今天是星期${Week.MONDAY}`); // 1
 ```
 
 #### 1.6.2 常数枚举
@@ -392,7 +394,37 @@ function fn(name4: string | number) {
 fn();
 ```
 
-#### 1.14 类型断言
+#### 1.13.1 交叉类型
+
+联合类型是或的关系
+
+交叉类型是两个都要有
+{a: string} & {b: number}
+表示一个对象必须要有a的属性，也必须要有b的属性
+
+```typescript
+import React, { ButtonHTMLAttributes, AnchorHTMLAttributes } from 'react'
+interface BaseButtonProps {
+  className?: string;
+  /**设置 Button 的禁用 */
+  disabled?: boolean;
+  /**设置 Button 的尺寸 */
+  size?: ButtonSize;
+  /**设置 Button 的类型 */
+  btnType?: ButtonType;
+  children: React.ReactNode;
+  href?: string;
+}
+
+// ButtonHTMLAttributes是react ts给我们内置的ts原生dom类型之一
+// ButtonHTMLAttributes<HTMLElement> 原生按钮的类型
+// AnchorHTMLAttributes<HTMLElement> 原生a链接的类型
+type NativeButtonProps = BaseButtonProps & ButtonHTMLAttributes<HTMLElement>
+type AnchorButtonProps = BaseButtonProps & AnchorHTMLAttributes<HTMLElement>
+export type ButtonProps = Partial<NativeButtonProps & AnchorButtonProps>
+```
+
+#### 1.14 类型断言 type assertion
 
 类型断言可以将一个联合类型的变量，指定为一个更加具体的类型
 
@@ -400,6 +432,15 @@ fn();
 
 ```typescript
 function fn(name5: string | number) {
+  let r;
+  // 这里用as 进行断言从ts语法上看需要用到一个临时变量
+  const strTemp = name5 as String;
+  if (strTemp.length) {
+    r = strTemp.length;
+  } else {
+    const numberTemp = name5 as Number;
+    r = numberTemp.toString().length;
+  }
   const a = (name5 as number).toFixed(3);
   const b = (name5 as string).length;
 
@@ -408,7 +449,27 @@ function fn(name5: string | number) {
   console.log(a, b, c);
 }
 
-fn();
+fn([]);
+```
+
+用`<>`加载对象的前面(加括号后面可以直接点属性),用以断言,语法上可以免去临时变量.
+
+但是只对当句有效,对下句无效
+
+```typescript
+function fn(name5: string | number) {
+  let r;
+
+  // 这里用as 进行断言从ts语法上看需要用到一个临时变量
+  if ((<String>name5).length) {
+    // r = name5.length; // 报错, <>断言对下面的无效,不同于as
+    r = (<String>name5).length;
+  } else {
+    r = (<Number>name5).toString().length;
+  }
+}
+
+fn([]);
 ```
 
 #### 1.15 字符串、数字、布尔值字面量
@@ -470,7 +531,7 @@ print("Jack");
 
 ```typescript
 // 默认参数逻辑上包含可选参数，所以写默认参数的时候没有必要写可选参数的method后面的 ?
-
+// 默认参数是es6写法
 // function ajax(url: string, method?: string = "GET") {
 function ajax(url: string, method: string = "GET") {
   console.log(url, method);
@@ -972,10 +1033,10 @@ let a: number = 1
 a as any as string = 'a' // 不合理的断言会报错，双重断言可以解决
 ```
 
-### 别名 关键词 type
+### 类型别名 aliases 关键词 type
 
 ```typescript
-// 别名 声明一个类型
+// 类型别名 声明一个类型
 type Sum = ((aa: number, bb: number) => number) | string;
 
 // 接口 定义函数是冒号隔开函数返回值，不是箭头
@@ -1004,7 +1065,8 @@ function createArray<T>(len: number, value: T): T[] {
 }
 let arr = createArray(3, "HELLO");
 
-// 多个泛型  元组的交换 [boolean,number] = [number,boolean]
+// 多个泛型  <T, K>申明泛型T,K
+// 元组的交换 [boolean,number] = [number,boolean]
 const swap = <T, K>(tuple: [T, K]): [K, T] => {
   return [tuple[1], tuple[0]];
 };
@@ -1016,7 +1078,23 @@ export {};
 
 ### 用 ts 的 extends 约束泛型
 
-约束必须带 length 属性
+需求: 约束对象必须带 length 属性
+
+想要约束对象有 length 属性,但是如下约束时,对象只能是数组,局限性太大
+
+```typescript
+function echoWithArr<T>(arg: T[]): T[] {
+  console.log(arg.length);
+  return arg;
+}
+const arrs = echoWithArr([1, 2, 3]);
+
+interface IWithLength {
+  length: number;
+}
+```
+
+如下约束对象必须有 length 属性,对象可以是数组,对象,函数等等
 
 ```typescript
 interface IWithLength {
@@ -1054,26 +1132,31 @@ const queue = new Queue();
 queue.push(1);
 queue.push("str");
 
-// new出来的的对象中可能推入任何值，如手动设定成any或者允许自动定义any类型，使用方法，在运行中会产生ts检查不到
+// new出来的的对象中可能推入任何值，如手动设定成any或者允许自动定义any类型，在运行中,使用方法会产生ts捕捉不到的错误
 console.log(queue.pop().toFixed()); // 手动或自动设为any，能消除ts报错，但运行时会产生错误
 console.log(queue.pop().length);
+```
 
-/*
+类的定义与上面完全相同,通过在使用时给泛型定义类型来进行更好的约束
+
+```typescript
 class Queue<T> {
   private data = [];
   push(item: T) {
-    return this.data.push(item)
+    return this.data.push(item);
   }
   pop(): T {
-    return this.data.shift()
+    return this.data.shift();
   }
-}*/
+}
 
+// 通过在使用时给泛型定义类型<number>来进行更好的约束
 const queue2 = new Queue<number>();
 queue2.push(1);
 console.log(queue2.pop().toFixed()); // 使用数字有字符串没有的toFixed
 // console.log(queue2.pop().length) // ts报错，没有length，能很好约束。保证在ts不报错的情况下，运行也不报错
 
+// 通过在使用时给泛型定义类型<string>来进行更好的约束
 const queue3 = new Queue<string>();
 queue3.push("str");
 console.log(queue3.pop().length); // 使用字符串有数字没有的length
@@ -1093,6 +1176,7 @@ let kp1: KeyPair<number, string> = { key: 123, value: "str" };
 let kp2: KeyPair<string, number> = { key: "test", value: 123 };
 
 let arr: number[] = [1, 2, 3];
+// 与上面效果相同,但是用的泛型传入类型的方式
 let arrTwo: Array<number> = [1, 2, 3];
 ```
 
@@ -1101,21 +1185,80 @@ let arrTwo: Array<number> = [1, 2, 3];
 ```typescript
 // 未用泛型时,函数定义适用局限性大
 interface IPlusOrg {
-(a: number, b: number) : number
+  (a: number, b: number): number;
 }
 
 // 圆括号中的是入参,冒号后的是返回值
 interface IPlus<T> {
-(a: T, b: T) : T
+  (a: T, b: T): T;
 }
 function plus(a: number, b: number): number {
-return a + b;
+  return a + b;
 }
 function connect(a: string, b: string): string {
-return a + b
+  return a + b;
 }
 
 // 函数定义加入了泛型更灵活,一个IPlus接口可以满足以下两个函数的需求
-const a: IPlus<number> = plus
-const b: IPlus<string> = connect
+const a: IPlus<number> = plus;
+const b: IPlus<string> = connect;
 ```
+
+### 申明 declare
+
+常用于库的引入申明，库的申明文件可以去 @types 找 （由DefinitelyTyped组织管理，github可搜到）
+microsoft.github.io/TypeSearch/  内可搜索
+```typescript
+// 申明
+declare var jQuery: (selector: string) => any
+
+jQuery('#id') // 申明了之后,就不会报 Unresolved function or method jQuery()
+```
+
+一般会建单独文件保存类型，ts解析器会去查找项目中所有的 .d.ts结尾的文件
+```typescript
+declare var jQuery: (selector: string) => any
+```
+如果没有加载到，目录下添加tsconfig.json文件
+```json
+{
+  "include": ["**/*"]
+}
+```
+
+装完高质量申明库，jQuery就有类型了
+```shell
+yarn add @types/jQuery
+```
+
+
+## Utility Types 官方工具类型
+
+### Partial
+
+使一个类型的所有属性变成可选属性
+
+```typescript
+// 例子
+interface Todo {
+  title: string;
+  description: string;
+}
+// Partial<Todo> 部分属性覆盖功时，覆盖对象可用被覆盖类型加上Partial包装
+function updateTodo(todo: Todo, fieldsToUpdate: Partial<Todo>) {
+  return { ...todo, ...fieldsToUpdate };
+}
+
+const todo1 = {
+  title: "organize desk",
+  description: "clear clutter",
+};
+
+const todo2 = updateTodo(todo1, {
+  description: "throw out trash",
+});
+```
+
+
+Partial源码
+type Partial<T> = { [P in keyof T]?: T[P] };

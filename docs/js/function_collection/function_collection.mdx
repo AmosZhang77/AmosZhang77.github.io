@@ -1,12 +1,12 @@
-### dom转pdf下载
+### dom 转 pdf 下载
 
-第一个将页面html转换成图片
+第一个将页面 html 转换成图片
 
 ```shell
 npm install html2canvas --save
 ```
 
-第二个将图片生成pdf
+第二个将图片生成 pdf
 
 ```shell
 npm install jspdf --save
@@ -14,145 +14,145 @@ npm install jspdf --save
 
 ```js
 // toPDF.js
-import html2canvas from 'html2canvas'
-import JsPDF from 'jspdf'
+import html2canvas from "html2canvas";
+import JsPDF from "jspdf";
 
 /**
  * @param  ele          要生成 pdf 的DOM元素（容器）
  * @param  padfName     PDF文件生成后的文件名字
  * */
-function downloadPDF (ele, pdfName) {
-  document.documentElement.scrollTop = 0
+function downloadPDF(ele, pdfName) {
+  document.documentElement.scrollTop = 0;
   html2canvas(ele, {
     dpi: 300,
-    useCORS: true  // 允许canvas画布内 可以跨域请求外部链接图片, 允许跨域请求。
+    useCORS: true, // 允许canvas画布内 可以跨域请求外部链接图片, 允许跨域请求。
   }).then((canvas) => {
-    const contentWidth = canvas.width
-    const contentHeight = canvas.height
+    const contentWidth = canvas.width;
+    const contentHeight = canvas.height;
     // 一页pdf显示html页面生成的canvas高度;
-    const pageHeight = contentWidth / 592.28 * 841.89
+    const pageHeight = (contentWidth / 592.28) * 841.89;
     // 未生成pdf的html页面高度
-    let leftHeight = contentHeight
+    let leftHeight = contentHeight;
     // 页面偏移
-    let position = 0
+    let position = 0;
     // a4纸的尺寸[595.28,841.89]，html页面生成的canvas在pdf中图片的宽高
-    const imgWidth = 595.28
-    const imgHeight = 595.28 / contentWidth * contentHeight
-    const pageData = canvas.toDataURL('image/jpeg', 1.0)
-    const pdf = new JsPDF('', 'pt', 'a4')
+    const imgWidth = 595.28;
+    const imgHeight = (595.28 / contentWidth) * contentHeight;
+    const pageData = canvas.toDataURL("image/jpeg", 1.0);
+    const pdf = new JsPDF("", "pt", "a4");
     // 有两个高度需要区分，一个是html页面的实际高度，和生成pdf的页面高度(841.89)
     // 当内容未超过pdf一页显示的范围，无需分页
     if (leftHeight < pageHeight) {
       // 在pdf.addImage(pageData, 'JPEG', 左，上，宽度，高度)设置在pdf中显示；
-      pdf.addImage(pageData, 'JPEG', 0, 0, imgWidth, imgHeight)
-    } else {    // 分页
+      pdf.addImage(pageData, "JPEG", 0, 0, imgWidth, imgHeight);
+    } else {
+      // 分页
       while (leftHeight > 0) {
-        pdf.addImage(pageData, 'JPEG', 0, position, imgWidth, imgHeight)
-        leftHeight -= pageHeight
-        position -= 841.89
+        pdf.addImage(pageData, "JPEG", 0, position, imgWidth, imgHeight);
+        leftHeight -= pageHeight;
+        position -= 841.89;
         // 避免添加空白页
         if (leftHeight > 0) {
-          pdf.addPage()
+          pdf.addPage();
         }
       }
     }
     // 可动态生成
-    pdf.save(pdfName)
-  })
+    pdf.save(pdfName);
+  });
 }
 
 export default {
-  downloadPDF
-}
-
+  downloadPDF,
+};
 ```
 
-使用toPDF.js
+使用 toPDF.js
 
 ```js
-import htmlToPdf from "@/assets/js/htmlToPdf"
+import htmlToPdf from "@/assets/js/htmlToPdf";
 
 htmlToPdf.downloadPDF(
   document.querySelector("#myexport"), // 需要转化的dom
   "下载文件的文件名"
-)
+);
 ```
 
-多选择框，由随后id计算出id路径数组。 不用记录parentId的方法
+多选择框，由随后 id 计算出 id 路径数组。 不用记录 parentId 的方法
 
 ```js
-const categoryId = '111'
+const categoryId = "111";
 const category = [
   {
-    id: '1',
+    id: "1",
     children: [
       {
-        id: '11',
+        id: "11",
         children: [
           {
-            id: '111',
+            id: "111",
           },
           {
-            id: '112',
+            id: "112",
           },
           {
-            id: '113',
+            id: "113",
           },
-        ]
+        ],
       },
       {
-        id: '12',
+        id: "12",
         children: [
           {
-            id: '121',
+            id: "121",
           },
           {
-            id: '122',
+            id: "122",
           },
           {
-            id: '123',
+            id: "123",
           },
-        ]
-      }
-    ]
+        ],
+      },
+    ],
   },
   {
-    id: '2',
+    id: "2",
     children: [
       {
-        id: '21',
+        id: "21",
         children: [
           {
-            id: '211',
+            id: "211",
           },
           {
-            id: '212',
+            id: "212",
           },
           {
-            id: '213',
+            id: "213",
           },
-        ]
+        ],
       },
       {
-        id: '22',
+        id: "22",
         children: [
           {
-            id: '221',
+            id: "221",
           },
           {
-            id: '222',
+            id: "222",
           },
           {
-            id: '223',
+            id: "223",
           },
-        ]
-      }
-    ]
-  }
-]
+        ],
+      },
+    ],
+  },
+];
 
 const getIdArr = (categoryList, id) => {
-  let r= [];
+  let r = [];
   for (let i = 0; i < categoryList.length; i += 1) {
     if (categoryList[i].id === id) {
       r = [categoryList[i].id];
@@ -168,7 +168,7 @@ const getIdArr = (categoryList, id) => {
 
       for (let k = 0; k < children2.length; k += 1) {
         if (children2[k].id === id) {
-          console.log('成功');
+          console.log("成功");
           r = [categoryList[i].id, children[j]?.id, children2[k]?.id];
           break;
         }
@@ -179,10 +179,7 @@ const getIdArr = (categoryList, id) => {
 };
 const getIdArr2 = (categoryList, id) => {
   let r = [];
-  const fn = (
-    list,
-    idInner
-  ) => {
+  const fn = (list, idInner) => {
     for (let i = 0; i < list.length; i += 1) {
       if (list[i].id === idInner) {
         return {
@@ -193,7 +190,7 @@ const getIdArr2 = (categoryList, id) => {
       const children = list[i]?.children ?? [];
       if (children.length > 0) {
         const inner = fn(children, idInner);
-        console.log('inner', inner);
+        console.log("inner", inner);
         if (inner.b === true) {
           return { b: true, r: [list[i].id, ...inner.r] };
         } else {
@@ -221,19 +218,20 @@ const getIdArr2 = (categoryList, id) => {
 };
 
 console.log(
-  'getIdArr2------------',
+  "getIdArr2------------",
 
   category,
   categoryId,
   getIdArr2(category, categoryId),
-  getIdArr(category, categoryId),
+  getIdArr(category, categoryId)
 );
 ```
 
-### headers拿不到完整,拿headers里的文件名
-默认情况下，只有七种 simple response headers（简单响应首部）可以暴露给外部：(浏览器调试界面可以看到全部header，但是js只能获得默认7种)
+### headers 拿不到完整,拿 headers 里的文件名
 
-如果想要让客户端可以访问到其他的首部信息，可以将它们在 Access-Control-Expose-Headers 里面列出来。(后端需要在response的头里面加)
+默认情况下，只有七种 simple response headers（简单响应首部）可以暴露给外部：(浏览器调试界面可以看到全部 header，但是 js 只能获得默认 7 种)
+
+如果想要让客户端可以访问到其他的首部信息，可以将它们在 Access-Control-Expose-Headers 里面列出来。(后端需要在 response 的头里面加)
 
 Access-Control-Expose-Headers: `<header-name>`, `<header-name>`, ...
 
@@ -336,14 +334,73 @@ window.URL.revokeObjectURL(herf);
 ```
 
 字符串替换
-```javascript
 
-// str.replace("需要替换的字符串"，"新字符串")　
+```javascript
+// str.replace("需要替换的字符串"，"新字符串")
 
 // str.replace(/需要替换的字符串/g，"新字符串")
 
 // 将linux的/ 换成 win的\ 功能函数，正则中\用来转义，字符串中\需要用\来转义
-const replaceForWin = (val)=> {
-return val?.replace(/\//g, '\\') ?? ''
-}
+const replaceForWin = (val) => {
+  return val?.replace(/\//g, "\\") ?? "";
+};
+```
+
+### 比较网速，选择快的网址作为系统 api 地址
+
+```typescript
+// 这里加setTimeout的原因：app 里面只要写promise或者await，console是正确的网址，但是实际运行拿不到，
+// 放到setTimeout里面就可以（这里不知道umi框架产生这个问题的原因）
+setTimeout(async () => {
+  async function hello1() {
+    // 这里因为全局接口和网速测试接口地址不同（差一个api），
+    // 所以用umi的request请求网速接口，会被umi整体设置的前缀url影响而多一个api去不掉，所以这里用fetch
+    // 测速api
+    await fetch("https://hkapi.com/test/hello", {
+      method: "GET",
+    });
+    // 因为Promise.race无法得到是哪个api快，只有先到的api的结果，
+    // 后端测速接口不返回的情况下，需要将两个请求再包装一层promise，返回不同的内容，用于区分哪个网址比较快。
+    return Promise.resolve("https://hkapi.com/api");
+  }
+  async function hello2() {
+    await fetch("https://cnapi.com/test/hello", {
+      method: "GET",
+    });
+    return Promise.resolve("https://cnapi.com/api");
+  }
+  const getFastestUrl = async () => {
+    const res = await Promise.race([hello1(), hello2()]);
+    localStorage.setItem("fastPublicPath", res);
+  };
+  if (REACT_APP_E === "prod" || REACT_APP_E === "test") {
+    getFastestUrl();
+  }
+}, 1);
+```
+
+不用 await 的写法
+
+```typescript
+export const queryFastUrl = () => {
+  const p1 = new Promise((resolve) => {
+    fetch("https://hkapi.com/test/hello", {
+      method: "GET",
+    }).then(() => {
+      resolve("https://hkapi.com/api");
+    });
+  });
+  const p2 = new Promise((resolve) => {
+    fetch("https://cnapi.com/test/hello", {
+      method: "GET",
+    }).then(() => {
+      resolve("https://cnapi.com/api");
+    });
+  });
+  if (REACT_APP_E === "prod" || REACT_APP_E === "test") {
+    Promise.race([p1, p2]).then((e) => {
+      localStorage.setItem("fastPublicPath", e);
+    });
+  }
+};
 ```

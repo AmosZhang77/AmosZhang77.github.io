@@ -14,9 +14,9 @@ $color: red; // 声明
 ```scss
 $h: 20; // 声明
 .className {
-  height: $h+px; // 这里要用加号链接
+  height: $h + px; // 这里要用加号链接
 
-// 这里如果用空格可以正确读取变量，但是编译出来会在数字和px间多空格，浏览器不识别！！！
+  // 这里如果用空格可以正确读取变量，但是编译出来会在数字和px间多空格，浏览器不识别！！！
   height: $h px;
 }
 ```
@@ -287,4 +287,33 @@ import ScssBase2 from "./scssBase2.tsx";
 .child2 {
   width: 400px; /*跳出外层嵌套*/
 }
+```
+
+### 变量默认值
+
+!default 关键词，在写组件库的默认变量时，可以使用，用户在不改源代码的情况下方便自定义色彩变量等
+
+```scss
+$white: #fff !default;
+$gray-100: #f8f9fa !default;
+$gray-200: #e9ecef !default;
+$gray-300: #dee2e6 !default;
+```
+
+### sass 中的@import
+
+\_mixin.scss sass 中约定下划线前缀的文件只能被其他文件导入，不能直接用。
+并且编译的时候不会像 css 中的 import，每一个都是单独的一个 css 文件。
+
+```scss
+@import "mixin"; // 引入的时候不需要家前缀下划线
+```
+
+### calc() 中无法直接使用 sass 变量，必须使用插值写法，变量$spacer写成#{$spacer}
+
+```scss
+$spacer: 1rem;
+$headings-margin-bottom: $spacer;
+//$headings-margin-bottom: calc( $spacer / 2); // 变量无效
+$headings-margin-bottom: calc( #{$spacer} / 2);
 ```

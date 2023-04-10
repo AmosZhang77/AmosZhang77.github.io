@@ -75,3 +75,14 @@ maxlength
 `<pre>` 标签可定义预格式化的文本。
 
 被包围在 `<pre>` 标签 元素中的文本通常会保留空格和换行符。而文本也会呈现为等宽字体。
+
+### blur change 注意 el-select没有blur事件
+
+在做el-select校验的时候要注意，校验触发条件用change，不要用blur。blur无法触发验证回调函数
+
+```vue
+const rules = {
+  productName: [{ validator: validatePass, trigger: 'blur' }],
+  compileOption: [{ validator: validatePass, trigger: 'change' }],
+}
+```

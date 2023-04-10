@@ -92,3 +92,15 @@ declare module 'uuid';
 // uuid 为js包
 import { v4 } from 'uuid';
 ```
+
+## typescript内置类型
+
+### MouseEvent
+
+```typescript
+const updateMouse = (e: MouseEvent)=>{
+    console.log('e',e)
+    setPositions({ x: e.clientX, y: e.clientY })
+}
+document.addEventListener('click',updateMouse)
+```

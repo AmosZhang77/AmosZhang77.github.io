@@ -12,7 +12,8 @@ background-clip
 
 ```css
 .demo:nth-child(1) {
-  background-clip: border-box; /*背景平铺到边框,但是左上角默认第一张背景设置从边框内部开始,想要从边框上开始设置background-position:负值*/
+  background-clip: border-box; /*背景平铺到边框,但是左上角默认第一张背景设置从边框内部开始,
+想要从边框上开始设置background-position:负值*/
   /*background-position: -10px -10px;*/
 }
 
@@ -28,21 +29,20 @@ background-clip
 ### 背景图平铺方式
 
 ```css
-    .backgroundSize2 {
+.backgroundSize2 {
   background-size: 100% 100%;
-/ / 填满，比例会失调 background-repeat: no-repeat;
+  /* 填满，比例会失调 background-repeat: no-repeat;*/
 }
 
 .backgroundSize3 {
   background-size: cover;
-/ / 填满，比例会保证。 尺寸不对剪裁图，不留空白 background-repeat: no-repeat;
-
+  /* 填满，比例会保证。 尺寸不对剪裁图，不留空白 background-repeat: no-repeat; */
 }
 
 .backgroundSize4 {
   background-color: red;
   background-size: contain;
-/ / 填满，比例会保证， 尺寸不对，不剪裁图，空白留给背景色发挥。 background-repeat: no-repeat;
+  /* 填满，比例会保证， 尺寸不对，不剪裁图，空白留给背景色填充。 background-repeat: no-repeat;*/
 }
 ```
 
@@ -58,7 +58,7 @@ background-clip
 
 ### 设定宽度，要求高度根据宽度变化，并保持一定的宽高比
 
-利用 margin padding 的两个方向均是以宽度为准，设定好父宽度，如 100px， 子宽度 10%，子高度设为 0，子 paddingBottom 设为 10%，就可以得到 1：1 宽高比
+利用 margin padding 的两个方向均是以宽度为准的特性，设定好父宽度，如 100px，子宽度 20%，子高度设为 0，子paddingBottom 设为 20%，就可以得到 1：1 宽高比
 
 ```html
 <div class="father">
@@ -446,7 +446,7 @@ body {
 
 ```css
 .clip {
-height: 24px;
+  height: 24px;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;

@@ -1,0 +1,42 @@
+### scoped 的原理和缺陷
+
+scoped 能使 vue 中的样式模块化，原理是带属性为哈希值的 class 选择器。
+
+每个组件会有一个自己的哈希值，但是会有一个问题，每个组件最外层有两个哈希，一个是父组件的哈希，一个是自己的哈希。所以会被父组件同class名选择器意外选中。
+
+父组件
+```vue
+<style lang="scss" scoped>
+.mainDiv[data-v-0211bbce] {
+  height: 10px;
+}
+</style>
+```
+
+两个哈希值，其中一个是父组件的，子组件最外层mainDiv会被父组件的同名class样式意外影响：
+```html
+<div data-v-0211bbce="" data-v-2a6c6f64="" class="mainDiv"></div>
+```
+
+子组件
+```vue
+<style lang="scss" scoped>
+.mainDiv[data-v-2a6c6f64] {
+  min-height: 1px;
+}
+</style>
+```
+
+### trim处理输入框首位空格回车功能
+
+
+注意！在textarea使用此功能会导致用户无法输入回车和空格字符，textarea中空格是常用的输入
+v-model.trim
+
+input中无法输入空格
+```vue
+<el-input
+    v-model.trim="form.riskTask"
+    type="textarea"
+/>
+```
