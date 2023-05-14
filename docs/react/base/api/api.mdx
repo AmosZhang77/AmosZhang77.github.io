@@ -42,3 +42,20 @@ children可能是组件使用者传入的一个按钮，给按钮添加事件，
 </> 
 
 ```
+
+### displayName
+
+displayName是 react 内部功能，用来标记判断组件是什么组件
+
+```jsx
+export const MenuItem = (props) => {
+
+  return (
+    <div>1</div>
+  )
+}
+
+// displayName是 react 内部功能，用来标记判断组件是什么组件
+MenuItem.displayName = 'MenuItem'
+export default MenuItem
+```

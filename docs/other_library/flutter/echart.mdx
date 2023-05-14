@@ -1,0 +1,16 @@
+---
+sidebar_position: 2
+---
+
+## flutter
+
+### 多次setOptions
+
+需要对同一个echarts实例多次setOptions的时候，
+记得先clear一下， 否则有数据错乱的问题
+```js
+chart.clear()
+chart.setOption({
+  color:['#3398DB'],
+})
+```

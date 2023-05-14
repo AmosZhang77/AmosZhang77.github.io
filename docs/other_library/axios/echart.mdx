@@ -1,0 +1,61 @@
+### 获取原生 ajax 的进度事件
+
+用于展示上传进度
+
+```javascript
+import axios from "axios";
+
+const config = {
+  signal: this.controller.signal,
+  // `onUploadProgress` 允许为上传处理进度事件
+  // 浏览器专属
+  onUploadProgress: function (evt) {
+    // 处理原生进度事件
+    if (evt.lengthComputable) {
+      console.log("进度展示可用", evt.total, evt.loaded);
+    }
+  },
+  // `onDownloadProgress` 允许为下载处理进度事件
+  // 浏览器专属
+  onDownloadProgress: function (progressEvent) {
+    // 处理原生进度事件
+  },
+};
+const res = await axios("url", {
+  method: "POST",
+  data: formData,
+  requestType: "form",
+  ...config,
+});
+```
+
+### 原生支持的暂停 ajax 请求再 axios 中使用
+
+```javascript
+class MyUploadAdapter {
+  constructor() {
+    // 原生取消请求api
+    const controller = new AbortController();
+    this.controller = controller;
+  }
+
+  async upload() {
+    const config = {
+      // 给axios传入原生取消请求对象
+      signal: this.controller.signal,
+    };
+    const res = await axios("url", {
+      method: "POST",
+      data: formData,
+      requestType: "form",
+      ...config,
+    });
+  }
+
+  // Aborts the upload process.
+  abort() {
+    // 调用原生取消请求方法
+    this.controller.abort();
+  }
+}
+```

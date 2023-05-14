@@ -61,6 +61,17 @@ flex 容器的子元素如果没有指定宽度，子元元素会被孙子等元
 
 或者设定子元素的宽度 100%或者 calc(100% - 100px)等都可以。（实际效果是 flex 弹性布局和设定宽度的结合，规则比较复杂，用到实际看）
 
+用 flex 实现几列等分，如 3 等分
+
+```scss
+.box {
+  display: flex;
+  .panel {
+    flex: 0 0 33.3333%;
+  }
+}
+```
+
 ### sticky 吸顶
 
 小于设定高度，小于此高度不在上移，吸顶效果
@@ -87,7 +98,7 @@ textarea::-webkit-input-placeholder {
 }
 ```
 
-### placeholder字体和颜色，placeholder在disabled状态下的字体和颜色
+### placeholder 字体和颜色，placeholder 在 disabled 状态下的字体和颜色
 
 ```vue
 <el-form>
@@ -109,7 +120,8 @@ textarea::-webkit-input-placeholder {
 </el-form>
 
 <style lang="scss" scoped>
-:deep(.selfInput) { // .selfInput这个选择器可以是外部的一个组件，比如el-form上面的class，但是如果是外部div上的class，deep不能往里面一直穿透
+:deep(.selfInput) {
+  // .selfInput这个选择器可以是外部的一个组件，比如el-form上面的class，但是如果是外部div上的class，deep不能往里面一直穿透
   input::-webkit-input-placeholder,
   textarea::-webkit-input-placeholder {
     color: red; // 输入状态时候的placeholder字体颜色

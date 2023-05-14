@@ -1,7 +1,51 @@
 ### react-transtion-group 官方动画库
 
-### 多class处理
+### 多 class 处理
+
 ```jsx
-import cx from 'classnames';
-<div className={cx(styles.select, 'nmm-select-outline')}/>
+import cx from "classnames";
+<div className={cx(styles.select, "nmm-select-outline")} />;
+```
+
+### useWatch
+
+antd 在版本 4.20.0 中增加了 Form.useWatch(name, form) 方法，用来获取表单的值，当表单值发生修改，还会触发组件的刷新操作。
+
+这种方式可以显著减少代码量，缺点是只能获取 FormStore 中维护的表单值（Form.Item 设置了 name 属性）!
+
+```typescript
+// field-form/src/useWatch.ts
+function useWatch(dependencies: NamePath = [], form?: FormInstance) {
+  const [value, setValue] = useState<any>();
+
+  const fieldContext = useContext(FieldContext);
+  const formInstance = (form as InternalFormInstance) || fieldContext;
+  const namePath = getNamePath(dependencies);
+
+  useEffect(() => {
+    const { getFieldsValue, getInternalHooks } = formInstance;
+    const { registerWatch } = getInternalHooks(HOOK_MARK);
+    registerWatch((store) => {
+      const newValue = getValue(store, namePath);
+      if (value !== newValue) {
+        setValue(newValue);
+      }
+    });
+    const initialValue = getValue(getFieldsValue(), namePath);
+    setValue(initialValue);
+  }, []);
+  return value;
+}
+```
+
+### antd form 中自动收集表单内容变化时
+
+checkbox 外侧的 Form.Item 除了要设置 name 之外，还要设置 valuePropName="checked"
+
+```tsx
+<Form>
+  <Form.Item name="a" label="" valuePropName="checked" noStyle>
+    <Checkbox>只看与我有关</Checkbox>
+  </Form.Item>
+</Form>
 ```
