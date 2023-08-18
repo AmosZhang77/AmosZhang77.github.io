@@ -24,3 +24,7 @@ const num1 = 123.456
 const reg1 = new RegExp(/^[1-9]\d*\.?\d{0,2}$/)
 console.log(reg1.test(num1)) // false
 ```
+
+### 保留小数点后两位正则
+
+/^[1-9]\d*\.?\d{0,2}$/.test(num1) 这样用正则必须外面再包个括号，否则^符号会报语法错误

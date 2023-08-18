@@ -86,3 +86,76 @@ const rules = {
   compileOption: [{ validator: validatePass, trigger: 'change' }],
 }
 ```
+
+### 限制上传文件类型
+
+也可以适用于antd等这些UI框架的上传组件，因为底层dom使用原生input upload做的
+
+需要允许传多种文件，用豆号隔开
+
+accept="application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+.xls
+
+```html
+<input type="file" accept="application/vnd.ms-excel" />
+```
+
+.xlsx
+```html
+<input type="file" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" />
+```
+
+.ppt
+```html
+<input type="file" accept="application/vnd.ms-powerpoint" />
+```
+
+.pptx
+```html
+<input type="file" accept="application/vnd.openxmlformats-officedocument.presentationml.presentation" />
+```
+
+.doc
+```html
+<input type="file" accept="application/msword" />
+```
+
+.docx
+```html
+<input type="file" accept="application/vnd.openxmlformats-officedocument.wordprocessingml.document" />
+```
+
+.pdf
+```html
+<input type="file" accept="application/pdf" />
+```
+
+.csv
+```html
+<input type="file" accept=".csv" />
+```
+
+.png/.jpg/.jpeg/.etc
+```html
+<input type="file" accept=".csv" />
+```
+
+.txt
+```html
+<input type="file" accept="text/plain" />
+```
+
+.htm/.html
+```html
+<input type="file" accept="text/html" />
+```
+
+.avi/.mpg/.mpeg/.mp4
+```html
+<input type="file" accept="video/*" />
+```
+
+.mp3/.wav/.etc
+```html
+<input type="file" accept="audio/*" />
+```

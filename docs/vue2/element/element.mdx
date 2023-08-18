@@ -524,3 +524,24 @@ export default {
 ```
 
 
+### table 无限长大的问题
+
+el-table外层有di
+
+```vue
+<div  class="tableBox">
+  <div class="tableBoxInner">
+    <el-table/>
+  </div>
+</div>
+<style lang="scss" scoped>
+.tableBox {
+  position: relative;
+  width: 100%;
+  .tableBoxInner{
+    position: absolute;
+    width: 100%;
+  }
+}
+</style>
+```

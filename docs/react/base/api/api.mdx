@@ -56,6 +56,7 @@ export const MenuItem = (props) => {
 }
 
 // displayName是 react 内部功能，用来标记判断组件是什么组件
+// 可用于嵌套时检查用户是否嵌套了正确的组件，父组件中这样检查：childElement.type.displayName === 'MenuItem'
 MenuItem.displayName = 'MenuItem'
 export default MenuItem
 ```

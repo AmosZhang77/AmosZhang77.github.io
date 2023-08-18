@@ -1,8 +1,13 @@
-import React, { ReactElement, useRef } from "react";
+import React, {ReactElement, useEffect, useRef, useState} from "react";
 
 const VideoMD: React.FC<any> = () => {
   const scale = 8;
   const audioRef = useRef<any>();
+  const [canAutoPlay, setCanAutoPlay] = useState<boolean>(false);
+  let clickEvent;
+
+  // 音乐资源加载完毕
+  const [loading, setLoading] = useState<boolean>(false);
 
 
   /**播放*/
@@ -41,7 +46,43 @@ const VideoMD: React.FC<any> = () => {
       audioRef.current.volume = 0;
     }
   };
+  const clickCanAutoPlay = () => {
+    console.log("用户已经和网页有过交互，js可以操作播放了");
+    setCanAutoPlay(true);
+  };
+  const hasLoaded = () => {
+    console.log("加载音乐完毕了");
 
+    setLoading(true);
+  };
+  useEffect(() => {
+    clickEvent = document.body.addEventListener("click", clickCanAutoPlay);
+    /*setTimeout(()=>{
+    startBtnRef.current.click();
+
+  },6000)*/
+    return () => {
+      clickEvent?.removeEventListener("click", clickCanAutoPlay);
+    };
+  }, []);
+  useEffect(() => {
+    console.log("canAutoPlay", canAutoPlay);
+    if (canAutoPlay) {
+      setTimeout(() => {
+        // startBtnRef.current.click();
+        play();
+      }, 2000);
+    }
+  }, [canAutoPlay]);
+  useEffect(() => {
+    console.log("canAutoPlay", canAutoPlay);
+    if (canAutoPlay && loading) {
+      setTimeout(() => {
+        // startBtnRef.current.click();
+        play();
+      }, 2000);
+    }
+  }, [canAutoPlay, loading]);
   return (
     <div>
       <div className="videoBox">
@@ -49,6 +90,10 @@ const VideoMD: React.FC<any> = () => {
           ref={audioRef}
           src="/audio/20220605_2_wait_a_minute_amos.mp3"
           controls
+          autoPlay="autoplay"
+          preload="auto"
+          loop="loop"
+          onCanPlay={hasLoaded}
         >
           {/*<video ref="video1" src="/video/laugh.mp4" controls @timeupdate="timeupdate" width='480px' height="270px"*/}
         </audio>
