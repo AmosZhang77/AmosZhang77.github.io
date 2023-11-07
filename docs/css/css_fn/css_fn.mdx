@@ -58,7 +58,7 @@ background-clip
 
 ### 设定宽度，要求高度根据宽度变化，并保持一定的宽高比
 
-利用 margin padding 的两个方向均是以宽度为准的特性，设定好父宽度，如 100px，子宽度 20%，子高度设为 0，子paddingBottom 设为 20%，就可以得到 1：1 宽高比
+利用 margin padding 的两个方向均是以宽度为准的特性，设定好父宽度，如 100px，子宽度 20%，子高度设为 0，子 paddingBottom 设为 20%，就可以得到 1：1 宽高比
 
 ```html
 <div class="father">
@@ -353,6 +353,24 @@ $widthDesign2: 1920;
 }
 ```
 
+### flex 弹性布局中，有部分需要固定宽度或者高度
+
+flex 布局中，某一部分需要设置固定宽度，直接设置 width 并不能固定宽度，需要用 flex 的方式设置固定宽度
+
+```less
+.father {
+  display: flex;
+
+  .changeableHead {
+    flex: 0 0 200px;
+    // width: 200px; // 无效果，并不能固定宽度
+  }
+
+  .content {
+  }
+}
+```
+
 ### flex 实现高度撑满
 
 ```jsx
@@ -444,8 +462,14 @@ body {
 
 超出省略号
 
+本身不能是 display:flex，否则无法出点点点效果
+
 ```css
 .clip {
+  /*display: flex; 本身不能是display:flex*/
+
+  /*本身可以再弹性盒子内，如下*/
+  flex: 0 0 calc(100% - 20px);
   height: 24px;
   overflow: hidden;
   white-space: nowrap;

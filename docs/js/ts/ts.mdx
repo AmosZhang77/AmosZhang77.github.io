@@ -1,40 +1,52 @@
 ### 全文忽略
+
 ```ts
 /* tslint-disable */
 /* eslint-disable */
 ```
 
-### 忽略ts单行检查
+### 忽略 ts 单行检查
 
 ```ts
 // @ts-ignore
 ```
 
-### 忽略ts全文检查
+### 忽略 ts 全文检查
 
 ```ts
 // @ts-nocheck
 ```
 
-
-### 取消忽略ts全文检查
+### 取消忽略 ts 全文检查
 
 ```ts
 // @ts-check
 ```
 
-
-
 ### 忽略单行检查
-/* tslint:disable */
 
-ts内建重要类型
+/_ tslint:disable _/
 
-dom
+ts 内建重要类型
+
+#### dom
+
 ```typescript
-const dom: HTMLElement = document.getElementById('app')
+const dom: HTMLElement = document.getElementById("app");
 ```
 
+#### styles
+
+React.CSSProperties
+
+```typescript
+import react from "react";
+const componentProps = {
+  styles: React.CSSProperties,
+};
+
+const Menu: React.FC<componentProps>= (props)=>{}
+```
 
 ### 其他没有设定属性，设定一个类型，[propName: string]
 
@@ -48,11 +60,10 @@ interface a {
 
 其他没有使用的属性名 可以统一使用[propName: string]: number | string | boolean | Array'<'string'>';
 
-
 ## declare namespace API 申明全局命名空间
 
-在typings.d.ts文件中申明全局命名空间，所有typings.d.ts文件中都可以
-（不同的文件中有相同的两个命名空间，如API会产生冲突，因避免）
+在 typings.d.ts 文件中申明全局命名空间，所有 typings.d.ts 文件中都可以
+（不同的文件中有相同的两个命名空间，如 API 会产生冲突，因避免）
 在使用类型时，可以通过申明的命名空间直接使用
 
 ```ts
@@ -64,9 +75,9 @@ declare namespace API1 {
   };
 }
 ```
+
 ```ts
-export default function(initialState: API1.InitialStateItem) {
-}
+export default function (initialState: API1.InitialStateItem) {}
 ```
 
 ### 接口合并 接口拓展
@@ -74,33 +85,47 @@ export default function(initialState: API1.InitialStateItem) {
 可使用继承接口的方式
 
 也可以使用&拼接的作用
+
 ```typescript
-type A1 = {name:string}
-type A2 = {age:number}
-type A = A1 & A2
-let b: A = {name:'sansan',age:22}
+type A1 = { name: string };
+type A2 = { age: number };
+type A = A1 & A2;
+let b: A = { name: "sansan", age: 22 };
 ```
 
-
-引入js模块因为没有类型文件而报错，在typings.d.ts加入declare module '模块名'
+引入 js 模块因为没有类型文件而报错，在 typings.d.ts 加入 declare module '模块名'
 
 ```typescript
 // typings.d.ts
-declare module 'uuid';
-```
-```typescript
-// uuid 为js包
-import { v4 } from 'uuid';
+declare module "uuid";
 ```
 
-## typescript内置类型
+```typescript
+// uuid 为js包
+import { v4 } from "uuid";
+```
+
+## typescript 内置类型
 
 ### MouseEvent
 
 ```typescript
-const updateMouse = (e: MouseEvent)=>{
-    console.log('e',e)
-    setPositions({ x: e.clientX, y: e.clientY })
+const updateMouse = (e: MouseEvent) => {
+  console.log("e", e);
+  setPositions({ x: e.clientX, y: e.clientY });
+};
+document.addEventListener("click", updateMouse);
+```
+
+### FunctionComponentElement'<'propsType'>'
+react组件类型
+```tsx
+import {FunctionComponentElement} from "react";
+type propsType ={
+    name: string;
+    age: number;
 }
-document.addEventListener('click',updateMouse)
+const Card: FunctionComponentElement<propsType> = ({name,age}) => {
+return (<div>{}</div>)
+};
 ```
