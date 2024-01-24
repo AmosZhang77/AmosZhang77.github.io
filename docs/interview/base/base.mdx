@@ -61,7 +61,55 @@ Object.is(+0, -0); // false
 async/await，Promise.then，Object.observe，MutationObserver
 
 宏任务(macroTask)
-绑定事件（如 click），setTimeout，setInterval，ajax
+绑定事件（如 click），setTimeout，setInterval，ajax，网络请求
+
+宏任务
+一轮微任务都走完，才走宏任务，然后第二论微任务，然后第二轮宏任务
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Event Loop</title>
+  </head>
+  <body>
+    <p>Event Loop</p>
+
+    <script>
+      const p = document.createElement("p");
+      p.innerHTML = "new paragraph";
+      document.body.appendChild(p);
+      const list = document.getElementsByTagName("p");
+      console.log("length----", list.length);
+      console.log("start");
+      // 渲染之后
+      setTimeout(() => {
+        const list = document.getElementsByTagName("p");
+        console.log("length on timeout----", list.length); // 2
+        alert("阻塞 timeout");
+      });
+      // 渲染之前
+      Promise.resolve().then(() => {
+        const list = document.getElementsByTagName("p");
+        console.log("length on promise.then----", list.length); // 2
+        alert("阻塞 promise");
+      });
+      console.log("end");
+    </script>
+  </body>
+</html>
+```
+
+执行顺序：
+
+火狐：start end 阻塞 promise 页面未渲染 点掉之后页面渲染 阻塞 timeout 页面已经渲染
+
+谷歌，edge:start end 阻塞 promise 页面未渲染 点掉之后页面也未渲染 阻塞 timeout 点掉，页面渲染
+
+但是都是为渲染的情况下也都能拿到 2 个 p，为渲染，但是结构已经有了
 
 Promise.allSettled 无论对错，全部返回
 
@@ -153,3 +201,952 @@ import Center1 from "./center1.tsx";
 <div>
   <Center1 />
 </div>
+
+宏任务 微任务
+
+防抖节流
+
+箭头函数
+
+for in for of for await of
+
+offsetHeight: border + padding + content
+
+clientHeight: padding + content
+
+scrollHeight: padding + 实际内容尺寸（出滚动条时，比容器的内容 content 大）
+
+scrollTop: 已滚动上方高度
+
+类数组转数组
+
+```javascript
+const arr1 = Array.form(list);
+const arr2 = Array.prototype.slice.call(list);
+const arr3 = [...list];
+```
+
+### 严格模式区别
+
+开启
+
+```javascript
+"use strict"; // 全局开启
+
+function fn() {
+  "use strict"; // 某个函数内开启
+}
+```
+
+区别：
+
+全局变量必须先生命，显式声明全局变量
+
+```javascript
+function fn() {
+  a = 1; // 意外污染全局变量
+}
+```
+
+禁止 with
+
+创建 eval 作用域
+
+禁止 this 指向 window
+
+函数参数不能重名
+
+跨域为什么要发送 options 请求
+
+浏览器自动发起，无需干预，跨域预检查，会返回服务器允许哪些类型的跨域，是否允许跨域
+
+weaMap 值必须是引用类型
+
+for foreach 执行效率 3.6s 15s
+
+react fiber
+
+组件树转换未链表，可以分段渲染
+
+浏览器空闲时，继续渲染，浏览器提供了空闲 api -- requestIdleCallback，空闲时才执行
+
+每次渲染玩都会执行，高优先级，requestAnimationFrame
+
+上面两个都是宏任务，优先级低于 setTimeout
+
+width=device-width 告诉浏览器已经适配了手机端，不需要双击放大功能，浏览器 click 事件 300ms 的延迟会关掉。
+
+```html
+<meta name="viewport" content="width=device-width,initial-scale=1.0" />
+```
+
+https 原理 及 中间人攻击
+
+先非对称加密，服务器给客户端发公钥（用于加密），客户端生成随机数，用公钥加密随机数给服务器，服务器可以用私钥解开。之后通信都用这个随机数作为对称加密的密钥，进行对称加密通信。
+
+因为客户端有这个随机数，不需要解密，服务器有私钥可以解开，获得随机数，所以可以进行对称加密通信。中间如果被拦截因为这个随机数是非对称加密的，无法获得原本随机数，无法用过随机数解密对称加密通信的内容
+
+中间人攻击，黑客拦截服务器到客户端的信息，更换成自己的公钥。抓取客户端发出的请求，此请求有客户端生成的随机数，因为是黑客提供的公钥，所以可以用黑客自己的私钥解开，获得客户端的随机数。如此就能解密后面的对称加密内容。
+
+防范方法，购买正规第三方 https 证书，第三方会和浏览器厂商合作，浏览器会检查请求来源和证书是否匹配，不匹配会给出不安全的提示。
+
+### script 的属性 defer async
+
+defer: HTML 继续解析，并行下载设置了 defer 的 script 标签，HTML 解析完了再执行 js。如果是多个，按照开始加载的顺序执行。
+
+async: HTML 继续解析，并行下载设置了 async 的 script 标签，下载完直接运行，执行完了继续 HTML 解析。如果是多个，执行顺序和加载开始顺序无关，与加载完毕的顺序有关。
+
+无以上两个属性：script 标签下方的 HTML 暂停解析，下载 js，执行 js，执行完了继续 HTML 解析
+
+### preload prefetch
+
+```html
+<!-- preload 资源在当前页面使用，会优先加载-->
+<link rel="preload" href="style.css" as="style" />
+<link rel="preload" href="main.js" as="script" />
+
+<!-- prefetch 资源不在当前页面使用，空闲时提前加载-->
+<link rel="prefetch" href="main.js" as="script" />
+```
+
+### preload prefetch
+
+```html
+<!-- dns-prefetch 预先查询DNS，当前页面DNS已经查询好了，所以此处的地址肯定是跨域的地址才有意义-->
+<link rel="dns-prefetch" href="http://www.baidu.com" />
+
+<!-- preconnect 预先链接DNS，当前页面DNS已经查询链接好了，所以此处的地址肯定是跨域的地址才有意义-->
+<link rel="preconnect" href="http://www.baidu.com" crossorigin="" />
+```
+
+### XSS 攻击
+
+跨站脚本攻击（Cross Site Scripting）缩写为 CSS，但这会与层叠样式表（Cascading Style Sheets，CSS）的缩写混淆。因此，有人将跨站脚本攻击缩写为 XSS。
+
+常见的是评论区输入框注入 script 标签
+
+### CSRF 攻击
+
+import imgSrc from "./img/csrf.jpg";
+
+<img src={imgSrc} style={{ width: "500px" }} />
+
+跨站请求伪造（英语：Cross-site request forgery）
+
+用户登录过要被攻击的 a 网站，a 网站拿 cookie 来做权限控制
+
+在 b 网站点到 a 网站，请求中会带有 cookie，b 网站偷到了 a 的 cookie。
+
+防御，1 服务器拦截，2.用 token 做权限不要用 cookie
+
+### 浏览器渲染大致流程
+
+dns 解析，http 请求 HTML 等文件
+
+解析 DOM 树，CSSOM 树，合成 RenderTree
+
+计算绘制页面，同时执行 js
+
+所以建议将 css 放在 header 里面，减少渲染过程中的重绘重排
+
+### 触发 BFC 条件
+
+根节点'<'html'>'
+
+float: left/right
+
+overflow: auto/scroll/hidden
+
+display:inline-block/table/table-row/table-cell
+
+display: flex/grid; 的直接子元素
+
+position: absolute/fixed;
+
+### 减少重排的方法
+
+集中修改样式，或者直接切换 class 以整体切换 css
+
+修改之前 display:none，脱离文档流
+
+使用 BFC 特性，因为 BFC 不会影响外部
+
+节流防抖
+
+批量操作 DOM
+
+用 css3 动画，少用 js 操作 DOM 的动画
+
+### 页面间通信
+
+同域名，可以用 localstorage 在不同窗口同步共享的特性，并且依靠 localstorage 变化的事件。
+
+```javascript
+window.addEventListener("storage", (event) => {
+  console.log(event.key, event.newValue);
+});
+```
+
+需要后端帮忙，websocket 通信
+
+### 页面和 iframe 通信
+
+```html
+<html>
+  <body>
+    <iframe id="iframe1" src="https://www.baidu.com"></iframe>
+  </body>
+  <script>
+    window.iframe1.contentWindow.postMessage("hello", "域名限制");
+  </script>
+</html>
+```
+
+```html
+<html>
+  <body></body>
+  <script>
+    // iframe中接受信息
+    window.addEventListener('message',event=>{
+
+    })
+    function sendMes ()=>{
+        window.parent.postMessage('hello','*')
+    }
+  </script>
+</html>
+```
+
+首屏速度优化
+
+路由按需加载
+
+ssr
+
+app 中的页面，用 app 的能力，预取
+
+分页
+
+图片懒加载
+
+### 10 万条数据
+
+设计首先是不合理的，沟通，看实际需求，可以通过分页能去解决
+
+仅渲染看得见的，可以用库
+
+虚拟列表 vue-virtual-scroll-list react-virtualized
+
+### 前端常用的设计模式
+
+工场模式
+
+$('div p')，隐藏 new，用一个函数传入参数的模式，产生一个 jquery 对象，方便使用
+
+React creatElement 函数
+
+单例模式
+
+vuex 的 store
+
+代理模式
+
+比如 vue3 用 proxy api
+
+观察者模式
+
+```javascript
+btn.addEventListener("click", () => {});
+```
+
+发布订阅
+
+```javascript
+// vue自定义事件
+event.on("event-key", () => {});
+event.emit("event-key", () => {});
+```
+
+装饰器模式
+
+观察者模式 预与 发布订阅 的区别
+
+观察者是事先绑定对应观察关系的，发布订阅，谁都可以发布，事先不绑定对象
+
+vue 性能优化
+
+v-if v-show
+
+v-for 使用 key 而不是 index
+
+computed 缓存数据，而不是 function 每次都计算。用尽量 computed 代替 watch
+
+keep-alive
+
+异步组件，路由懒加载
+
+react 性能优化
+
+用 css display:none 模拟 v-show 的显示隐藏
+
+不需要层级时用'<''>'
+
+class 组件 jsx 中少定义函数，因为 jsx 会被反复执行，函数会被平凡创建。
+
+bind.this 不要放在 jsx 中，放在 class 构造函数中，最优解是 class 函数中用箭头函数不用 bind，class 中的箭头函数会自动绑上 this
+
+react 子组件默认在父组件渲染时都会重新渲染，和 vue 不同
+
+class 组件 shouldComponentUpdate(nextProps,nextState){}生命周期函数中，自己编写函数优化子组件更新。
+
+pureComponent 组件是 class 组件的封装，设定了 shouldComponentUpdate，并且对比 props 第一层的所有属性是否相同，决定是否重新渲染，
+所以使用的时候不能在内部使用这个生命周期。
+
+这里引出了一个问题，react 中要求 setState 时不改变原有数据，而是新创建一个数据，如果不按此操作，
+自定义的性能优化如果只对比第一层就会失效，pureComponent 一定会失效。
+
+函数组件优化子组件更新：
+
+```jsx
+import React from "react";
+const Com = () => {
+  return <div>{1}</div>;
+};
+// 参数2可以手动设定优化规则，如果不设定同pureComponent一样自动对比props最外层所有属性
+export const ComMemo = React.memo(Com, (prevProps, nextProps) => {});
+```
+
+hooks 缓存数据
+
+useMemo 缓存计算值
+useCallback 缓存函数
+
+```jsx
+import React, { useCallback, useMemo, useState } from "react";
+const Com = () => {
+  const [num1, setNum1] = useState(100);
+  const [num2, setNum2] = useState(200);
+  // num1 或者num2有变化才会重新计算
+  const sum = useMemo(() => num1 + num2, [num1, num2]);
+  return <div>{1}</div>;
+};
+// 不会每次都创建一遍函数，只在依赖变化时重新创建函数
+const getNum1 = useCallback(() => {
+  return num1;
+}, [num1]);
+// 参数2可以手动设定优化规则，如果不设定同pureComponent一样自动对比props最外层所有属性
+```
+
+异步组件
+
+路由懒加载
+
+react 坑
+
+自定义组件首字母大写
+
+关键词冲突，for 改成 htmlFor，class 改成 className
+
+### vue 错误上报
+
+有组件监听错误的生命周期
+
+也有全局的监听 api，监听到了会阻止冒泡，让 window.onerror
+
+不监听异步错误，比如写在 setTimeout 里面的错误，异步中的错误需要 window.onerror 补充监听
+
+### react 错误上报
+
+有监听报错的组件，可以降级展示 UI
+
+只监听组件渲染时报错，不见听 dom 事件中的和异步中的
+
+只在 prod 降级显示，dev 直接抛错误
+
+### 性能指标
+
+chrome 浏览器性能测试里也有
+
+DCL html 加载完成
+
+DOM Content Loaded 0.03 秒
+Marks the point when the page's initial HTML document has been completely loaded and parsed,
+without waiting for stylesheets, images, and subframes to finish loading.
+
+FCP
+
+First Contentful Paint 0.05 秒
+Measures the time from when the page starts loading to when any part of the page's content is rendered on the screen.
+
+LCP
+
+Largest Contentful Paint 0.05 秒
+Marks the point in the page load timeline when the page's main content has likely loaded.
+
+### flatten 数组扁平化
+
+```javascript
+const flat = (arr) => {
+  let res = [];
+  arr.forEach((item) => {
+    if (item instanceof Array) {
+      res = [...res, ...flat(item)];
+      // res = res.concat(flat(item)) // 同样效果
+    } else {
+      res = [...res, item];
+      // res = res.concat(item) // 同样效果
+    }
+  });
+  return res;
+};
+
+let a = ["a", "b", ["c", "d"], [["e", "f"], "g"]];
+console.log(flat(a));
+```
+
+### 获取详细数据类型 number string boolean object array, object array map regexp 等类型
+
+typeof 只能判断值类型，其他 obj function
+instanceof 枚举判断判断是否是某个特定引用类型
+
+直接用 Object.prototype.toString.call(arr1)
+
+结果'[object Null]'
+'[object Undefined]'
+'[object String]'
+'[object Number]'
+'[object WeakMap]'
+'[object Map]'
+'[object Set]'
+'[object Function]'
+'[object Object]'
+
+```javascript
+const flat = (arr) => {
+  let res = [];
+  arr.forEach((item) => {
+    if (item instanceof Array) {
+      res = [...res, ...flat(item)];
+      // res = res.concat(flat(item)) // 同样效果
+    } else {
+      res = [...res, item];
+      // res = res.concat(item) // 同样效果
+    }
+  });
+  return res;
+};
+
+let a = ["a", "b", ["c", "d"], [["e", "f"], "g"]];
+console.log(flat(a));
+```
+
+### 遍历 dom 深度优先 广度优先
+
+```typescript
+/**
+ * 访问节点
+ * @param n node
+ */
+function visitNode(n: Node) {
+  if (n instanceof Comment) {
+    // 注释
+    console.info("Comment node ---", n.textContent);
+  }
+  if (n instanceof Text) {
+    // 文本
+    const t = n.textContent?.trim();
+    if (t) {
+      console.info("Text node ---", t);
+    }
+  }
+  if (n instanceof HTMLElement) {
+    // element
+    console.info("Element node ---", `<${n.tagName.toLowerCase()}>`);
+  }
+}
+
+/**
+ * 深度优先遍历，使用递归
+ * @param root dom node
+ */
+function depthFirstTraverse1(root: Node) {
+  visitNode(root);
+
+  const childNodes = root.childNodes; // .childNodes 和 .children 不一样，children只包含html节点，不包含注释，文本节点等
+  if (childNodes.length) {
+    childNodes.forEach((child) => {
+      depthFirstTraverse1(child); // 递归
+    });
+  }
+}
+
+/**
+ * 深度优先遍历，不适用递归
+ * @param root dom node
+ */
+function depthFirstTraverse2(root: Node) {
+  const stack: Node[] = [];
+
+  // 根节点压栈
+  stack.push(root);
+
+  while (stack.length > 0) {
+    const curNode = stack.pop(); // 出栈
+    if (curNode == null) break;
+
+    visitNode(curNode);
+
+    // 子节点压栈
+    const childNodes = curNode.childNodes;
+    if (childNodes.length > 0) {
+      // reverse 反顺序压栈。因为栈后进先出，只是为了遍历的顺序正确
+      Array.from(childNodes)
+        .reverse()
+        .forEach((child) => stack.push(child));
+    }
+  }
+}
+
+/**
+ * 广度优先遍历
+ * @param root dom node
+ */
+function breadthFirstTraverse(root: Node) {
+  const queue: Node[] = []; // 需要一个队列辅助
+
+  // 根节点入队列
+  queue.unshift(root);
+
+  // 队列力pop出一个，遍历这个，之后unshift它的子节点
+  while (queue.length > 0) {
+    const curNode = queue.pop();
+    if (curNode == null) break;
+
+    visitNode(curNode);
+
+    // 子节点入队
+    const childNodes = curNode.childNodes;
+    if (childNodes.length) {
+      childNodes.forEach((child) => queue.unshift(child));
+    }
+  }
+}
+
+const box = document.getElementById("box");
+if (box == null) throw new Error("box is null");
+depthFirstTraverse2(box);
+```
+
+### 手写一个带延迟执行功能的对象
+
+实现
+
+const me = new LazyMan('lazyMan1')
+
+me.eat('苹果').eat('香蕉').sleep(2).eat('葡萄').eat('西瓜').sleep(2).eat('橘子')
+
+```typescript
+class LazyMan {
+  private name: string;
+
+  // 为了不立即执行需要一个任务列表辅助
+  private tasks: Function[] = []; // 任务列表
+
+  constructor(name: string) {
+    this.name = name;
+
+    // 任务列表内部是会调用next连续完成，但任务列表完成后需要启动一次，启动必须在任务列表都推入之后，
+    // 也就是me.eat('苹果').eat('香蕉').sleep(2).eat('葡萄').eat('西瓜').sleep(2).eat('橘子')都执行完之后执行一次，
+    // 这里利用了异步一定会在同步代码之后执行，在setTimeout中启动
+    setTimeout(() => {
+      this.next();
+    });
+  }
+
+  private next() {
+    const task = this.tasks.shift(); // 取出当前 tasks 的第一个任务
+    if (task) task();
+  }
+
+  eat(food: string) {
+    const task = () => {
+      console.info(`${this.name} eat ${food}`);
+      this.next(); // 立刻执行下一个任务
+    };
+    this.tasks.push(task);
+
+    return this; // 链式调用
+  }
+
+  sleep(seconds: number) {
+    const task = () => {
+      console.info(`${this.name} 开始睡觉`);
+      setTimeout(() => {
+        console.info(`${this.name} 已经睡完了 ${seconds}s，开始执行下一个任务`);
+        this.next(); // xx 秒之后再执行下一个任务
+      }, seconds * 1000);
+    };
+    this.tasks.push(task);
+
+    return this; // 链式调用
+  }
+}
+
+const me = new LazyMan("lazyMan1");
+me.eat("苹果")
+  .eat("香蕉")
+  .sleep(2)
+  .eat("葡萄")
+  .eat("西瓜")
+  .sleep(2)
+  .eat("橘子");
+```
+
+### 手写柯里化函数
+
+实现将函数柯里化，函数 curry
+
+```typescript
+function add(a: number, b: number, c: number): number {
+  return a + b + c;
+}
+add(10, 20, 30); // 60
+
+const curryAdd = curry(add);
+
+add(10, 20, 30) === curryAdd(10)(20)(30); // true
+```
+
+```typescript
+export function curry(fn: Function) {
+  const fnArgsLength = fn.length; // 传入函数的参数长度
+  let args: any[] = [];
+
+  // ts 中，独立的函数，this 需要声明类型，编译时不会有这个this形参
+  function calc(this: any, ...newArgs: any[]) {
+    // 收集参数
+    args = [...args, ...newArgs];
+    if (args.length < fnArgsLength) {
+      // 参数不够，返回函数
+      return calc;
+    } else {
+      // 参数够了，返回执行结果
+      return fn.apply(this, args.slice(0, fnArgsLength));
+    }
+  }
+
+  return calc;
+}
+
+function add(a: number, b: number, c: number): number {
+  return a + b + c;
+}
+// add(10, 20, 30) // 60
+
+const curryAdd = curry(add);
+const res = curryAdd(10)(20)(30); // 60
+console.info(res);
+```
+
+### 手写 instanceof
+
+```typescript
+export function myInstanceof(instance: any, origin: any): boolean {
+  if (instance == null) return false; // null undefined
+
+  const type = typeof instance;
+  if (type !== "object" && type !== "function") {
+    // instanceof遇到值类型或function类型，返回false
+    return false;
+  }
+
+  let tempInstance = instance; // 为了防止修改 instance
+  // 将对象原型链上所有的原型对象与构造函数的原型对象作比较，只要有一个相同就返回true
+  while (tempInstance) {
+    if (tempInstance.__proto__ === origin.prototype) {
+      return true; // 配上了
+    }
+    // 未匹配
+    tempInstance = tempInstance.__proto__; // 顺着原型链，往上找
+  }
+
+  return false;
+}
+
+// // 功能测试
+console.info(myInstanceof({}, Object));
+console.info(myInstanceof([], Object));
+console.info(myInstanceof([], Array));
+console.info(myInstanceof({}, Array));
+console.info(myInstanceof("abc", String));
+```
+
+### 手写 bind
+
+返回一个新函数
+
+绑定 this 和部分参数
+
+如是箭头函数无法改变 this，只能绑定部分参数
+
+```typescript
+Function.prototype.customBind = function (context: any, ...bindArgs: any[]) {
+  // context 是 bind 传入的 this
+  // bindArgs 是 bind 传入的各个参数
+
+  const self = this; // 当前的函数本身
+
+  return function (...args: any[]) {
+    // 拼接参数
+    const newArgs = bindArgs.concat(args);
+    return self.apply(context, newArgs);
+  };
+};
+
+// 功能测试
+function fn(this: any, a: any, b: any, c: any) {
+  console.info(this, a, b, c);
+}
+// @ts-ignore
+const fn1 = fn.customBind({ x: 100 }, 10);
+fn1(20, 30);
+```
+
+### 手写 apply call
+
+难点：绑定 this
+
+用 obj.fn()中的 this 是 obj 的特性实现
+
+```typescript
+// @ts-ignore
+Function.prototype.customCall = function (context: any, ...args: any[]) {
+  if (context == null) context = globalThis;
+  if (typeof context !== "object") context = new Object(context); // 值类型，变为对象
+
+  const fnKey = Symbol(); // 不会出现属性名称的覆盖
+  context[fnKey] = this; // this 就是当前的函数
+
+  const res = context[fnKey](...args); // 绑定了 this
+
+  delete context[fnKey]; // 清理掉 fn ，防止污染
+
+  return res;
+};
+
+// @ts-ignore
+Function.prototype.customApply = function (context: any, args: any[] = []) {
+  if (context == null) context = globalThis;
+  if (typeof context !== "object") context = new Object(context); // 值类型，变为对象
+
+  const fnKey = Symbol(); // 为了避免 原有的this同名属性被覆盖
+  context[fnKey] = this; // this 就是当前的函数
+
+  const res = context[fnKey](...args); // 绑定了 this
+
+  delete context[fnKey]; // 清理掉 fn ，防止污染
+
+  return res;
+};
+
+function fn(this: any, a: any, b: any, c: any) {
+  console.info(this, a, b, c);
+}
+// @ts-ignore
+fn.customCall({ x: 100 }, 10, 20, 30);
+// @ts-ignore
+fn.customApply({ x: 200 }, [100, 200, 300]);
+```
+
+### LRU cache 缓存队列
+
+1. get 之后要把记录放在最前面
+2. set 之后，不管是否是新 key，都要把记录放在最前面
+3. 当 set 增加记录时，长度超过规定长度，要删掉最后一条记录
+
+```typescript
+/**
+ * @description LRU cache
+ * set有两以下特性利于解决本问题
+ * 1. set新key一定是加在最前面的
+ * 2. set旧key，可以先删掉，在添加，等同于set新key，也一定是加在最前面的
+ * 3. 可以通过api--data.keys().next().value获取最后一个key，删除最后一个key，valve实现超长删最后一个的功能
+ * 用数组也能实现，set逻辑自己写起来稍微复杂一点，map是哈希结构的数据性能比数组好
+ *
+ */
+
+export default class LRUCache {
+  private length: number;
+  private data: Map<any, any> = new Map();
+
+  constructor(length: number) {
+    if (length < 1) throw new Error("invalid length");
+    this.length = length;
+  }
+
+  set(key: any, value: any) {
+    const data = this.data;
+
+    if (data.has(key)) {
+      data.delete(key);
+    }
+    data.set(key, value);
+
+    if (data.size > this.length) {
+      // 如果超出了容量，则删除 Map 最老的元素
+      const delKey = data.keys().next().value;
+      data.delete(delKey);
+    }
+  }
+
+  get(key: any): any {
+    const data = this.data;
+
+    if (!data.has(key)) return null;
+
+    const value = data.get(key);
+
+    data.delete(key);
+    data.set(key, value);
+
+    return value;
+  }
+}
+
+// const lruCache = new LRUCache(2)
+// lruCache.set(1, 1) // {1=1}
+// lruCache.set(2, 2) // {1=1, 2=2}
+// console.info(lruCache.get(1)) // 1 {2=2, 1=1}
+// lruCache.set(3, 3) // {1=1, 3=3}
+// console.info(lruCache.get(2)) // null
+// lruCache.set(4, 4) // {3=3, 4=4}
+// console.info(lruCache.get(1)) // null
+// console.info(lruCache.get(3)) // 3 {4=4, 3=3}
+// console.info(lruCache.get(4)) // 4 {3=3, 4=4}
+```
+
+### LRU cache 缓存队列
+
+需求：
+
+1. 考虑循环引用
+2. 考虑 set，map
+
+Json.stringify + parse 无法拷贝方法，如有循环引用会报错，无法拷贝 set，map
+
+只考虑数组对象的做法
+
+```typescript
+/**
+ * 深拷贝 - 只考虑了简单的数组、对象
+ * @param obj obj
+ */
+function cloneDeep(obj: any) {
+  if (typeof obj !== "object" || obj == null) return obj;
+
+  let result: any;
+  if (obj instanceof Array) {
+    result = [];
+  } else {
+    result = {};
+  }
+
+  for (let key in obj) {
+    if (obj.hasOwnProperty(key)) {
+      result[key] = cloneDeep(obj[key]); // 递归调用
+    }
+  }
+
+  return result;
+}
+// 功能测试
+const a: any = {
+  set: new Set([10, 20, 30]),
+  map: new Map([
+    ["x", 10],
+    ["y", 20],
+  ]),
+};
+a.self = a;
+console.log(cloneDeep(a)); // 无法处理 Map Set // 循环引用会内存溢出报错
+```
+
+```typescript
+export function cloneDeep(obj: any, map = new WeakMap()): any {
+    // typeof fn 'function'，所以这里function也是直接返回function即可
+  if (typeof obj !== "object" || obj == null) return obj;
+
+  // 已经拷贝过的对象记录下来，有相同的引用对象不重复拷贝，避免循环引用
+  const objFromMap = map.get(obj);
+  if (objFromMap) return objFromMap;
+
+  let target: any = {};
+  map.set(obj, target);
+
+  // Map
+  if (obj instanceof Map) {
+    target = new Map();
+    obj.forEach((v, k) => {
+      const v1 = cloneDeep(v, map);
+      const k1 = cloneDeep(k, map);
+      target.set(k1, v1);
+    });
+  }
+
+  // Set
+  if (obj instanceof Set) {
+    target = new Set();
+    obj.forEach((v) => {
+      const v1 = cloneDeep(v, map);
+      target.add(v1);
+    });
+  }
+
+  // Array
+  if (obj instanceof Array) {
+    target = obj.map((item) => cloneDeep(item, map));
+  }
+
+  // Object
+  for (const key in obj) {
+    const val = obj[key];
+    const val1 = cloneDeep(val, map);
+    target[key] = val1;
+  }
+
+  return target;
+}
+
+// // 功能测试
+// const a: any = {
+//     set: new Set([10, 20, 30]),
+//     map: new Map([['x', 10], ['y', 20]]),
+//     info: {
+//         city: '北京'
+//     },
+//     fn: () => { console.info(100) }
+// }
+// a.self = a
+// console.log( cloneDeep(a) )
+```
+### 函数参数是赋值
+
+```javascript
+    // 第一次调用，相当于let x = num
+
+// 第而次调用，相当于let x = obj x指向对象obj
+// 修改x指向并不能改变obj指向
+
+// 但是如果修改了x里面的属性，相当于修改了obj中的属性，  就会影响obj了
+function changeVal(x){
+    x = 200
+}
+let num = 100
+changeVal(num)
+console.log(num) // 100
+
+let obj ={name: 'jack'}
+changeVal(obj)
+console.log(num) // 100
+
+```

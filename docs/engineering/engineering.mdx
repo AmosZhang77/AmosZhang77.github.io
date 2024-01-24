@@ -198,3 +198,20 @@ commentJs 和 esModule 兼容及不兼容问题参考：
 <a href="https://es6.ruanyifeng.com/#docs/module-loader#ES6-%E6%A8%A1%E5%9D%97%E4%B8%8E-CommonJS-%E6%A8%A1%E5%9D%97%E7%9A%84%E5%B7%AE%E5%BC%82">参考链接</a>
 
 
+### path.resolve path.join
+
+path.resolve会在拼接地址之后在前面加上/
+path.join不会在拼接地址之后在前面加上/
+
+用path处理网址会有一个问题，会把http://www.baidu.com中的2个/转换成一个/，会导致开，请求时http:/www.bai前面会自动追加localhost:8080，变成http://localhost:8000/http:www.baidu
+
+需要用到http://的处理，可以引用于条件加载
+
+// import urlR from 'url';
+import url from 'url';
+
+urlR.resolve(baseURL, apiUrl)
+
+没有url.join，url.resolve相似于path.join的功能，如果最前面有http，url.resolve不会在最前面加/相当于path.join。
+
+如果最前面没有有http，url.resolve不会自动在最前面加。

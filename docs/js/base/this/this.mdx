@@ -1,0 +1,57 @@
+## this
+
+### 对象中的
+
+```javascript
+const obj = {
+  f1() {
+    const fn = () => {
+      console.log("this1", this);
+    };
+    fn();
+    fn.call(window);
+    fn.call({ n: 1 });
+  },
+  f2:()=> {
+    function fn() {
+      console.log("this2", this);
+    }
+    fn();
+    fn.call(this);
+  },
+};
+
+// object中的箭头函数会使fn该域的this不存在，所以fn方法中this不存在，取f1环境的this，这里打印obj
+// 因为fn不存在this,fn.call绑不了this，也是打印obj
+// fn.call({ n: 1 })同上
+obj.f1();
+
+// object中的箭头函数会使f2域的this不存在，f2是obj调用的，但因这个函数无this，拿外面的this，打印window
+// 这里f2环境this不存在，call 也是拿外面的this，是window
+obj.f2();
+```
+
+### 对象中的
+
+```javascript
+class Fn {
+  f1() {
+    console.log("this1", this);
+  }
+  f2 = () => {
+    console.log("this2", this);
+  };
+  f3 = () => {
+    console.log("this3", this);
+  };
+  static f4() {
+    console.log("this4", this);
+  }
+}
+const f = new Fn()
+f.f1() // 打印f
+f.f2() // class中方法不会因为箭头函数而没有this，打印f
+f.f3.call(this) // 还是会绑实例，不会改
+f.f3.bind({n:1})() // 还是会绑实例，不会改
+Fn.f4() // 静态属性的this是类本身
+```

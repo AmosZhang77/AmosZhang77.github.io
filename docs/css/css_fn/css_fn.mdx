@@ -56,6 +56,14 @@ background-clip
 }
 ```
 
+下面也能清除浮动的影响，把浮动元素的高度算到父元素中，利用的是bfc的原理
+```css
+.clearFix:after {
+ overflow:auto;
+<!--  overflow:hidden; -->
+}
+```
+
 ### 设定宽度，要求高度根据宽度变化，并保持一定的宽高比
 
 利用 margin padding 的两个方向均是以宽度为准的特性，设定好父宽度，如 100px，子宽度 20%，子高度设为 0，子 paddingBottom 设为 20%，就可以得到 1：1 宽高比

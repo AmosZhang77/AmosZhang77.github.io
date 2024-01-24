@@ -1,10 +1,19 @@
+下面api无法拿到外联css
+
+```js
+let width = dom.style.width;
+```
+
 ### 获取元素当前样式
 
+可以获取到最终样式
 ```js
 let style = window.getComputedStyle(element, [pseudoElt]);
 ```
 
-element:用于获取计算样式的Element。 pseudoElt 可选:指定一个要匹配的伪元素的字符串。必须对普通元素省略（或null）。 返回的style（只读）是一个实时的 CSSStyleDeclaration
+
+element:用于获取计算样式的Element。 pseudoElt 可选:指定一个要匹配的伪元素的字符串。必须对普通元素省略（或null）。
+返回的style（只读）是一个实时的 CSSStyleDeclaration
 对象，当元素的样式更改时，它会自动更新本身。
 
 ### 拿到某dom所属的 #document
@@ -22,7 +31,7 @@ document.getElementById("demo").ownerDocument
 视窗高度，包括padding，不包括border
 
 ![](./images/clientHeight.png )
-
+,
 ### offsetHeight
 
 高度，包括padding，包括border
@@ -65,4 +74,23 @@ ahook拿下面尺寸的时候都只能拿到0（没有类似先显示，拿到�
 if (el.scrollHeight - el.scrollTop <= el.clientHeight + threshold) {
   loadMore();
 }
+```
+
+### addEventListener
+默认参3：false 冒泡阶段触发。如设置为true，捕获阶段触发
+```js
+
+dom.addEventListener('notificationclose', function(e) {
+  console.log('Closed notification: ' + primaryKey)
+},false)
+```
+
+### 浏览器不同窗口互发消息 window.postMessage
+```javascript
+// a 窗口中
+window.postMessage('消息名','http://b窗口地址')
+// b窗口中
+window.addEventListener('message',function (e){
+    console.log(e)
+})
 ```

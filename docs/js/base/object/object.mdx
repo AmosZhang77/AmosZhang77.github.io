@@ -132,7 +132,7 @@ const deepCopy = (obj) => {
 
 ### 遍历对象
 
-for...in语句以任意顺序遍历一个对象的除Symbol以外的可枚举属性，会可以遍历出对象原型链上的属性。
+for in语句以任意顺序遍历一个对象的除Symbol以外的可枚举属性，会可以遍历出对象原型链上的属性。
 
 下面是去掉原型链上属性的遍历方法
 
@@ -161,7 +161,7 @@ for (var value in myArray) {
 ```
 
 for of (原生没有对象迭代器，想要便利对象需要自定义遍历器 Symbol.interater)
-for...of语句在可迭代对象（包括 Array，Map，Set，String，TypedArray，arguments 对象等等）上创建一个迭代循环，调用自定义迭代钩子，并为每个不同属性的值执行语句
+for of语句在可迭代对象（包括 Array，Map，Set，String，TypedArray，arguments 对象等等）上创建一个迭代循环，调用自定义迭代钩子，并为每个不同属性的值执行语句
 
 用法：
 
@@ -172,6 +172,21 @@ for (let value of iterable) {
   console.log(value) // 11 // 21 // 31
 }
 ```
+
+遍历对象：for in可以，for of不可以
+
+遍历Map Set generator：for of可以，for in不可以
+
+obj = {a:1}
+for in 可遍历Object.getOwnPropertyDescriptors(obj)
+a:{
+    configurable:true,
+    enumerable:true, // 遍历可以枚举的属性
+    val:true,
+    1:true,
+}
+
+for of需要对象有Symbol.iterator
 
 ### 多属性对象剔除少量属性
 
@@ -190,12 +205,4 @@ envItemT.sub[envItemT.subShowIndex].content = needContent // 如果表格是执�
 pickBy(object, it => !(it == null))
 ```
 
-### Object.create原理
-```javascript
-function create (prototype){
-  function Temp(){}
-  let temp = new Temp()
-  temp.prototype = prototype
-  return temp
-}
-```
+

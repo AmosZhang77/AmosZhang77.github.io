@@ -1419,5 +1419,18 @@ encodeURI(
 ### 迭代执行效率
 
 ```javascript
-for
 ```
+
+### 箭头函数
+
+1. 不能作为对象的方法，否则方法拿不到对象的this，但是class内部的方法可以。
+
+vue组件是对象，所以里面的方法不能用箭头函数，react的class组件是class所以方法可以用箭头函数
+
+2. 不能作为构造函数，否则直接运行报错
+
+3. 内部没有argument参数
+
+4. 因为没有this，无法用call，apply，bind指定this
+
+5. 原生事件需要this.target获取信息，用了箭头函数无法拿到事件对象1

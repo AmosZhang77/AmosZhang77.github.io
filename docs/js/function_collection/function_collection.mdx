@@ -456,3 +456,112 @@ export const queryFastUrl = () => {
   }
 };
 ```
+
+### 尾递归
+
+递归优化的条件：
+
+1. 代码在严格模式下执行
+2. 外部函数的返回值，是对尾调用函数的调用
+3. 尾调用函数返回后，不需要执行额外的逻辑
+4. 尾调用函数不是外部函数作用域中自由变量的闭包
+
+```javascript
+// 无优化： 尾调用没有返回
+function outer() {
+  inner();
+}
+```
+
+```javascript
+// 无优化： 尾调用没有直接返回
+function outer() {
+  let innerResult = inner();
+
+  return innerResult;
+}
+```
+
+```javascript
+//无优化： 尾调用返回值后，必须要转型为字符串
+function outer() {
+  return inner().toString();
+}
+```
+
+```javascript
+// 无优化： 尾调用是一个闭包
+function outer() {
+  let foo = "bar";
+
+  function inner() {
+    return foo;
+  }
+
+  return inner();
+}
+```
+
+乘阶
+
+```javascript
+// 优化前
+function foo(n) {
+  if (n <= 1) {
+    return 1;
+  }
+  return n * foo(n - 1);
+}
+
+foo(5); // 120
+```
+
+```javascript
+// 优化后
+function foo(n) {
+  return inner(n, n - 1);
+}
+
+function inner(sum, n) {
+  if (n <= 1) {
+    return sum;
+  }
+  return inner(sum * n, n - 1);
+}
+
+foo(5);
+```
+
+### 防抖
+
+抖动完了之后，执行最后一次
+
+```javascript
+function debounce() {
+  let time;
+  return function () {
+    if (time) clearTimeout(time);
+    time = setTimeout(() => {
+      fn.apply(this, arguments);
+      clearTimeout(time);
+    }, delay);
+  };
+}
+```
+
+### 节流
+
+开始就执行，但是限制执行频率
+
+```javascript
+function throttle(fn, delay = 200) {
+  let time;
+  return function () {
+    if (time) return;
+    fn.apply(this, arguments);
+    time = setTimeout(() => {
+      clearTimeout(time);
+    }, delay);
+  };
+}
+```

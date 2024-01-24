@@ -1,7 +1,7 @@
 ## class
 
-### 遍历数组
-
+### class 语法糖
+class 是语法糖，和es5一样靠原型链实现。
 ```js
 class classA {
   constructor() {}
@@ -35,6 +35,115 @@ p.play(); // palyFnDo
 ```
 
 class 内部的方法中是局部严格模式，外部调也同样，console.log（this） 不会默认指向 window，而是 undefined
+
+### es5类和class使用代码对比
+```javascript
+// 类的申明
+// es5
+function Animal(){
+    this.name = 'name'
+}
+// es6 class
+class Animal2 {
+    constructor(){
+        this.name = name
+    }
+}
+
+// 类的实例化，es5和6是一样的
+const a1 = new Animal()
+const a2 = new Animal2()
+```
+
+### 原型链
+
+import imgSrc from "./prototype__proto.png";
+
+<img src={imgSrc} style={{ width: "900px" }} />
+
+```javascript
+// 由上图的关系，只要愿意可以无限循环引用下去.__proto__.__proto__.constructor
+Object.__proto__.__proto__.constructor.constructor === Function // true
+Object.__proto__.__proto__.constructor.__proto__.__proto__.constructor.constructor === Function // true
+Object.__proto__.__proto__.constructor.__proto__.__proto__.constructor.__proto__.__proto__.constructor.constructor === Function // true
+```
+
+### new
+
+手写new函数
+```javascript
+const myNew = function (FN){
+    //1. 创建新对象，将新对象o的原型对象的__proto__指向构造函数的prototype(即FN.prototype)。
+//2.  FN.prototype.constructor本来就指向FN，1中__proto__指向FN.prototype后会，o.__proto__的constructor属性自然就变成FN.prototype.constructor（就是FN）
+  const o = Object.create(FN.prototype)
+  const r = FN.call(o)
+  if(typeof r === 'object'){
+    return r
+  }else{
+    return o
+  }
+}
+```
+
+### Object.create大致原理
+```javascript
+function create (prototype){
+  function Temp(){}
+  let temp = new Temp()
+  temp.prototype = prototype
+  return temp
+}
+```
+实际上，字面量初始化对象语法是 Object.create() 的一种语法糖!
+(参考：https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Object/create)
+使用 Object.create()，我们可以创建具有指定原型和某些属性的对象。
+请注意，第二个参数将键映射到属性描述符，这意味着你还可以控制每个属性的可枚举性、可配置性等，而这在字面量初始化对象语法中是做不到的。
+
+### 用 Object.create() 实现类式继承
+下面的例子演示了如何使用 Object.create() 来实现类式继承。这是一个所有版本 JavaScript 都支持的单继承。
+```javascript
+// Shape——父类
+function Shape() {
+  this.x = 0;
+  this.y = 0;
+}
+
+// 父类方法
+Shape.prototype.move = function (x, y) {
+  this.x += x;
+  this.y += y;
+  console.info("Shape moved.");
+};
+
+// Rectangle——子类4
+function Rectangle() {
+  Shape.call(this); // 调用父类构造函数。
+}
+
+// 子类继承父类
+Rectangle.prototype = Object.create(Shape.prototype, {
+  // 如果不将 Rectangle.prototype.constructor 设置为 Rectangle，
+  // 它将采用 Shape（父类）的 prototype.constructor。
+  // 为避免这种情况，我们将 prototype.constructor 设置为 Rectangle（子类）。
+  constructor: {
+    value: Rectangle, // 这里非常重要，将 prototype.constructor 设置为 Rectangle（子类）
+    enumerable: false,
+    writable: true,
+    configurable: true,
+  },
+});
+
+const rect = new Rectangle();
+
+console.log("rect 是 Rectangle 类的实例吗？", rect instanceof Rectangle); // true
+console.log("rect 是 Shape 类的实例吗？", rect instanceof Shape); // true
+rect.move(1, 1); // 打印 'Shape moved.'
+```
+需要注意的是，使用 create() 也有一些要注意的地方，比如重新添加 constructor 属性以确保正确的语义。
+
+虽然 Object.create() 被认为比使用 Object.setPrototypeOf() 修改原型更具有性能优势，但如果没有创建实例并且属性访问还没有被优化，它们之间的差异实际上是可以忽略不计的。
+在现代代码中，无论如何都应该优先使用类语法。
+
 
 ### instanceof
 
@@ -209,7 +318,7 @@ var cat = new Cat();
 
 console.log(cat instanceof Animal); // true
 console.log(cat instanceof Cat); // true
-// 感谢 @学无止境c 的提醒，组合继承也是需要修复构造函数指向的。
+// 组合继承也是需要修复构造函数指向的。
 
 Cat.prototype.constructor = Cat;
 
@@ -294,7 +403,7 @@ console.log(cat instanceof Cat); //true
 
 console.log('Cat.prototype.constructor',Cat.prototype.constructor)
 
-lodash 原型污染漏洞
+### lodash 原型污染漏洞
 
 ```javascript
 const payload = '{"constructor": {"prototype": {"toString": true}}}';
