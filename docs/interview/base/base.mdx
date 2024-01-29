@@ -1148,5 +1148,100 @@ console.log(num) // 100
 let obj ={name: 'jack'}
 changeVal(obj)
 console.log(num) // 100
+```
 
+###js unshift push效率
+
+因为数组的unshift数据结构的问题，往数组前插入内容，复杂度相当于o(n)，此处一个for循环本身就是一个o(n)。下面for+unshift复杂度达到o(n^2)，因此随着i的增大运算量暴增
+```javascript
+console.time()
+let arr1 = []
+for(let i = 0; i<100000;i++){
+    arr1.push(i)
+}
+console.timeEnd()
+console.time()
+let arr2 = []
+for(let i = 0; i<100000;i++){
+    arr2.unshift(i)
+}
+console.timeEnd()
+
+// default: 0.9580078125 ms
+// default: 422.833984375 ms
+```
+```javascript
+console.time()
+let arr1 = []
+for(let i = 0; i<1000000;i++){
+    arr1.push(i)
+}
+console.timeEnd()
+console.time()
+let arr2 = []
+for(let i = 0; i<1000000;i++){
+    arr2.unshift(i)
+}
+console.timeEnd()
+
+// default: 9.4521484375 ms i数量增10倍，时间增10倍
+// default: 41827.933837890625 ms i数量增10倍，时间增100倍
+```
+
+### 括号匹配
+
+算法关键: 栈
+```typescript
+/**
+ * @description 括号匹配
+*/
+
+/**
+ * 判断左右括号是否匹配
+ * @param left 左括号
+ * @param right 右括号
+*/
+function isMatch(left: string, right: string): boolean {
+if (left === '{' && right === '}') return true
+if (left === '[' && right === ']') return true
+if (left === '(' && right === ')') return true
+return false
+}
+
+/**
+ * 判断是否括号匹配
+ * @param str str
+*/
+export function matchBracket(str: string): boolean {
+const length = str.length
+if (length === 0) return true
+
+const stack = []
+
+const leftSymbols = '{[('
+const rightSymbols = '}])'
+
+for (let i = 0; i < length; i++) {
+const s = str[i]
+
+     if (leftSymbols.includes(s)) {
+         // 左括号，压栈
+         stack.push(s)
+     } else if (rightSymbols.includes(s)) {
+         // 右括号，判断栈顶（是否出栈）
+         const top = stack[stack.length - 1]
+         if (isMatch(top, s)) {
+             stack.pop()
+         } else {
+             return false
+         }
+     }
+}
+
+return stack.length === 0
+}
+
+// // 功能测试
+// const str = '{a(b[c]d)e}f'
+// console.info(123123, matchBracket(str))
 ```

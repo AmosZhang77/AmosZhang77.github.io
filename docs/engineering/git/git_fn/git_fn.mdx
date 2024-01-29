@@ -176,3 +176,42 @@ git config --global core.autocrlf false
 - 测试完成需要上线时，将release分支合到master分支，master分支作为发版分支
 - 一般bug修复同一般开发流程
 - 紧急bug热修，从master拉bugfix分支，修完自测后合到master发布，同时也需要合到dev分支
+
+### github ssh
+
+生成，启动ssh参考
+
+https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent
+
+按此启动ssh 服务
+```shell
+Get-Service -Name ssh-agent | Set-Service -StartupType Manual
+
+Start-Service ssh-agent
+
+ssh-add c:/Users/YOU/.ssh/id_ed25519
+```
+
+
+生成 key
+```shell
+ssh-keygen -t ed25519 -C "your_email@example.com"
+```
+检测是否能联通
+```shell
+ssh -T git@github.com
+```
+如果出现ssh: connect to host github.com port 22: Connection timed out
+
+可以尝试配置一下，在ssh文件夹中新建文件，文件名config，不要后缀，内容如下
+
+```text
+Host github.com
+User xxxxqq.com
+Hostname ssh.github.com
+PreferredAuthentications publickey
+IdentityFile ~/.ssh/id_rsa
+Port 443
+```
+第二行改成自己的邮箱，第5行改成自己私钥的路径 C:\Users\Name\.ssh\id_ed25519
+
