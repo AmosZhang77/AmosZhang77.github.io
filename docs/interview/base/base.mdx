@@ -1,15 +1,17 @@
 ---
 title: interview base
 sidebar_position: 2
-hide_table_of_contents: true
+hide_table_of_contents: false
 description: 面试基础
 ---
 
-超文本传输协议（Hyper Text Transfer Protocol，HTTP）是一个简单的请求-响应协议，它通常运行在 TCP 之上。 它指定了客户端可能发送给服务器什么样的消息以及得到什么样的响应。
+超文本传输协议（Hyper Text Transfer Protocol，HTTP）是一个简单的请求-响应协议，它通常运行在 TCP 之上。
+它指定了客户端可能发送给服务器什么样的消息以及得到什么样的响应。
 
 Protocol 英 [ˈprəʊtəkɒl] 美 [ˈproʊtəkɑːl]
 
-HTTPS （全称：Hyper Text Transfer Protocol over SecureSocket Layer），是以安全为目标的 HTTP 通道， 在 HTTP 的基础上通过*传输加密*和*身份认证*保证了传输过程的安全性。
+HTTPS （全称：Hyper Text Transfer Protocol over SecureSocket Layer），是以安全为目标的 HTTP 通道，
+在 HTTP 的基础上通过*传输加密*和*身份认证*保证了传输过程的安全性。
 
 HTTPS 在 HTTP 的基础下加入 SSL，HTTPS 的安全基础是 SSL，因此加密的详细内容就需要 SSL。
 
@@ -37,13 +39,15 @@ fetch 发送 2 次请求的原因
 
 fetch 发送 post 请求的时候，总是发送 2 次，第一次状态码是 204，第二次才成功？
 
-原因很简单，因为你用 fetch 的 post 请求的时候，导致 fetch 第一次发送了一个 Options 请求， 询问服务器是否支持修改的请求头，如果服务器支持，则在第二次中发送真正的请求。
+原因很简单，因为你用 fetch 的 post 请求的时候，导致 fetch 第一次发送了一个 Options 请求，
+询问服务器是否支持修改的请求头，如果服务器支持，则在第二次中发送真正的请求。
 
 Cookie 如何防范 XSS 攻击
 
 参考回答：
 
-XSS（跨站脚本攻击）是指攻击者在返回的 HTML 中嵌入 javascript 脚本，为了减轻这些攻击，需要在 HTTP 头部配上，set-cookie： httponly-这个属性可以防止 XSS,它会禁止 javascript 脚本来访问 cookie。
+XSS（跨站脚本攻击）是指攻击者在返回的 HTML 中嵌入 javascript 脚本，为了减轻这些攻击，需要在 HTTP 头部配上，
+set-cookie： httponly-这个属性可以防止 XSS,它会禁止 javascript 脚本来访问 cookie。
 Set-Cookie 由服务器发送，它包含在响应请求的头部中。
 
 === 与 object.is 的区别之处
@@ -109,7 +113,57 @@ async/await，Promise.then，Object.observe，MutationObserver
 
 谷歌，edge:start end 阻塞 promise 页面未渲染 点掉之后页面也未渲染 阻塞 timeout 点掉，页面渲染
 
-但是都是为渲染的情况下也都能拿到 2 个 p，为渲染，但是结构已经有了
+但是都是未渲染的情况下也都能拿到 2 个 p，未渲染，但是结构已经有了
+
+```html
+<!DOCTYPE html>
+<html>
+  <head></head>
+  <body>
+    <div id="container"></div>
+  </body>
+</html>
+<style></style>
+<script>
+  const $p1 = document.createElement("div");
+  $p1.innerText = "<p>一段文字</p>";
+  const $p2 = document.createElement("div");
+  $p2.innerText = "<p>一段文字</p>";
+  const $p3 = document.createElement("div");
+  $p3.innerText = "<p>一段文字</p>";
+
+  const $root = document.querySelector("#container");
+  $root.appendChild($p1);
+  $root.append($p2);
+  $root.append($p3);
+
+  console.log("length", $root.children);
+
+  // 另外，按照 event loop 触发 DOM 渲染时机，setTimeout 时 alert ，就能看到 DOM 渲染后的结果了
+  setTimeout(function () {
+    alert("setTimeout");
+  });
+  let p = new Promise((resolve) => {
+    resolve("Promise");
+  });
+  p.then(() => {
+    alert("Promise.then");
+  });
+  alert("本次 call stack 结束，DOM 结构已更新，但3个children尚未触发渲染");
+  // （alert 会阻断 js 执行，也会阻断 DOM 渲染，便于查看效果）
+  // 到此，即本次 call stack 结束后（同步任务都执行完了），浏览器会自动触发渲染，不用代码干预
+</script>
+```
+
+执行顺序：
+
+火狐：打印 3 个 children，打印'本次 call stack 结束，DOM 结构已更新，但 3 个 children 尚未触发渲染'，alert 'Promise.then'，
+同时还未渲染，点掉 alert"Promise.then"，之后页面渲染 3 个 children，alert('setTimeout')
+
+谷歌，edge:打印 3 个 children，打印'本次 call stack 结束，DOM 结构已更新，但尚未触发渲染'，alert 'Promise.then'，
+点掉 alert"Promise.then"，同时还未渲染，alert('setTimeout')，点掉之后页面渲染
+
+但是都是未渲染的情况下，也都打印出 4 个 children，未渲染，但是结构已经有了
 
 Promise.allSettled 无论对错，全部返回
 
@@ -163,9 +217,135 @@ Promise.all([p1, p2, p3])
   });
 ```
 
+### Promise 三种状态
+
+三种状态 pending resolved rejected
+
+转换不可逆
+
+```js
+// 刚定义时，状态默认为 pending
+const p1 = new Promise((resolve, reject) => {});
+
+// 执行 resolve() 后，Promise 状态变成 resolved
+const p2 = new Promise((resolve, reject) => {
+  setTimeout(() => {
+    resolve();
+  });
+});
+
+// 执行 reject() 后，Promise 状态变成 rejected
+const p3 = new Promise((resolve, reject) => {
+  setTimeout(() => {
+    reject();
+  });
+});
+```
+
+```js
+const p1 = new Promise((resolve, reject) => {
+reject(new Error('11'))});
+console.log(p1.then())
+// 直接返回一个 resolved 状态
+Promise.resolve(100);
+// 直接返回一个 rejected 状态
+Promise.reject("some error").then().catch((e)=>{return new Error()}).then();
+```
+
+### 状态和 then catch
+
+状态变化会触发 then catch
+
+- pending 不会触发任何 then catch 回调
+- 状态变为 resolved 会触发后续的 then 回调
+- 状态变为 rejected 会触发后续的 catch 回调
+
+**then catch 会继续返回 Promise，如果其中没有报错，都会返回 resolve 状态的 Promise(注意：catch 也是)。
+有报错则返回 rejected 的 Promise**
+
+```js
+// then() 一般正常返回 resolved 状态的 promise
+Promise.resolve().then(() => {
+  return 100;
+});
+
+// then() 里抛出错误，会返回 rejected 状态的 promise
+Promise.resolve().then(() => {
+  throw new Error("err");
+});
+
+// catch() 不抛出错误，会返回 resolved 状态的 promise
+Promise.reject().catch(() => {
+  console.error("catch some error");
+});
+
+// catch() 抛出错误，会返回 rejected 状态的 promise
+Promise.reject().catch(() => {
+  console.error("catch some error");
+  throw new Error("err");
+});
+```
+
+看一个综合的例子，几个面试题
+
+```js
+// 第一题
+Promise.resolve()
+  .then(() => {
+    console.log(1);
+  })
+  .catch(() => {
+    console.log(2);
+  })
+  .then(() => {
+    console.log(3);
+  });
+// 1 3
+
+// 第二题
+Promise.resolve()
+  .then(() => {
+    // 返回 rejected 状态的 promise
+    console.log(1);
+    throw new Error("erro1");
+  })
+  .catch(() => {
+    // 返回 resolved 状态的 promise
+    console.log(2);
+  })
+  .then(() => {
+    // 因为上面返回的是个 resolved 状态的 promise， 所以这里会调用than
+    console.log(3);
+  });
+// 1 2 3
+
+// 第三题
+Promise.resolve()
+  .then(() => {
+    // 返回 rejected 状态的 promise
+    console.log(1);
+    throw new Error("erro1");
+  })
+  .catch(() => {
+    // 返回 resolved 状态的 promise
+    console.log(2);
+  })
+  .catch(() => {
+    // 因为上面返回的是个 resolved 状态的 promise， 所以这里不会调用catch
+    console.log(3);
+  });
+// 1 2
+```
+
+### 执行 async 函数返回的是 Promise 对象
+
+### 手写简单promise
+
 垂直水平居中
 
-1. absolute 加 margin auto
+1. absolute top left bottom right = 0 加 margin auto
+
+没有用到 css3，比起方法二如果需要兼容老浏览器的话更适合
 
 ```vue
 <template>
@@ -201,6 +381,10 @@ import Center1 from "./center1.tsx";
 <div>
   <Center1 />
 </div>
+
+2. absolute 元素： transform(-50%,-50%)
+
+3. 知道元素宽度高度的情况，用 absolute 元素: top:50% + margin-top 负值。（水平雷同）
 
 宏任务 微任务
 
@@ -282,11 +466,14 @@ width=device-width 告诉浏览器已经适配了手机端，不需要双击放�
 
 https 原理 及 中间人攻击
 
-先非对称加密，服务器给客户端发公钥（用于加密），客户端生成随机数，用公钥加密随机数给服务器，服务器可以用私钥解开。之后通信都用这个随机数作为对称加密的密钥，进行对称加密通信。
+先非对称加密，服务器给客户端发公钥（用于加密），客户端生成随机数，用公钥加密随机数给服务器，服务器可以用私钥解开。
+之后通信都用这个随机数作为对称加密的密钥，进行对称加密通信。
 
-因为客户端有这个随机数，不需要解密，服务器有私钥可以解开，获得随机数，所以可以进行对称加密通信。中间如果被拦截因为这个随机数是非对称加密的，无法获得原本随机数，无法用过随机数解密对称加密通信的内容
+因为客户端有这个随机数，不需要解密，服务器有私钥可以解开，获得随机数，所以可以进行对称加密通信。
+中间如果被拦截因为这个随机数是非对称加密的，无法获得原本随机数，无法用过随机数解密对称加密通信的内容
 
-中间人攻击，黑客拦截服务器到客户端的信息，更换成自己的公钥。抓取客户端发出的请求，此请求有客户端生成的随机数，因为是黑客提供的公钥，所以可以用黑客自己的私钥解开，获得客户端的随机数。如此就能解密后面的对称加密内容。
+中间人攻击，黑客拦截服务器到客户端的信息，更换成自己的公钥。抓取客户端发出的请求，此请求有客户端生成的随机数，
+因为是黑客提供的公钥，所以可以用黑客自己的私钥解开，获得客户端的随机数。如此就能解密后面的对称加密内容。
 
 防范方法，购买正规第三方 https 证书，第三方会和浏览器厂商合作，浏览器会检查请求来源和证书是否匹配，不匹配会给出不安全的提示。
 
@@ -294,7 +481,8 @@ https 原理 及 中间人攻击
 
 defer: HTML 继续解析，并行下载设置了 defer 的 script 标签，HTML 解析完了再执行 js。如果是多个，按照开始加载的顺序执行。
 
-async: HTML 继续解析，并行下载设置了 async 的 script 标签，下载完直接运行，执行完了继续 HTML 解析。如果是多个，执行顺序和加载开始顺序无关，与加载完毕的顺序有关。
+async: HTML 继续解析，并行下载设置了 async 的 script 标签，下载完直接运行，执行完了继续 HTML 解析。如果是多个，
+执行顺序和加载开始顺序无关，与加载完毕的顺序有关。
 
 无以上两个属性：script 标签下方的 HTML 暂停解析，下载 js，执行 js，执行完了继续 HTML 解析
 
@@ -321,7 +509,8 @@ async: HTML 继续解析，并行下载设置了 async 的 script 标签，下�
 
 ### XSS 攻击
 
-跨站脚本攻击（Cross Site Scripting）缩写为 CSS，但这会与层叠样式表（Cascading Style Sheets，CSS）的缩写混淆。因此，有人将跨站脚本攻击缩写为 XSS。
+跨站脚本攻击（Cross Site Scripting）缩写为 CSS，但这会与层叠样式表（Cascading Style Sheets，CSS）的缩写混淆。
+因此，有人将跨站脚本攻击缩写为 XSS。
 
 常见的是评论区输入框注入 script 标签
 
@@ -349,13 +538,13 @@ dns 解析，http 请求 HTML 等文件
 
 所以建议将 css 放在 header 里面，减少渲染过程中的重绘重排
 
-### 触发 BFC 条件
+### 触发 BFC (block format context) 条件
 
 根节点'<'html'>'
 
-float: left/right
+float 不是 none
 
-overflow: auto/scroll/hidden
+overflow: auto/scroll/hidden (不是 visible)
 
 display:inline-block/table/table-row/table-cell
 
@@ -428,6 +617,12 @@ app 中的页面，用 app 的能力，预取
 分页
 
 图片懒加载
+
+### es-module 和 commonjs 区别
+
+<a href="/docs/engineering/#require-import" target="_blank">
+  点击此处查看
+</a>
 
 ### 10 万条数据
 
@@ -606,7 +801,7 @@ console.log(flat(a));
 
 ### 获取详细数据类型 number string boolean object array, object array map regexp 等类型
 
-typeof 只能判断值类型，其他 obj function
+typeof 判断是什么值类型，是否时引用类型，function
 instanceof 枚举判断判断是否是某个特定引用类型
 
 直接用 Object.prototype.toString.call(arr1)
@@ -1073,7 +1268,7 @@ console.log(cloneDeep(a)); // 无法处理 Map Set // 循环引用会内存溢�
 
 ```typescript
 export function cloneDeep(obj: any, map = new WeakMap()): any {
-    // typeof fn 'function'，所以这里function也是直接返回function即可
+  // typeof fn 'function'，所以这里function也是直接返回function即可
   if (typeof obj !== "object" || obj == null) return obj;
 
   // 已经拷贝过的对象记录下来，有相同的引用对象不重复拷贝，避免循环引用
@@ -1129,60 +1324,64 @@ export function cloneDeep(obj: any, map = new WeakMap()): any {
 // a.self = a
 // console.log( cloneDeep(a) )
 ```
+
 ### 函数参数是赋值
 
 ```javascript
-    // 第一次调用，相当于let x = num
+// 第一次调用，相当于let x = num
 
 // 第而次调用，相当于let x = obj x指向对象obj
 // 修改x指向并不能改变obj指向
 
 // 但是如果修改了x里面的属性，相当于修改了obj中的属性，  就会影响obj了
-function changeVal(x){
-    x = 200
+function changeVal(x) {
+  x = 200;
 }
-let num = 100
-changeVal(num)
-console.log(num) // 100
+let num = 100;
+changeVal(num);
+console.log(num); // 100
 
-let obj ={name: 'jack'}
-changeVal(obj)
-console.log(num) // 100
+let obj = { name: "jack" };
+changeVal(obj);
+console.log(num); // 100
 ```
 
-###js unshift push效率
+###js unshift push 效率
 
-因为数组的unshift数据结构的问题，往数组前插入内容，复杂度相当于o(n)，此处一个for循环本身就是一个o(n)。下面for+unshift复杂度达到o(n^2)，因此随着i的增大运算量暴增
+因为数组的 unshift 数据结构的问题，往数组前插入内容，复杂度相当于 o(n)，此处一个 for 循环本身就是一个 o(n)。
+下面 for+unshift 复杂度达到 o(n^2)，因此随着 i 的增大运算量暴增
+
 ```javascript
-console.time()
-let arr1 = []
-for(let i = 0; i<100000;i++){
-    arr1.push(i)
+console.time();
+let arr1 = [];
+for (let i = 0; i < 100000; i++) {
+  arr1.push(i);
 }
-console.timeEnd()
-console.time()
-let arr2 = []
-for(let i = 0; i<100000;i++){
-    arr2.unshift(i)
+console.timeEnd();
+console.time();
+let arr2 = [];
+for (let i = 0; i < 100000; i++) {
+  arr2.unshift(i);
 }
-console.timeEnd()
+console.timeEnd();
 
 // default: 0.9580078125 ms
 // default: 422.833984375 ms
 ```
+
 ```javascript
-console.time()
-let arr1 = []
-for(let i = 0; i<1000000;i++){
-    arr1.push(i)
+console.time();
+let arr1 = [];
+for (let i = 0; i < 1000000; i++) {
+  arr1.push(i);
 }
-console.timeEnd()
-console.time()
-let arr2 = []
-for(let i = 0; i<1000000;i++){
-    arr2.unshift(i)
+console.timeEnd();
+console.time();
+let arr2 = [];
+for (let i = 0; i < 1000000; i++) {
+  arr2.unshift(i);
 }
-console.timeEnd()
+console.timeEnd();
 
 // default: 9.4521484375 ms i数量增10倍，时间增10倍
 // default: 41827.933837890625 ms i数量增10倍，时间增100倍
@@ -1191,57 +1390,420 @@ console.timeEnd()
 ### 括号匹配
 
 算法关键: 栈
+
 ```typescript
 /**
  * @description 括号匹配
-*/
+ */
 
 /**
  * 判断左右括号是否匹配
  * @param left 左括号
  * @param right 右括号
-*/
+ */
 function isMatch(left: string, right: string): boolean {
-if (left === '{' && right === '}') return true
-if (left === '[' && right === ']') return true
-if (left === '(' && right === ')') return true
-return false
+  if (left === "{" && right === "}") return true;
+  if (left === "[" && right === "]") return true;
+  if (left === "(" && right === ")") return true;
+  return false;
 }
 
 /**
  * 判断是否括号匹配
  * @param str str
-*/
+ */
 export function matchBracket(str: string): boolean {
-const length = str.length
-if (length === 0) return true
+  const length = str.length;
+  if (length === 0) return true;
 
-const stack = []
+  const stack = [];
 
-const leftSymbols = '{[('
-const rightSymbols = '}])'
+  const leftSymbols = "{[(";
+  const rightSymbols = "}])";
 
-for (let i = 0; i < length; i++) {
-const s = str[i]
+  for (let i = 0; i < length; i++) {
+    const s = str[i];
 
-     if (leftSymbols.includes(s)) {
-         // 左括号，压栈
-         stack.push(s)
-     } else if (rightSymbols.includes(s)) {
-         // 右括号，判断栈顶（是否出栈）
-         const top = stack[stack.length - 1]
-         if (isMatch(top, s)) {
-             stack.pop()
-         } else {
-             return false
-         }
-     }
-}
+    if (leftSymbols.includes(s)) {
+      // 左括号，压栈
+      stack.push(s);
+    } else if (rightSymbols.includes(s)) {
+      // 右括号，判断栈顶（是否出栈）
+      const top = stack[stack.length - 1];
+      if (isMatch(top, s)) {
+        stack.pop();
+      } else {
+        return false;
+      }
+    }
+  }
 
-return stack.length === 0
+  return stack.length === 0;
 }
 
 // // 功能测试
 // const str = '{a(b[c]d)e}f'
 // console.info(123123, matchBracket(str))
 ```
+
+### 实现 链表 完成队列的功能
+
+```typescript
+interface IListNode {
+  value: number;
+  next: IListNode | null;
+}
+
+export class MyQueue {
+  private head: IListNode | null = null;
+  private tail: IListNode | null = null;
+  private len = 0;
+
+  /**
+   * 入队，在 tail 位置
+   * @param n number
+   */
+  add(n: number) {
+    const newNode: IListNode = {
+      value: n,
+      next: null,
+    };
+
+    // 处理 head
+    if (this.head == null) {
+      this.head = newNode;
+    }
+
+    // 处理 tail
+    const tailNode = this.tail;
+    if (tailNode) {
+      tailNode.next = newNode;
+    }
+    this.tail = newNode;
+
+    // 记录长度
+    this.len++;
+  }
+
+  /**
+   * 出队，在 head 位置
+   */
+  delete(): number | null {
+    const headNode = this.head;
+    if (headNode == null) return null;
+    if (this.len <= 0) return null;
+
+    // 取值
+    const value = headNode.value;
+
+    // 处理 head
+    this.head = headNode.next;
+
+    // 记录长度
+    this.len--;
+
+    return value;
+  }
+
+  // 属性前面加get 表示属性的get方法，用.取length值时，会走此方法
+  get length(): number {
+    // length 要单独存储，不能遍历链表来获取（否则时间复杂度太高 O(n)）
+    return this.len;
+  }
+}
+
+// // 功能测试
+// const q = new MyQueue()
+// q.add(100)
+// q.add(200)
+// q.add(300)
+// console.info('length1', q.length)
+// console.log(q.delete())
+// console.info('length2', q.length)
+// console.log(q.delete())
+// console.info('length3', q.length)
+// console.log(q.delete())
+// console.info('length4', q.length)
+// console.log(q.delete())
+// console.info('length5', q.length)
+
+// // 性能测试
+// const q1 = new MyQueue()
+// console.time('queue with list')
+// for (let i = 0; i < 10 * 10000; i++) {
+//     q1.add(i)
+// }
+// for (let i = 0; i < 10 * 10000; i++) {
+//     q1.delete()
+// }
+// console.timeEnd('queue with list') // 17ms
+
+// const q2 = []
+// console.time('queue with array')
+// for (let i = 0; i < 10 * 10000; i++) {
+//     q2.push(i) // 入队
+// }
+// for (let i = 0; i < 10 * 10000; i++) {
+//     q2.shift() // 出队
+// }
+// console.timeEnd('queue with array') // 431ms
+```
+
+### 双指针 有序，可以考虑双指针
+
+一个从小到大有序排列的数组，找出所有两个元素和为一个确定数的组合
+
+```javascript
+/**
+ * @description 两数之和
+ */
+
+/**
+ * 寻找和为 n 的两个数（嵌套循环）
+ * @param arr arr
+ * @param n n
+ */
+export function findTowNumbers1(arr: number[], n: number): number[] {
+  const res: number[] = [];
+
+  const length = arr.length;
+  if (length === 0) return res;
+
+  // O(n^2)
+  for (let i = 0; i < length - 1; i++) {
+    const n1 = arr[i];
+    let flag = false; // 是否得到了结果
+
+    for (let j = i + 1; j < length; j++) {
+      const n2 = arr[j];
+
+      if (n1 + n2 === n) {
+        res.push(n1);
+        res.push(n2);
+        flag = true;
+        break;
+      }
+    }
+
+    if (flag) break;
+  }
+
+  return res;
+}
+
+/**
+ * 查找和为 n 的两个数（双指针）
+ * @param arr arr
+ * @param n n
+ */
+export function findTowNumbers2(arr: number[], n: number): number[] {
+  const res: number[] = [];
+
+  const length = arr.length;
+  if (length === 0) return res;
+
+  let i = 0; // 头
+  let j = length - 1; // 尾
+
+  // O(n)
+  while (i < j) {
+    const n1 = arr[i];
+    const n2 = arr[j];
+    const sum = n1 + n2;
+
+    if (sum > n) {
+      // sum 大于 n ，则 j 要向前移动
+      j--;
+    } else if (sum < n) {
+      // sum 小于 n ，则 i 要向后移动
+      i++;
+    } else {
+      // 相等
+      res.push(n1);
+      res.push(n2);
+      break;
+    }
+  }
+
+  return res;
+}
+
+// // 功能测试
+const arr = [1, 2, 4, 7, 11, 15];
+// console.info(findTowNumbers2(arr, 15))
+
+// 下面加大循环次数只是让两个结果都乘以一个一定的数，让两个值都大一些，循环的次数并不是算法时间复杂度中的n。
+// 算法复杂度基数n是arr的长度n，这里应该要将arr定义数组长度比较大，才容易看到和算法复杂度匹配的，更大差距。
+
+console.time("findTowNumbers1");
+for (let i = 0; i < 100 * 10000; i++) {
+  findTowNumbers1(arr, 15);
+}
+console.timeEnd("findTowNumbers1"); // 730ms
+
+console.time("findTowNumbers2");
+for (let i = 0; i < 100 * 10000; i++) {
+  findTowNumbers2(arr, 15);
+}
+console.timeEnd("findTowNumbers2"); // 102
+```
+
+### 快速排序
+
+```typescript
+export function quickSort1(arr: number[]): number[] {
+  const length = arr.length;
+  if (length === 0) return arr;
+
+  const midIndex = Math.floor(length / 2);
+  const midValue = arr.splice(midIndex, 1)[0];
+
+  const left: number[] = [];
+  const right: number[] = [];
+
+  // 注意：这里不用直接用 length ，而是用 arr.length 。因为 arr 已经被 splice 给修改了
+  // 时间复杂度O（n * log(n))
+  for (let i = 0; i < arr.length; i++) {
+    const n = arr[i];
+    if (n < midValue) {
+      // 小于 midValue ，则放在 left
+      left.push(n);
+    } else {
+      // 大于 midValue ，则放在 right
+      right.push(n);
+    }
+  }
+
+  return quickSort1(left).concat([midValue], quickSort1(right));
+  // 功能测试
+  const arr1 = [1, 6, 2, 7, 3, 8, 4, 9, 5];
+  console.info(quickSort2(arr1));
+}
+```
+
+### 浮点数 小数 运算
+
+js 中计算 0.01 + 0.02 不等于 0.03
+
+<a href="/docs/other_library/#xss-攻击-防御-dompurify" target="_blank">
+  点击此处查看
+</a>
+
+### margin 负值
+
+<a href="/docs/css/base/#Holy Grail Layout " target="_blank">
+  点击此处查看
+</a>
+
+### margin 叠加
+
+父子，兄弟 margin 叠加取大值，无内容的
+
+<a href="/docs/css/base/#Holy Grail Layout " target="_blank">
+  点击此处查看
+</a>
+
+### line-height 继承
+
+<a href="/docs/css/base/#line-height 继承" target="_blank">
+  点击此处查看
+</a>
+
+
+### 状态码
+
+1xx：表示消息或进度通知。
+
+100 (继续)：初始的请求已经接受，请求者应当继续提出请求。
+101 (切换协议)：请求者已要求服务器切换协议，服务器听从客户的请求已确认并准备切换。
+2xx：表示请求已成功被服务器接收、理解、并接受。
+
+200 (请求成功)：服务器成功返回请求的数据。
+201 (已创建)：请求成功并且服务器创建了新的资源。
+202 (已接受)：服务器已接受请求，但尚未处理。
+204 (无内容)：服务器处理成功，但无返回内容。
+3xx：表示重定向，即服务器告诉客户端“你要的资源搬家了，你到某某地方再去找它吧”。
+
+301 (永久重定向)：请求的资源已永久移动到新的URI，以后应使用新URI代替。
+302 (临时重定向)：请求的资源暂时从不同的URI响应请求，但请求者应继续使用原有URI。
+304 (未修改)：如果客户端发送了一个带条件的GET请求且该请求已被允许，而文档的内容（自上次访问以来或者根据请求的条件）并没有改变，
+则服务器应当返回这个状态码。
+4xx：表示客户端发来的响应报文里有些错误，比如语法错误或请求的资源不存在等。
+
+400 (错误请求)：请求有误，服务器无法理解。
+401 (未授权)：请求需要用户身份验证。
+403 (禁止)：请求被服务器拒绝，无权访问。
+404 (未找到)：请求的资源不存在。
+5xx：表示服务器端有些问题，已经无法处理完成你的请求了。
+
+500 (内部服务器错误)：服务器内部发生错误，无法完成请求。
+502 (错误网关)：由于服务器作为网关或代理，从上游服务器收到无效响应。
+503 (服务不可用)：服务器当前无法处理请求，一段时间后可能恢复正常。
+
+
+### 缓存
+
+import webCacheImgSrc from "/img/webcache.jpg";
+
+<img src={webCacheImgSrc} style={{ width: "1143px" }} />
+
+### 强制缓存
+
+强制缓存是浏览器缓存机制中的一种，它直接根据缓存的标识（如Expires或Cache-Control）来判断是否使用本地缓存。当浏览器再次请求资源时，
+会首先检查本地缓存中是否有该资源，并且检查该资源的缓存是否过期。如果没有过期，则直接从本地缓存中读取资源，而不会向服务器发送请求。
+
+Expires：这是一个HTTP 1.0版本的缓存控制字段。它表示一个资源的过期时间，是一个GMT格式的绝对时间。
+当浏览器再次请求该资源时，会检查当前时间与Expires字段的值进行比较，如果当前时间早于Expires字段的值，则直接从缓存中读取资源。
+
+Cache-Control：这是HTTP 1.1版本引入的缓存控制字段，它提供了更细粒度的缓存控制选项。
+其中，max-age字段表示资源在缓存中的最大有效时间，单位是秒。浏览器会根据这个值来判断缓存是否过期。
+
+Cache-Control字段一部分可选的值：
+
+no-cache：
+表示必须先与服务器确认返回的响应是否被更改后，才能使用该响应来满足后续对同一个网址的请求。这通常涉及到发送一个条件请求到服务器，
+比如包含 If-None-Match 或 If-Modified-Since 头的请求。如果资源未更改，服务器会返回 304 Not Modified 状态码，避免重新传输整个资源。
+
+no-store：
+表示响应不应被存储在任何缓存中，即禁止缓存。这适用于敏感信息或需要确保每次请求都直接从服务器获取最新数据的场景。
+
+max-age=‘<’seconds‘>’：
+开启强制缓存，表示响应在指定的秒数内可以重复使用本地被缓存的资源，而不需要向服务器发送请求重新验证。从请求时间开始计算，
+如果当前时间与响应中 Date 头的差值小于 max-age，则直接读取本地缓存。
+
+### 对比缓存
+对比缓存也称为协商缓存，它依赖于服务器和浏览器之间的协商来确定是否使用缓存。当浏览器再次请求资源时，会在请求头带上缓存信息，
+服务器检查该资源的缓存标识（如Last-Modified或ETag）是否与服务器上的资源匹配。如果资源未过期，则返回 304 状态码，浏览器使用本地缓存；否则，
+服务器返回 200 状态码和最新的资源。
+
+以下为对比缓存的形式：
+
+#### Last-Modified & If-Modified-Since
+
+服务器通过 Last-Modified 字段记录资源最后一次被修改的时间，
+
+浏览器将这个值和内容一起记录在缓存数据库中。
+
+下一次请求相同资源时时在请求头中将上次的 Last-Modified 的值写入到请求头的 If-Modified-Since 字段
+
+服务器会将 If-Modified-Since 的值与 Last-Modified 字段进行对比。如果相等，则表示未修改，返回304和空内容，不返回内容，浏览器使用本地缓存；
+反之，则表示修改了，返回 200 状态码和最新的资源。
+
+如果资源更新的速度是秒以下单位，那么该缓存是不能被使用的，因为它的时间单位最低是秒。
+
+如果相应是通过服务器重复生成的，那么该方法的更新时间永远是生成的时间，尽管文件可能没有变化，所以起不到缓存的作用。
+
+
+#### Etag & If-None-Match
+
+Etag 的优先级高于 Last-Modified
+
+Etag 存储的是文件的特殊标识(一般都是 hash 生成的)，服务器存储着文件的 Etag 字段。
+
+之后的流程和 Last-Modified 一致，只是 Last-Modified 字段和它所表示的更新时间改变成了 Etag 字段和它所表示的文件 hash，
+把 If-Modified-Since 变成了 If-None-Match。
+
+服务器同样进行比较，命中返回 304, 不命中返回 200 状态码和最新的资源。
+
+
+

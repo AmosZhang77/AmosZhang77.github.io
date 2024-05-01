@@ -1,7 +1,9 @@
 ## class
 
 ### class 语法糖
-class 是语法糖，和es5一样靠原型链实现。
+
+class 是语法糖，和 es5 一样靠原型链实现。
+
 ```js
 class classA {
   constructor() {}
@@ -36,23 +38,24 @@ p.play(); // palyFnDo
 
 class 内部的方法中是局部严格模式，外部调也同样，console.log（this） 不会默认指向 window，而是 undefined
 
-### es5类和class使用代码对比
+### es5 类和 class 使用代码对比
+
 ```javascript
 // 类的申明
 // es5
-function Animal(){
-    this.name = 'name'
+function Animal() {
+  this.name = "name";
 }
 // es6 class
 class Animal2 {
-    constructor(){
-        this.name = name
-    }
+  constructor() {
+    this.name = name;
+  }
 }
 
 // 类的实例化，es5和6是一样的
-const a1 = new Animal()
-const a2 = new Animal2()
+const a1 = new Animal();
+const a2 = new Animal2();
 ```
 
 ### 原型链
@@ -63,44 +66,158 @@ import imgSrc from "./prototype__proto.png";
 
 ```javascript
 // 由上图的关系，只要愿意可以无限循环引用下去.__proto__.__proto__.constructor
-Object.__proto__.__proto__.constructor.constructor === Function // true
-Object.__proto__.__proto__.constructor.__proto__.__proto__.constructor.constructor === Function // true
-Object.__proto__.__proto__.constructor.__proto__.__proto__.constructor.__proto__.__proto__.constructor.constructor === Function // true
+Object.__proto__.__proto__.constructor.constructor === Function; // true
+Object.__proto__.__proto__.constructor.__proto__.__proto__.constructor
+  .constructor === Function; // true
+Object.__proto__.__proto__.constructor.__proto__.__proto__.constructor.__proto__
+  .__proto__.constructor.constructor === Function; // true
 ```
 
-### new
+结合下面 Object.create() 的作用是新建一个对象，将对象的原形对象（**proto**）指向第一个参数。
+相较于 new 少走了一遍构造函数，但是实现了需要的**proto**指向动作。
 
-手写new函数
 ```javascript
-const myNew = function (FN){
-    //1. 创建新对象，将新对象o的原型对象的__proto__指向构造函数的prototype(即FN.prototype)。
-//2.  FN.prototype.constructor本来就指向FN，1中__proto__指向FN.prototype后会，o.__proto__的constructor属性自然就变成FN.prototype.constructor（就是FN）
-  const o = Object.create(FN.prototype)
-  const r = FN.call(o)
-  if(typeof r === 'object'){
-    return r
-  }else{
-    return o
+const FatherFn = function () {};
+FatherFn.prototype.eat = function () {
+  console.log("eat old");
+};
+FatherFn.prototype.str = "old";
+const SonFn = function () {};
+// 链接原形对象动作方法1，会多走一遍不必要的构造函数
+// SonFn.prototype = new FatherFn()
+
+// 链接原形对象动作方法2，es5新方法帮助链接原形对象动作
+SonFn.prototype = Object.create(FatherFn.prototype);
+console.log(
+  "Object.assign(FatherFn.prototype.str)",
+  Object.create(FatherFn.prototype).str
+); // old
+console.log(
+  "Object.assign(FatherFn.prototype)",
+  Object.create(FatherFn.prototype)
+);
+
+SonFn.prototype.constructor = SonFn;
+const son1 = new SonFn();
+son1.eat(); // eat old
+console.log(son1.str); // old
+
+FatherFn.prototype.eat = function () {
+  console.log("eat new");
+};
+FatherFn.prototype.str = "new";
+
+son1.eat(); // eat new
+console.log(son1.str); // new
+const son2 = new SonFn();
+son2.eat(); // eat new
+console.log(son2.str); // new
+```
+
+es6 class 语法糖实际也是用原形链的方案继承的，故有一样的效果。但是除了语法糖部分外，class 做了一部分特殊的工作，见本实例和下一个示例的对比
+
+如果没有用 class 里面的 get 方法设置属性，然后按老写法去改 FatherFn.prototype.str，改之后，新旧 son1,2 都对象会打印出 new
+
+```javascript
+class FatherFn {
+  eat() {
+    console.log("eat old");
   }
+  static str = "old";
 }
+class SonFn extends FatherFn {
+  constructor() {
+    super(); // 调用父类的构造函数
+    // SonFn 的构造函数逻辑
+  }
+  /** get str() {
+    return "old";
+  } */
+  // 可以在这里添加 SonFn 特有的方法或属性
+}
+
+console.log(
+  "Object.assign(FatherFn.prototype.str)",
+  Object.create(FatherFn.prototype).str
+); // old
+console.log(
+  "Object.assign(FatherFn.prototype)",
+  Object.create(FatherFn.prototype)
+);
+
+const son1 = new SonFn();
+son1.eat(); // eat old
+console.log(son1.str); // undefined
+
+FatherFn.prototype.eat = function () {
+  console.log("eat new");
+};
+FatherFn.prototype.str = "new";
+
+son1.eat(); // eat new
+
+// new。 在FatherFn.prototype.str = "new";操作之后，之前创建的对象仍然可以打印新str值
+console.log(son1.str);
+const son2 = new SonFn();
+son2.eat(); // eat new
+console.log(son2.str); // new 在FatherFn.prototype.str = "new";操作之后，新对象打印新str值
 ```
 
-### Object.create大致原理
+es6 class 语法糖实际也是用原形链的方案继承的，故有一样的效果。但是除了语法糖部分外，class 做了静态属性的功能和相应保护，之前的继承方法是没有的
+
+如果 class 里面，有 get 方法设置属性，然后按老写法去改 FatherFn.prototype.str，改之后，新旧 son1,2 都对象会打印出 old，str 得到了保护，不会被修改
+
+但是用老写法去改 FatherFn.prototype.eat，class 并不能保护方法，也体现了语法糖的特点，方法依旧使用原形对象原形链的方法继承的，
+改变原形对象的方法，之前创建的实例的方法会受到影响。
+
 ```javascript
-function create (prototype){
-  function Temp(){}
-  let temp = new Temp()
-  temp.prototype = prototype
-  return temp
+class FatherFn {
+  eat() {
+    console.log("eat old");
+  }
+  static str = "old";
 }
+class SonFn extends FatherFn {
+  constructor() {
+    super(); // 调用父类的构造函数
+    // SonFn 的构造函数逻辑
+  }
+  get str() {
+    return "old";
+  }
+  // 可以在这里添加 SonFn 特有的方法或属性
+}
+
+console.log(
+  "Object.assign(FatherFn.prototype.str)",
+  Object.create(FatherFn.prototype).str
+); // old
+console.log(
+  "Object.assign(FatherFn.prototype)",
+  Object.create(FatherFn.prototype)
+);
+
+const son1 = new SonFn();
+son1.eat(); // eat old
+console.log(son1.str); // old
+
+FatherFn.prototype.eat = function () {
+  console.log("eat new");
+};
+FatherFn.prototype.str = "new";
+
+// eat new // 尽管对象先创建，之后改变父类原形对象的方法，子类方法也会受到影响
+son1.eat();
+console.log(son1.str); // old // 子类属性会受到保护
+const son2 = new SonFn();
+son2.eat(); // eat new
+console.log(son2.str); // old
 ```
-实际上，字面量初始化对象语法是 Object.create() 的一种语法糖!
-(参考：https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Object/create)
-使用 Object.create()，我们可以创建具有指定原型和某些属性的对象。
-请注意，第二个参数将键映射到属性描述符，这意味着你还可以控制每个属性的可枚举性、可配置性等，而这在字面量初始化对象语法中是做不到的。
 
 ### 用 Object.create() 实现类式继承
+
 下面的例子演示了如何使用 Object.create() 来实现类式继承。这是一个所有版本 JavaScript 都支持的单继承。
+
 ```javascript
 // Shape——父类
 function Shape() {
@@ -139,11 +256,45 @@ console.log("rect 是 Rectangle 类的实例吗？", rect instanceof Rectangle);
 console.log("rect 是 Shape 类的实例吗？", rect instanceof Shape); // true
 rect.move(1, 1); // 打印 'Shape moved.'
 ```
+
 需要注意的是，使用 create() 也有一些要注意的地方，比如重新添加 constructor 属性以确保正确的语义。
 
 虽然 Object.create() 被认为比使用 Object.setPrototypeOf() 修改原型更具有性能优势，但如果没有创建实例并且属性访问还没有被优化，它们之间的差异实际上是可以忽略不计的。
 在现代代码中，无论如何都应该优先使用类语法。
 
+### new
+
+手写 new 函数
+
+```javascript
+const myNew = function (FN) {
+  //1. 创建新对象，将新对象o的原型对象的__proto__指向构造函数的prototype(即FN.prototype)。
+  //2.  FN.prototype.constructor本来就指向FN，1中__proto__指向FN.prototype后会，o.__proto__的constructor属性自然就变成FN.prototype.constructor（就是FN）
+  const o = Object.create(FN.prototype);
+  const r = FN.call(o);
+  if (typeof r === "object") {
+    return r;
+  } else {
+    return o;
+  }
+};
+```
+
+### Object.create 大致原理
+
+```javascript
+function create(prototype) {
+  function Temp() {}
+  let temp = new Temp();
+  temp.prototype = prototype;
+  return temp;
+}
+```
+
+实际上，字面量初始化对象语法是 Object.create() 的一种语法糖!
+(参考：https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Object/create)
+使用 Object.create()，我们可以创建具有指定原型和某些属性的对象。
+请注意，第二个参数将键映射到属性描述符，这意味着你还可以控制每个属性的可枚举性、可配置性等，而这在字面量初始化对象语法中是做不到的。
 
 ### instanceof
 
@@ -353,7 +504,8 @@ const b = new B();
 const c = new C();
 A.prototype = b;
 A.prototype = c;
-// A.prototype.constructor = A // 现在不用修复了？
+console.log(" A.prototype.constructor", A.prototype.constructor);
+A.prototype.constructor = A; // 修复constructor
 
 const a = new A();
 
@@ -630,33 +782,75 @@ const extend = function () {
           copy &&
           (isPlainObject(copy) || (copyIsArray = Array.isArray(copy)))
         ) {
-          console.log("target1", JSON.stringify(target),'name',JSON.stringify(name));
+          console.log(
+            "target1",
+            JSON.stringify(target),
+            "name",
+            JSON.stringify(name)
+          );
 
           src = target[name];
 
           // Ensure proper type for the source value
           if (copyIsArray && !Array.isArray(src)) {
-            console.log('clone = []',JSON.stringify([]),'to',JSON.stringify(clone))
+            console.log(
+              "clone = []",
+              JSON.stringify([]),
+              "to",
+              JSON.stringify(clone)
+            );
             clone = [];
           } else if (!copyIsArray && !isPlainObject(src)) {
-            console.log('clone = {}',JSON.stringify({}),'to',JSON.stringify(clone))
+            console.log(
+              "clone = {}",
+              JSON.stringify({}),
+              "to",
+              JSON.stringify(clone)
+            );
             clone = {};
           } else {
-            console.log('clone = src',JSON.stringify(src),'to',JSON.stringify(clone))
+            console.log(
+              "clone = src",
+              JSON.stringify(src),
+              "to",
+              JSON.stringify(clone)
+            );
             clone = src;
           }
           copyIsArray = false;
 
-          console.log("copyObj", JSON.stringify(copy),'to',JSON.stringify(clone));
-          console.log("target", JSON.stringify(target),'name',JSON.stringify(name));
+          console.log(
+            "copyObj",
+            JSON.stringify(copy),
+            "to",
+            JSON.stringify(clone)
+          );
+          console.log(
+            "target",
+            JSON.stringify(target),
+            "name",
+            JSON.stringify(name)
+          );
           // Never move original objects, clone them
           target[name] = extend(deep, clone, copy);
 
           // Don't bring in undefined values
         } else if (copy !== undefined) {
-
-          console.log("copyNotObj", JSON.stringify(copy), copy,'to',JSON.stringify(target[name]), target[name]);
-          console.log("target", JSON.stringify(target), copy,'name',JSON.stringify(name));
+          console.log(
+            "copyNotObj",
+            JSON.stringify(copy),
+            copy,
+            "to",
+            JSON.stringify(target[name]),
+            target[name]
+          );
+          console.log(
+            "target",
+            JSON.stringify(target),
+            copy,
+            "name",
+            JSON.stringify(name)
+          );
           target[name] = copy;
         }
       }
@@ -674,13 +868,14 @@ console.log("json", JSON.parse('{"__proto__": {"devMode": true}}'));
 ```
 
 关键简写
+
 ```javascript
-let target = {}
-let src = target['__proto__']
-extendAgain = (t,c) =>{
-  t['devMode'] = true
-}
-target['__proto__'] = extendAgain(target['__proto__'],{"devMode":true})
+let target = {};
+let src = target["__proto__"];
+extendAgain = (t, c) => {
+  t["devMode"] = true;
+};
+target["__proto__"] = extendAgain(target["__proto__"], { devMode: true });
 
 // extend(true, {}, JSON.parse('{"__proto__": {"devMode": true}}'));
 
@@ -688,14 +883,15 @@ console.log(!("devMode" in {}), "Object.prototype not polluted", {});
 ```
 
 关键简写
+
 ```javascript
-let target = {}
-let src = target['__proto__']
-extendAgain = (t,c) =>{
-  t['devMode'] = true
-}
+let target = {};
+let src = target["__proto__"];
+extendAgain = (t, c) => {
+  t["devMode"] = true;
+};
 // target['__proto__'] = extendAgain(target['__proto__'])
-extendAgain(target['__proto__'])
+extendAgain(target["__proto__"]);
 
 // extend(true, {}, JSON.parse('{"__proto__": {"devMode": true}}'));
 
@@ -704,11 +900,13 @@ console.log(!("devMode" in {}), "Object.prototype not polluted", {});
 
 关键简写
 
-如果人家框架有自己写的for in 遍历创造或者合并对象，没有屏蔽掉__proto__，
+如果人家框架有自己写的 for in 遍历创造或者合并对象，没有屏蔽掉**proto**，
 就会有污染全局对象的漏洞
+
 ```javascript
-let target = {}
-target['__proto__']['devMode']=true
+let target = {};
+target["__proto__"]["devMode"] = true;
 console.log(!("devMode" in {}), "Object.prototype not polluted", {});
 ```
-只要中间执行 这段代码的第二行，全局所有以字面量{a:0}创建的对象都会受到污染。 jquery 和 lodash19年的时候修复了这个漏洞，就是加了这个判断。
+
+只要中间执行 这段代码的第二行，全局所有以字面量{a:0}创建的对象都会受到污染。 jquery 和 lodash19 年的时候修复了这个漏洞，就是加了这个判断。

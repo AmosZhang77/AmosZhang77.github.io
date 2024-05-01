@@ -72,8 +72,10 @@ flex 容器的子元素如果没有指定宽度，子元元素会被孙子等元
 }
 ```
 
-### flex 指定撑满剩余  溢出
-有些情况下会因为内部其他元素撑开“用于撑满剩余尺寸的元素”，使之超出flex外壳main的尺寸。需要加overflow: hidden
+### flex 指定撑满剩余 溢出
+
+有些情况下会因为内部其他元素撑开“用于撑满剩余尺寸的元素”，使之超出 flex 外壳 main 的尺寸。需要加 overflow: hidden
+
 ```less
 .main {
   display: flex;
@@ -171,12 +173,13 @@ vh and vw：相对于视口的高度和宽度单位
 
 1vh 等于视口高度的 1%。
 
+vmax vmin
 
 ### svg 颜色继承
 
-用于实现svg变色
+用于实现 svg 变色
 
-svg内部fill=颜色改成fill="currentColor"
+svg 内部 fill=颜色改成 fill="currentColor"
 
 ```svg
 <?xml version="1.0" encoding="UTF-8"?>
@@ -197,7 +200,221 @@ svg内部fill=颜色改成fill="currentColor"
 </svg>
 ```
 
-### :scope dom自身伪类
+### :scope dom 自身伪类
+
 ```css
 
+```
+
+### margin 叠加
+
+父子，兄弟 margin 叠加取大值。
+
+无内容的合并，会跨dom合并，把能合并的都合并，如下例子，4个div合并之后整体高度只有15px。
+
+import MarginOverlap from "./components/margin_overlap.tsx";
+
+<div>
+  <MarginOverlap />
+</div>
+
+
+```html
+<!DOCTYPE html>
+<html>
+  <head> </head>
+  <body>
+    <div class="p1"></div>
+    <div class="p2"></div>
+    <div class="p3"></div>
+    <div class="p4"></div>
+  </body>
+</html>
+<style>
+  .p1 {
+    margin-top: 10px;
+    margin-bottom: 15px;
+  }
+  .p2 {
+    margin-top: 10px;
+    margin-bottom: 15px;
+  }
+  .p3 {
+    margin-top: 10px;
+    margin-bottom: 15px;
+  }
+  .p4 {
+    margin-top: 10px;
+    margin-bottom: 15px;
+  }
+</style>
+```
+
+### margin 负值
+
+两个 div 纵向正常排布，上方 div 设置 margin-top 负值，上方 div 会向上移动，同时下方 div 也会跟着向上移动。
+
+上方 div 设置 margin-bottom 设置负值，上方 div 不会变动位置，下方 div 会向上移动这个负值，如果本来两个 div 紧贴，下方 div 向上移动后会盖住上方 div 这个负值。
+
+类似，两个 div float 之后横向排列，左边 div 设置 margin-left 负值，左边 div 会向左移动，同时右边 div 也会跟着向左移动。
+
+左边 div 设置 margin-right 设置负值，左边 div 不会变动位置，右边 div 会向左移动这个负值，如果本来两个 div 紧贴，右边 div 向左移动后会盖住左边 div 这个负值。
+
+以上负值引起的移动没有范围限制，可以移到无限远。同时之后的元素继续在被移动的之后渲染，相当于会跟着被移动的一起移动
+
+```html
+<!DOCTYPE html>
+<html>
+  <head> </head>
+  <body>
+    <div class="top">1</div>
+    <div class="bottom">2</div>
+    <div class="bottom2">跟着2之后渲染</div>
+  </body>
+</html>
+<style>
+  .top {
+    height: 50px;
+    border: 1px solid red;
+    margin-bottom: -200px;
+  }
+  .bottom {
+    /*margin-top:-100px;*/
+    height: 50px;
+
+    border: 1px solid blue;
+  }
+  . bottom {
+    /*margin-top:-100px;*/
+    height: 50px;
+
+    border: 1px solid green;
+  }
+</style>
+```
+
+float 水平排布时，如果 d2 margin-left 为 100%（相当于父宽度），会先向左移，然后拍到上一行，再向左移，移动到最开始的 x 轴相同的位置。
+
+d3 自身设置 margin-right 等于或超过自身宽度，会把 d3 视为没有宽度，所以会允许他在 float 排布中挤到上一行。
+
+```html
+<!DOCTYPE html>
+<html>
+  <head></head>
+  <body>
+    <div class="box">
+      <div class="d1 c">center</div>
+      <div class="d2 c">left</div>
+      <div class="d3 c">right</div>
+    </div>
+  </body>
+</html>
+<style>
+  .box {
+    padding-left: 200px;
+    padding-right: 150px;
+    .c {
+      float: left;
+    }
+  }
+
+  .d1 {
+    width: 100%;
+    height: 50px;
+    background-color: red;
+  }
+
+  .d2 {
+    width: 200px;
+    height: 50px;
+    margin-left: -100%;
+    background-color: blue;
+  }
+
+  .d3 {
+    width: 150px;
+    height: 50px;
+    background-color: rgba(255, 255, 0, 0.5);
+    margin-right: -150px;
+  }
+</style>
+```
+
+### Holy Grail Layout
+
+圣杯布局
+
+import ShengBei from "./components/shengbei.tsx";
+
+<div>
+  <ShengBei />
+</div>
+
+```html
+<!DOCTYPE html>
+<html>
+  <head></head>
+  <body>
+    <div class="box">
+      <div class="d1 c">center</div>
+      <div class="d2 c">left</div>
+      <div class="d3 c">right</div>
+    </div>
+  </body>
+</html>
+<style>
+  .box {
+    padding-left: 200px;
+    padding-right: 150px;
+    .c {
+      float: left;
+    }
+  }
+
+  .d1 {
+    width: 100%;
+    height: 50px;
+    background-color: red;
+  }
+
+  .d2 {
+    width: 200px;
+    height: 50px;
+    position: relative;
+    right: 200px;
+    margin-left: -100%;
+    background-color: blue;
+  }
+
+  .d3 {
+    width: 150px;
+    height: 50px;
+    background-color: rgba(255, 255, 0, 0.5);
+    /* 自身设置margin-right */
+    margin-right: -150px;
+  }
+</style>
+```
+
+### line-height 继承
+
+```html
+<!DOCTYPE html>
+<html>
+  <head></head>
+  <body>
+    <div class="box"></div>
+  </body>
+</html>
+<style>
+  body {
+    font-size: 20px;
+    line-height: 200%; /*  内部元素继承本元素计算出来来的值，font-size20*2 = 40px，而不是子的16px * 2 */
+    line-height: 50px; /* 内部元素直接继承值 */
+    line-height: 1.5; /* 内部元素直接继承值 */
+  }
+  .box {
+    font-size: 16px;
+  }
+</style>
 ```

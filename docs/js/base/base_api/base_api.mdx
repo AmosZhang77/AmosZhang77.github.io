@@ -61,7 +61,7 @@ date.setTime(); // 单位：毫秒数
 
 ### 计算精度产生小数问题
 
-0.29*100 不会得到 29，而是 28.99999999
+0.29\*100 不会得到 29，而是 28.99999999
 希望得到正确结果
 
 ```javascript
@@ -263,7 +263,7 @@ foo = function () {
 尽可能避免把函数声明放在判断条件中，因为 js 未来版本中解析规则可能会发生变化
 (当 chrome 前版本 84，已经将 function 解析在内部了，无法提升，打印 Uncaught TypeError: foo is not a function)
 
-```js
+```javascript
 foo(); // b // 84版chrome打印Uncaught TypeError: foo is not a function
 var a = true;
 if (a) {
@@ -286,12 +286,46 @@ if (a) {
 }); // Uncaught TypeError: foo is not a function
 ```
 
-### eval
+### 词法定义域（Lexical Scope）或“静态作用域”
 
-eval: 非严格模式下，用 var 定义变量，会在词法作用于中插入变量 b 的声明定义（工作原理）， 从而改变了浏览器编译时的词法作用域。 （浏览器会通过词法静态分析优化变量和函数。如果 eval 存在，会动态改变词法作用域，
-浏览器只能选择不做优化避免引起程序逻辑变化。所以会影响性能。）
+JavaScript 函数的作用域在函数声明的时候就已经确定了，而不是在函数执行的时候。（对比，this是在运行的时候确定的）
+
+词法作用域是基于代码的词法结构（即源代码的写法）来决定的。当你在代码中定义一个函数时，JavaScript 引擎会查看这个函数是在哪个作用域中声明的，
+然后确定该函数的词法作用域。这个作用域链在函数声明时就已经固定了，并且在函数执行期间不会改变。
+
 
 ```js
+function creatArea1() {
+  const a = 100;
+  return function () {
+    console.log(a);
+  };
+}
+
+const fn1 = creatArea1;
+const a = 200;
+fn1; // 100
+
+function fn2(fn) {
+  const b = 200;
+  fn();
+}
+
+const b = 100;
+function creatArea2() {
+  console.log(a);
+}
+
+fn2(creatArea2); // 100
+```
+
+### eval
+
+eval: 非严格模式下，用 var 定义变量，会在词法作用于中插入变量 b 的声明定义（工作原理）， 从而改变了浏览器编译时的词法作用域。
+（浏览器会通过词法静态分析优化变量和函数。如果 eval 存在，会动态改变词法作用域，
+浏览器只能选择不做优化避免引起程序逻辑变化。所以会影响性能。）
+
+```javascript
 const b = 2;
 
 function org(a, str) {
@@ -1393,7 +1427,7 @@ console.log(JSON.stringify(obj)) 或者深拷贝
 
 ### encodeURI
 
-可以处理整个url
+可以处理整个 url
 
 该方法的目的是对 URI 进行完整的编码，因此对以下在 URI 中具有特殊含义的 ASCII 标点符号，encodeURI() 函数是不会进行转义的：;/?:@&=+$,#
 
@@ -1401,7 +1435,7 @@ console.log(JSON.stringify(obj)) 或者深拷贝
 
 ### encodeURIComponent
 
-用于处理url中单独的参数
+用于处理 url 中单独的参数
 
 用于 rul 中的编码参数中的特殊字符，比如？ \* & #这些如果出现在参数本身中，会被解析为 url 中的特殊作用符号，会打断后端拿 url 的参数，比如出现&，就会误认为这个参数值到此结束了，要开始解析下一个了。如#后面后端全部拿不到。
 
@@ -1415,22 +1449,22 @@ encodeURI(
 );
 ```
 
-
 ### 迭代执行效率
 
 ```javascript
+
 ```
 
 ### 箭头函数
 
-1. 不能作为对象的方法，否则方法拿不到对象的this，但是class内部的方法可以。
+1. 不能作为对象的方法，否则方法拿不到对象的 this，但是 class 内部的方法可以。
 
-vue组件是对象，所以里面的方法不能用箭头函数，react的class组件是class所以方法可以用箭头函数
+vue 组件是对象，所以里面的方法不能用箭头函数，react 的 class 组件是 class 所以方法可以用箭头函数
 
 2. 不能作为构造函数，否则直接运行报错
 
-3. 内部没有argument参数
+3. 内部没有 argument 参数
 
-4. 因为没有this，无法用call，apply，bind指定this
+4. 因为没有 this，无法用 call，apply，bind 指定 this！
 
-5. 原生事件需要this.target获取信息，用了箭头函数无法拿到事件对象1
+5. 原生事件需要 this.target 获取信息，用了箭头函数无法拿到事件对象

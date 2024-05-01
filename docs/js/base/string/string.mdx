@@ -81,10 +81,49 @@ split
 ```js
 // 以逗号切割
 let s  ='12,34,56'
-s.split('') // ['12','34'.'56']
+s.split(',') // ['12','34'.'56']
 
 // 同时以中英文逗号切割
 // split
 let s2  ='12,34，56'
 s.split('') // ['12','34'.'56']
+function splitByComma(str) {
+    // 创建一个空数组来存储分割后的结果
+    let result = [];
+    let currentWord = '';
+    let isInWord = false; // 标记当前是否在处理一个单词
+
+    // 遍历字符串的每个字符
+    for (let i = 0; i < str.length; i++) {
+        const char = str[i];
+
+        // 检查字符是否是逗号（中文或英文）
+        if (char === '，' || char === ',') {
+            if (isInWord) {
+                // 如果当前在处理一个单词，则将单词添加到结果数组，并重置当前单词和状态
+                result.push(currentWord);
+                currentWord = '';
+                isInWord = false;
+            }
+        } else {
+            // 如果不是逗号，则将字符添加到当前单词
+            currentWord += char;
+            isInWord = true;
+        }
+    }
+
+    // 如果字符串以单词结尾，则将最后一个单词添加到结果数组
+    if (isInWord) {
+        result.push(currentWord);
+    }
+
+    return result;
+}
+
+
+// 正则表达式方法，性能稍差一点
+const str = "apple,banana，cherry";
+const array = str.split(/[,，]/); // 使用英文逗号和中文逗号作为分隔符
+console.log(array); // 输出: ["apple", "banana", "cherry"]
+
 ```

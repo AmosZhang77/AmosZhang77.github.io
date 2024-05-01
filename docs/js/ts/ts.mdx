@@ -83,6 +83,16 @@ export default function (initialState: API1.InitialStateItem) {}
 ### 接口合并 接口拓展
 
 可使用继承接口的方式
+```typescript
+interface Radio {
+  switchRadio(): void;
+}
+// 在Radio接口中加入新的方法checkBatteryStatus
+interface RadioWithBattery extends Radio {
+  checkBatteryStatus();
+}
+
+```
 
 也可以使用&拼接的作用
 
@@ -90,10 +100,140 @@ export default function (initialState: API1.InitialStateItem) {}
 type A1 = { name: string };
 type A2 = { age: number };
 type A = A1 & A2;
-let b: A = { name: "sansan", age: 22 };
+let b: A = { name: "Jack", age: 22 };
+// 这样拼接也可
+type B = A1 & { age: number };
+let c: B = { name: "Jack", age: 22 };
+```
+
+### 提取属性类型
+
+已存在的类型中提取一个属性作为新的类型，你可以使用类型映射（Type Mapping）或者类型查询（Type Query）来实现。
+
+类型映射（Type Mapping）：
+
+```typescript
+type Person = {
+  name: string;
+  age: number;
+};
+
+// 使用类型映射来提取name属性
+type Name = {
+  [K in keyof Person]: K extends 'name' ? Person[K] : never;
+}[keyof Person];
+
+// 现在你可以使用Name类型了
+const personName: Name = 'Alice'; // 正确
+const personAge: Name = 25; // 错误，因为Name类型不包含age属性
+```
+
+更简洁的方式，如果你只关心name属性，并且知道它一定存在，你可以使用类型查询来直接获取这个属性的类型：
+
+```typescript
+type Person = {
+  name: string;
+  age: number;
+};
+
+// 使用类型查询来提取name属性的类型
+type Name = Person['name'];
+
+// 现在你可以使用Name类型了
+const personName: Name = 'Alice'; // 正确
+const personAge: Name = 25; // 错误，因为Name类型是string，而不是number
+```
+
+### 提取数组中元素的类型
+
+在TypeScript中，ElementType是一个内置的类型工具，它可以用来提取数组元素的类型。
+
+下面示例是先提取了类型对象属性，这个属性是一个数组，再提取数组中的元素
+```typescript
+type Person = {
+  names: string[];
+  ages: number[];
+};
+
+// 使用ElementType提取names属性的元素类型
+type Name = ElementType<Person['names']>;
+
+// 使用ElementType提取ages属性的元素类型
+type Age = ElementType<Person['ages']>;
+
+// 现在你可以使用Name和Age类型了
+const name: Name = 'Alice'; // 正确
+const age: Age = 25; // 正确
+```
+使用类型查询和索引签名
+
+如果你的类型定义中没有使用ElementType，或者你想手动进行类型提取，你可以通过类型查询和索引签名来实现。
+
+
+
+注意，这种方法假设数组至少有一个元素，并且所有元素都是相同类型的。如果数组可能是空的，或者数组元素类型不一致，这种方法可能不适用。
+```typescript
+type Person = {
+  names: string[];
+  ages: number[];
+};
+
+// 使用类型查询和索引0来获取数组元素的类型
+type Name = Person['names'][0];
+
+// 使用类型查询和索引0来获取数组元素的类型
+type Age = Person['ages'][0];
+
+// 现在你可以使用Name和Age类型了
+const name: Name = 'Alice'; // 正确
+const age: Age = 25; // 正确
+```
+
+目前更推荐
+
+使用泛型
+
+更通用的解决方案，你可以使用泛型来创建一个可以提取任意数组类型元素的类型。
+```typescript
+// 创建一个泛型类型，用于提取数组元素的类型
+type ArrayElementType<T extends any[]> = T[number extends keyof T ? 0 : never];
+
+type Person = {
+  names: string[];
+  ages: number[];
+};
+
+// 使用泛型类型提取names属性的元素类型
+type Name = ArrayElementType<Person['names']>;
+
+// 使用泛型类型提取ages属性的元素类型
+type Age = ArrayElementType<Person['ages']>;
+
+// 现在你可以使用Name和Age类型了
+const name: Name = 'Alice'; // 正确
+const age: Age = 25; // 正确
+```
+
+### 从一个类型对象中去掉一些属性
+
+DefinedNameType是使用Exclude工具类型从PersonOptional['name']中排除了undefined的类型。这样，DefinedNameType就只会是string，如果尝试将undefined赋值给definedName变量，TypeScript将会报错。
+
+```typescript
+type PersonOptional = {
+  name?: string;
+  age: number;
+};
+
+// 使用Exclude排除undefined，从而得到仅当属性存在时的类型
+type DefinedNameType = Exclude<PersonOptional['name'], undefined>;
+
+// 现在DefinedNameType就是string
+const definedName: DefinedNameType = 'Bob'; // 正确
+// const undefinedName: DefinedNameType = undefined; // 错误，因为DefinedNameType不包括undefined
 ```
 
 引入 js 模块因为没有类型文件而报错，在 typings.d.ts 加入 declare module '模块名'
+
 
 ```typescript
 // typings.d.ts

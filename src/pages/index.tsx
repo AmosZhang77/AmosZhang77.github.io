@@ -15,13 +15,16 @@ function HomepageHeader() {
         <img src="/img/logo.jpg" alt="" className={styles.logoImg}/>
         <h1 className="hero__title">{siteConfig.title}</h1>
         <p className="hero__subtitle">{siteConfig.tagline}</p>
+        <p className="hero__subtitle" style={{color:'#ee3f4d'}}>请优先使用右上角搜索功能！！！可以方便地整站全文搜索</p>
+        <p className="hero__subtitle">(比如搜索“原型链”)</p>
+
         <div className={styles.btnBox}>
           <div className={styles.buttons}>
             <Link
                 className="button button--secondary button--lg"
                 to="/docs/intro"
             >
-               Document
+               Document由此进入
             </Link>
           </div>
           <div className={styles.buttons}>

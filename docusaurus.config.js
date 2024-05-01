@@ -155,6 +155,20 @@ const config = {
   // 安装支持less插件：yarn add docusaurus-plugin-less
   // 支持less sass 都需要文件名加. 例如lightRing.module.scss
   plugins: ["docusaurus-plugin-sass", "docusaurus-plugin-less"],
+
+  // 其定义运行js
+  scripts: [
+    {
+      src: '/js/custom.js',
+      async: false,
+      defer: false,
+    },
+   /* {
+      src: 'src/js/custom.js',
+      async: false,
+      defer: false,
+    },*/
+  ],
 };
 
 module.exports = config;

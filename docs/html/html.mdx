@@ -208,3 +208,37 @@ https://developer.mozilla.org/zh-CN/docs/Web/Performance/dns-prefetch
 <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1"/>
 ```
 
+### Attribute 和 Property 区别
+属性（Attribute）
+
+HTML元素的属性是在HTML标签中定义的，用于提供有关元素的额外信息。这些属性通常包含在元素的开始标签中，并且以名称/值对的形式出现。例如：
+
+```html
+<input type="text" name="username" value="JohnDoe">
+```
+在这个例子中，type、name和value都是'<'input'>'元素的属性。
+
+在JavaScript中，你可以使用getAttribute()和setAttribute()方法来获取和设置元素的属性。例如：
+
+```javascript
+var input = document.querySelector('input');
+var type = input.getAttribute('type');  // 获取 type 属性
+input.setAttribute('value', 'NewUsername');  // 设置 value 属性
+```
+属性（Property）
+
+另一方面，HTML元素的属性（在JavaScript中通常称为“属性”，以避免与HTML属性混淆）是JavaScript对象的一部分，这些对象表示DOM中的元素。这些属性通常与元素的状态和行为有关。例如，一个'<'input'>'元素有一个value属性，该属性反映了输入字段的当前值。
+
+在JavaScript中，你可以直接通过点表示法（.）或方括号表示法（[]）来访问和修改元素的属性。例如：
+
+```javascript
+var input = document.querySelector('input');
+var value = input.value;  // 获取 value 属性
+input.value = 'NewUsername';  // 设置 value 属性
+```
+区别
+
+来源：Attribute来源于HTML标记，而Property来源于JavaScript对象。
+更新方式：Attribute的更新通常涉及到DOM操作，而Property的更新可以直接在JavaScript对象上进行。
+同步性：某些HTML Property（如checked、disabled、selected等）和它们对应的JavaScript Property（如checked、disabled、selected等）
+之间可能存在同步问题。这意味着更改一个可能不会立即影响另一个。例如，更改一个元素的Property checked可能不会立即反映在HTML标记中。
