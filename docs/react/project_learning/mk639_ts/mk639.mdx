@@ -1,0 +1,51 @@
+npm 版本 nvm use 16.17.0
+
+npm create vite@latest
+
+npm install
+
+npm run dev
+
+globals 依赖用来告诉eslint全局变量的，实际globals就是一个json
+
+package.json中删掉 type，因为项目导入用到了comment js语法
+"type": "module",
+
+vite.config.ts 中加入
+resolve:{
+    alias:{
+      '@': resolve('src')
+    }
+  }
+
+
+
+配置postcss 可以使用推荐配置
+
+postcss-preset-env
+
+https://github.com/csstools/postcss-plugins/tree/main/plugin-packs/postcss-preset-env
+
+在vite.config.ts或者postcss.config(vite对这个文件有预设，只要配置了构建时就会读取)中配置
+
+
+### 安装 husky
+
+npm install --save-dev husky
+
+npx husky init （次步骤之前需要已经git init过）
+
+
+
+lint-stage
+
+lint-staged 中执行eslint fix 和prettier fix。husky的precommit时执行lint-staged 。
+那为什么我不直接在husky的precommit时执行eslint fix 和prettier fix，跳过lint-staged呢？lint-staged在这个流程中有什么用？
+
+在开发流程中，使用husky的precommit钩子结合lint-staged执行eslint fix和prettier fix是一个常见且推荐的做法。尽管你可以直接在husky的precommit钩子中调用eslint和prettier的命令行工具来修复代码问题，但使用lint-staged提供了几个重要的优势，这些优势使得它在这个流程中变得非常有用：
+
+1.针对暂存文件：lint-staged的核心功能之一是它只处理git add添加到暂存区的文件。这意味着，如果你只对部分文件进行了更改并准备提交，lint-staged将只对这些更改的文件执行lint和格式化操作，而不是整个项目。这可以显著提高效率，尤其是在大型项目中，因为你不必等待整个项目都被lint和格式化。
+
+2.并行执行：lint-staged支持并行执行多个任务，这意味着你可以同时运行eslint fix和prettier fix（或其他任何lint和格式化工具），从而进一步缩短提交前检查的时间。
+
+3.灵活性：通过配置lint-staged，你可以为不同类型的文件指定不同的lint和格式化规则。例如，你可以为.js文件使用eslint，为.css和.scss文件使用stylelint，为.md文件使用remark-lint等。这种灵活性使得lint-staged成为了一个非常强大的工具，可以覆盖项目中几乎所有类型的文件。

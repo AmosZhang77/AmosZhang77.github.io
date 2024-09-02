@@ -1,0 +1,80 @@
+### 字符串数组
+
+#### slice
+
+数组，字符串提取，原数组或字符串不变，（数组情况，浅拷贝）
+
+参 1 开始索引，参 2 结束索引（包前不包后）
+
+参 2 省略时，提取到最后
+
+负数索引在 slice 中会被视为 length + index，其中 length 是数组的长度。例如，-1 表示最后一个元素，-2 表示倒数第二个元素，依此类推
+
+```js
+let arr = [1, 2, 3, 4, 5];
+let newArr = arr.slice(1, 4); // 提取索引1到索引4（不包括索引4）的元素
+console.log(newArr); // 输出: [2, 3, 4]
+
+// 如果start大于数组长度，则返回一个空数组
+let emptyArr = arr.slice(10);
+console.log(emptyArr); // 输出: []
+
+// 如果end小于start，则返回一个空数组
+let emptyArr2 = arr.slice(4, 1);
+console.log(emptyArr2); // 输出: []
+
+// 如果省略end，则slice到数组末尾
+let endArr = arr.slice(1);
+console.log(endArr); // 输出: [2, 3, 4, 5]
+
+// 负数索引在slice中会被视为length + index，其中length是数组的长度
+// 例如，-1表示最后一个元素，-2表示倒数第二个元素，依此类推
+let lastTwo = arr.slice(-2);
+console.log(lastTwo); // 输出: [4, 5]
+```
+
+#### substring
+
+substring(indexStart, indexEnd)
+用法：提取字符串中两个指定的索引号之间的字符。
+示例：let str = "Hello world!"; let newStr = str.substring(7, 12); console.log(newStr); // 输出 "world"
+
+slice(start, end)：与 substr() 类似，但 end 参数是可选的，并且指定了结束位置（但不包括该位置的字符）。如果 end 被省略，slice() 会提取到字符串的末尾。如果 start 或 end 是负数，则它们会被视为 0（对于 start）或字符串的长度（对于 end，但实际上是转换为从字符串末尾开始计算的位置）。
+substring(indexStart, indexEnd)：与 slice() 类似，但不允许 indexStart 或 indexEnd 为负数。如果任一参数小于另一个参数，则 substring() 会交换这两个参数的值。
+
+#### substr
+在JavaScript中，substr() 方法确实曾经被用来提取字符串的一部分，并返回一个新字符串，不改变原字符串。然而，需要注意的是，substr() 方法已经被废弃（deprecated），并且在未来的JavaScript版本中可能会被移除。
+
+substr() 方法接受两个参数：
+
+start（必需）：提取子字符串的起始位置（索引从0开始）。如果 start 是负数，则 substr() 会从字符串的末尾开始计算位置。
+length（可选）：要提取的字符数。如果省略该参数或其值大于字符串的剩余长度，则 substr() 会提取到字符串的末尾。
+
+```js
+let str = "Hello, world!";
+let result = str.substr(7, 5); // 从索引7开始提取5个字符
+console.log(result); // 输出 "world"
+
+// 如果start是负数
+let result2 = str.substr(-6); // 从字符串末尾开始提取6个字符
+console.log(result2); // 输出 "world!"
+```
+
+### promise
+
+#### promise consumer
+
+.then .catch .finally
+
+### 语法
+
+#### do while
+先执行在判断，至少执行一次
+```js
+// 1 - 10
+var index = 0;
+do {
+  index++;
+  console.log(index);
+} while (index < 10);
+```

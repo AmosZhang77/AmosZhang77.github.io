@@ -42,13 +42,6 @@ fetch 发送 post 请求的时候，总是发送 2 次，第一次状态码是 2
 原因很简单，因为你用 fetch 的 post 请求的时候，导致 fetch 第一次发送了一个 Options 请求，
 询问服务器是否支持修改的请求头，如果服务器支持，则在第二次中发送真正的请求。
 
-Cookie 如何防范 XSS 攻击
-
-参考回答：
-
-XSS（跨站脚本攻击）是指攻击者在返回的 HTML 中嵌入 javascript 脚本，为了减轻这些攻击，需要在 HTTP 头部配上，
-set-cookie： httponly-这个属性可以防止 XSS,它会禁止 javascript 脚本来访问 cookie。
-Set-Cookie 由服务器发送，它包含在响应请求的头部中。
 
 === 与 object.is 的区别之处
 
@@ -66,6 +59,22 @@ async/await，Promise.then，Object.observe，MutationObserver
 
 宏任务(macroTask)
 绑定事件（如 click），setTimeout，setInterval，ajax，网络请求
+
+一般认为的执行栈、微任务队列、宏任务队列和页面渲染的顺序关系如下：（不同浏览器会有一些表现细节的不同，下面也有例子）
+
+顺序关系
+
+1. 执行栈中的同步代码：首先，JavaScript引擎会执行调用栈中的同步代码。
+
+2. 遇到异步任务：在执行同步代码的过程中，如果遇到异步任务（如setTimeout、Promise等），JavaScript引擎会将它们分别推送到宏任务队列或微任务队列中。
+
+3. 同步代码执行完毕：当调用栈中的同步代码执行完毕后，JavaScript引擎会检查微任务队列。
+
+4. 执行微任务队列中的任务：如果微任务队列不为空，JavaScript引擎会按照先进先出的顺序执行队列中的所有微任务，直到队列为空。
+
+5. 页面渲染（如果必要）：在微任务队列为空后，浏览器会检查是否需要渲染页面，并进行相应的渲染工作。
+
+6. 执行宏任务队列中的任务：接下来，JavaScript引擎会检查宏任务队列，并从队列中取出最早进入的任务执行。执行完毕后，再次重复上述步骤（从检查微任务队列开始）。
 
 宏任务
 一轮微任务都走完，才走宏任务，然后第二论微任务，然后第二轮宏任务
@@ -219,7 +228,7 @@ Promise.all([p1, p2, p3])
 
 ### Promise 三种状态
 
-三种状态 pending resolved rejected
+三种状态 pending fulfilled rejected
 
 转换不可逆
 
@@ -245,22 +254,22 @@ const p3 = new Promise((resolve, reject) => {
 ```js
 const p1 = new Promise((resolve, reject) => {
 reject(new Error('11'))});
-console.log(p1.then())
-// 直接返回一个 resolved 状态
-Promise.resolve(100);
-// 直接返回一个 rejected 状态
-Promise.reject("some error").then().catch((e)=>{return new Error()}).then();
+console.log(p1.then()) // 直接返回一个 rejected 状态的promise
+
+Promise.resolve(100); // 直接返回一个 fulfilled 状态的promise
+
+Promise.reject("some error").then().catch((e)=>{return new Error()}).then(); // 最后一个new Error执行报错
 ```
 
-### 状态和 then catch
+### 状态和 then catch finally
 
-状态变化会触发 then catch
+状态变化会触发 then catch finally
 
-- pending 不会触发任何 then catch 回调
-- 状态变为 resolved 会触发后续的 then 回调
-- 状态变为 rejected 会触发后续的 catch 回调
+- pending 不会触发任何 then catch finally回调
+- 状态变为 resolved 会触发后续的 then finally回调
+- 状态变为 rejected 会触发后续的 catch finally回调
 
-**then catch 会继续返回 Promise，如果其中没有报错，都会返回 resolve 状态的 Promise(注意：catch 也是)。
+**then catch finally会继续返回 Promise，如果其中没有报错，都会返回 resolve 状态的 Promise(注意：catch 也是)。
 有报错则返回 rejected 的 Promise**
 
 ```js
@@ -307,7 +316,7 @@ Promise.resolve()
   .then(() => {
     // 返回 rejected 状态的 promise
     console.log(1);
-    throw new Error("erro1");
+    throw new Error("error1");
   })
   .catch(() => {
     // 返回 resolved 状态的 promise
@@ -324,7 +333,7 @@ Promise.resolve()
   .then(() => {
     // 返回 rejected 状态的 promise
     console.log(1);
-    throw new Error("erro1");
+    throw new Error("error1");
   })
   .catch(() => {
     // 返回 resolved 状态的 promise
@@ -340,6 +349,174 @@ Promise.resolve()
 ### 执行 async 函数返回的是 Promise 对象
 
 ### 手写简单promise
+
+
+```javascript
+
+function MyPromise(executor) {
+    let state = 'pending';
+    let value = undefined;
+    let handlers = [];
+    let catchers = [];
+    let finallyHandlers = [];
+
+    function resolve(result) {
+        if (state !== 'pending') return;
+
+        state = 'fulfilled';
+        value = result;
+
+        handlers.forEach(handler => handler(value));
+        finallyHandlers.forEach(finallyHandler => finallyHandler());
+    }
+
+    function reject(err) {
+        if (state !== 'pending') return;
+
+        state = 'rejected';
+        value = err;
+
+        catchers.forEach(catcher => catcher(value));
+        finallyHandlers.forEach(finallyHandler => finallyHandler());
+    }
+
+    this.then = function (successCallback) {
+        return new MyPromise((resolve, reject) => {
+            handle({
+                resolve: resolve,
+                reject: reject,
+                successCallback: successCallback
+            });
+        });
+    };
+
+    this.catch = function (failureCallback) {
+        return new MyPromise((resolve, reject) => {
+            handle({
+                resolve: resolve,
+                reject: reject,
+                failureCallback: failureCallback
+            });
+        });
+    };
+
+    this.finally = function (callback) {
+        return new MyPromise((resolve, reject) => {
+            handle({
+                resolve: resolve,
+                reject: reject,
+                finallyCallback: callback
+            });
+        });
+    };
+
+    function handle(handler) {
+        if (state === 'fulfilled') {
+            if (handler.successCallback) {
+                try {
+                    const result = handler.successCallback(value);
+                    handler.resolve(result);
+                } catch (err) {
+                    handler.reject(err);
+                }
+            } else {
+                handler.resolve(value);
+            }
+        } else if (state === 'rejected') {
+            if (handler.failureCallback) {
+                try {
+                    const result = handler.failureCallback(value);
+                    handler.resolve(result);
+                } catch (err) {
+                    handler.reject(err);
+                }
+            } else {
+                handler.reject(value);
+            }
+        } else {
+            handlers.push((value) => {
+                if (handler.successCallback) {
+                    try {
+                        const result = handler.successCallback(value);
+                        handler.resolve(result);
+                    } catch (err) {
+                        handler.reject(err);
+                    }
+                } else {
+                    handler.resolve(value);
+                }
+            });
+
+            catchers.push((error) => {
+                if (handler.failureCallback) {
+                    try {
+                        const result = handler.failureCallback(error);
+                        handler.resolve(result);
+                    } catch (err) {
+                        handler.reject(err);
+                    }
+                } else {
+                    handler.reject(error);
+                }
+            });
+        }
+
+        if (handler.finallyCallback) {
+            if (state === 'pending') {
+                finallyHandlers.push(handler.finallyCallback);
+            } else {
+                handler.finallyCallback();
+            }
+        }
+    }
+
+    executor(resolve, reject);
+}
+
+// 添加静态方法 resolve
+MyPromise.resolve = function(value) {
+    return new MyPromise((resolve) => {
+        resolve(value);
+    });
+};
+
+// 添加静态方法 reject
+MyPromise.reject = function(reason) {
+    return new MyPromise((resolve, reject) => {
+        reject(reason);
+    });
+};
+
+// 使用示例
+new MyPromise((resolve, reject) => {
+    setTimeout(() => resolve('Hello'), 1000);
+}).then(value => {
+    console.log(value); // Hello
+    return 'World';
+}).then(value => {
+    console.log(value); // World
+    throw new Error('Something went wrong!');
+}).catch(error => {
+    console.error(error.message); // Something went wrong!
+}).finally(() => {
+    console.log('Finished processing, whether it succeeded or failed.');
+});
+
+// 使用示例
+const prom1 = MyPromise.resolve("直接成功！");
+prom1.then(result => {
+    console.log(result); // 输出 "直接成功！"
+}).finally(() => {
+    console.log("Promise 结束。");
+});
+
+const prom2 = MyPromise.reject("直接失败！");
+prom2.catch(err => {
+    console.error(err); // 输出 "直接失败！"
+}).finally(() => {
+    console.log("Promise 结束。");
+});
+```
 
 垂直水平居中
 
@@ -514,6 +691,11 @@ async: HTML 继续解析，并行下载设置了 async 的 script 标签，下�
 
 常见的是评论区输入框注入 script 标签
 
+1. 前端dom-purifier对输入内容去脚本（主要！）
+
+2. 要在 HTTP 头部配上，set-cookie： httponly-这个属性会禁止 javascript 脚本来访问 cookie。
+减少一些xxs攻击获取cookie里面重要信息的损失Set-Cookie 由服务器发送，它包含在响应请求的头部中。
+
 ### CSRF 攻击
 
 import imgSrc from "./img/csrf.jpg";
@@ -524,9 +706,10 @@ import imgSrc from "./img/csrf.jpg";
 
 用户登录过要被攻击的 a 网站，a 网站拿 cookie 来做权限控制
 
-在 b 网站点到 a 网站，请求中会带有 cookie，b 网站偷到了 a 的 cookie。
+在 b 网站按钮吸引用户点击，会连到 a 网站，请求中会带有 a 的cookie，b 网站偷到了 a 的 cookie。
 
-防御，1 服务器拦截，2.用 token 做权限不要用 cookie
+防御，1 服务器拦截，2.用 token 做权限不要用 cookie ，3.服务端请求返回头Set-Cookie头部中添加SameSite属性SameSite=Strict.等防止跨域带cookie
+
 
 ### 浏览器渲染大致流程
 
@@ -534,7 +717,7 @@ dns 解析，http 请求 HTML 等文件
 
 解析 DOM 树，CSSOM 树，合成 RenderTree
 
-计算绘制页面，同时执行 js
+默认设置，页面渲染到js标签，会暂停渲染，执行js，因为js是单线程的，且js很可能去改变dom，所以这样设计
 
 所以建议将 css 放在 header 里面，减少渲染过程中的重绘重排
 
@@ -1748,6 +1931,12 @@ import webCacheImgSrc from "/img/webcache.jpg";
 <img src={webCacheImgSrc} style={{ width: "1143px" }} />
 
 ### 强制缓存
+
+正常进入网页： 强制缓存有效，协商缓存有效
+
+手动刷新： 强制缓存失效，协商缓存有效
+
+强制刷新（ctrl + f5）： 强制缓存失效，协商缓存失效
 
 强制缓存是浏览器缓存机制中的一种，它直接根据缓存的标识（如Expires或Cache-Control）来判断是否使用本地缓存。当浏览器再次请求资源时，
 会首先检查本地缓存中是否有该资源，并且检查该资源的缓存是否过期。如果没有过期，则直接从本地缓存中读取资源，而不会向服务器发送请求。

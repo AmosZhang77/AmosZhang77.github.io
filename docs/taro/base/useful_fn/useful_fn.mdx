@@ -1,0 +1,40 @@
+### 取微信小程序 dom 高度
+
+```javascript
+const [viewHeight, setViewHeight] = useState(0);
+useEffect(() => {
+  // 等待视图渲染完成后获取节点信息
+  Taro.nextTick(() => {
+    Taro.createSelectorQuery()
+      .select("#scrollView")
+      .boundingClientRect()
+      .exec((res) => {
+        if (res && res[0]) {
+          console.log("res[0].height", res[0].height);
+          setViewHeight(res[0].height);
+        }
+      });
+  });
+}, []);
+```
+
+### 微信小程序无限下拉功能
+
+```tsx
+const handleScroll = (e) => {
+  const { scrollTop, scrollHeight } = e.detail;
+  console.log("e.detail", e.detail);
+  if (scrollTop + viewHeight >= scrollHeight - 50) {
+    // 假设距离底部50px时触发加载
+    loadMore();
+  }
+};
+return (
+  <ScrollView
+    id="scrollView"
+    scrollY
+    scrollWithAnimation
+    onScroll={handleScroll}
+  ></ScrollView>
+);
+```

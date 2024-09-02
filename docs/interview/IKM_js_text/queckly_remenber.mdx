@@ -1,0 +1,1781 @@
+
+#### 1
+
+Which of the following JavaScript loops will display the same output as the code snippet below?
+
+```javascript
+var index = 0;
+do {
+  index++;
+  console.log(index);
+} while (index < 10);
+```
+
+A.
+
+```javascript
+var index = 0;
+do {
+  console.log(++index);
+} while (index < 10);
+```
+
+B.
+
+```javascript
+var index = 1;
+do {
+  console.log(++index);
+} while (index <= 10);
+```
+
+C.
+
+```javascript
+var index = 0;
+do {
+  console.log(index++);
+} while (index < 10);
+```
+
+D.
+
+```javascript
+for (var index = 1; index <= 10; index++) console.log(index);
+```
+
+E.
+
+```javascript
+for (var index = 0; index < 10; index++) console.log(index);
+```
+
+A D
+
+以下哪个 JavaScript 循环将显示与下面代码片段相同的输出？
+
+#### 2
+
+Which of the following are valid methods for a JavaScript promise consumer?
+
+A. .then();
+
+B. .finally();
+
+C. .catch ();
+
+D. .try();
+
+E. .error();
+
+A B C
+
+以下哪些是 JavaScript Promise 消费者的有效方法？
+
+#### 3
+
+Which of the following can replace \*\*\*\*\* so the variable car contains the value below, given the JavaScript code snippet below?
+Value:
+["toyota"]
+
+Code:
+
+```javascript
+var cars =[ "ford","mercedes", "toyota", "bmw","chrysler", "fiat" ];
+var car = *****;
+```
+
+A.
+
+```javascript
+cars.slice(2, 2);
+```
+
+B.
+
+```javascript
+cars.slice(2, 1);
+```
+
+C.
+
+```javascript
+cars.slice(2);
+```
+
+D.
+
+```javascript
+cars.slice(2, 3);
+```
+
+E.
+
+```javascript
+cars slice(3)
+```
+
+D
+
+给定以下 JavaScript 代码片段，以下哪个可以替换**\***，以便变量 car 包含下面的值？
+
+#### 4
+
+Which of the following correctly identify the result of executing the JavaScript code snippet below?
+
+```javascript
+var s = new Set();
+s.add("a");
+s.add("b");
+s.add("b");
+s.add(1000);
+var o = { 1: "1st", 2: "2nd" };
+s.add(o);
+s.add({ 1: "1st", 2: "2nd" });
+console.log(s);
+```
+
+A.
+
+```javascript
+Set {'a','b',1000,{'1':'1st','2':'2nd','1':'1st','2':'2nd'}}
+```
+
+B.
+
+```javascript
+Set { 'a','b','b',1000,{'1':'1st','2':'2nd'},{'1':'1st','2':'2nd'}}
+```
+
+C.
+
+```javascript
+Set {'a','b',1000,{'1':'1st','2':'2nd'},{'1':'1st','2':'2nd'}}
+```
+
+D.
+
+```javascript
+Set {'a','b','b',1000,{'1':'1st','2':'2nd'}}
+
+```
+
+E.
+
+```javascript
+Set {'a','b',1000,{'1':'1st','2':'2nd'}}
+
+```
+
+C
+
+以下哪个选项正确地识别了执行以下 JavaScript 代码片段的结果？
+
+#### 5
+
+Which of the following statements are correct regarding the context in JavaScript?
+
+A. The context in JavaScript is the same as scope.
+
+B. The context can be accessed inside the code by the keyword this.
+
+C. The context under which a function is executed can be variable.
+
+D. The context of global functions (such as parseInt() ) is null.
+
+E. The context refers to the JavaScript object under which the code is executed.
+
+B C E
+
+题目：以下哪些关于 JavaScript 中上下文的陈述是正确的？
+
+A. JavaScript 中的上下文与作用域相同。
+
+B. 上下文可以通过代码中的关键字 this 来访问。
+
+C. 函数执行的上下文可以是可变的。
+
+D. 全局函数（如 parseInt()）的上下文是 null。
+
+E. 上下文指的是代码执行时所在的 JavaScript 对象。
+
+解释：
+
+A. The context in JavaScript is the same as scope.
+
+错误。在 JavaScript 中，上下文（context）和作用域（scope）是两个不同的概念。作用域决定了变量和函数在代码中的可见性和可访问性，而上下文（或称为 this 的值）则是指函数执行时所在的对象环境。
+B. The context can be accessed inside the code by the keyword this.
+
+正确。在 JavaScript 中，this 关键字用于访问函数的上下文（context）。它指的是函数执行时所在的对象。如果函数是全局对象（如浏览器中的 window）的方法，那么 this 就指向全局对象。
+C. The context under which a function is executed can be variable.
+
+正确。JavaScript 中函数的上下文（即 this 的值）是可变的，它取决于函数是如何被调用的。例如，通过对象方法调用时，this 指向该对象；作为普通函数调用时，this 指向全局对象（在严格模式下为 undefined）；使用 call、apply 或 bind 方法时，可以显式设置 this 的值。
+D. The context of global functions (such as parseInt() ) is null.
+
+错误。全局函数（如 parseInt()）的上下文（this）在非严格模式下是全局对象（在浏览器中为 window），而不是 null。在严格模式下，全局函数的 this 值是 undefined。
+E. The context refers to the JavaScript object under which the code is executed.
+
+正确。这个选项正确地描述了上下文的概念，即上下文是指代码执行时所在的 JavaScript 对象。这个对象决定了 this 的值，以及在该上下文中可以访问的属性和方法。
+
+#### 6
+
+Which of the following JavaScript code snippets will run without errors?
+
+A.
+
+```javascript
+var calc = (n1, n2) => n1 + n2;
+calc(2, 2);
+```
+
+B.
+
+```javascript
+calc(2, 2);
+var calc = (n1, n2) => {
+  return nl + n2;
+};
+```
+
+C.
+
+```javascript
+var calc = ((n1, n2) => {
+  var calc = n1 + n2;
+  return calc;
+})(2, 2);
+```
+
+D.
+
+```javascript
+var calc = (n1, n2) => {
+  return n1 + n2;
+};
+calc(2, 2);
+```
+
+E.
+
+```javascript
+cale(2, 2);
+var calc = (n1, n2) => n1 + n2;
+```
+
+A C D
+
+题目：以下哪些 JavaScript 代码片段能够无误地运行？
+
+#### 7
+
+Which of the following statements are correct regarding JavaScript closures?
+
+A. Closures can be used to hide function implementation details.
+
+B. A closure is a combination of a function and a state.
+
+C. Global variables can be made local(private) with closures.
+
+D. A closure cannot access variables defined outside the function.
+
+E. A closure cannot be passed any parameters.
+
+A B C
+
+题目：关于 JavaScript 闭包的哪些说法是正确的？
+
+A. 闭包可以用来隐藏函数实现的细节。
+
+B. 闭包是函数和状态的组合。
+
+C. 可以通过闭包将全局变量变为局部变量（私有）。
+
+D. 闭包不能访问函数外部定义的变量。
+
+E. 闭包不能接受任何参数。
+
+解释：
+
+A. 正确。闭包可以用来隐藏函数实现的细节。闭包允许函数访问并操作函数外部的变量，这可以用于封装和隐藏内部实现，只暴露必要的接口。
+
+B. 正确。闭包是函数和函数创建时词法环境（即作用域）的组合。这意味着闭包不仅包含了函数本身，还包含了函数被创建时作用域内的所有变量和状态。
+
+C. 正确。通过使用闭包，我们可以将全局变量封装在函数内部，并通过闭包提供的接口来访问这些变量，从而实现全局变量的局部（私有）化。
+
+D. 错误。闭包可以访问其外部作用域（包括全局作用域）中定义的变量。这是闭包的一个重要特性，允许函数访问并操作其外部作用域中的变量。
+
+E. 错误。闭包可以被当作普通函数一样传递参数。闭包本身就是一个函数，因此它可以接收参数，这些参数可以是任何类型的数据，包括其他函数或闭包。
+
+#### 8
+
+Which of the following correctly identify the value of c, given the JavaScript code snippet below?
+
+```javascript
+function generate(seed) {
+  var private = seed;
+  return function (param) {
+    private += seed;
+    return private + param;
+  };
+}
+
+var a = generate(1);
+var b = generate(2);
+var c = a(1) + a(2) + b(3) + b(4);
+```
+
+A. 25
+
+B. 6
+
+C. 10
+
+D. 12
+
+E. 8
+
+A
+
+给定下面的 JavaScript 代码段，哪个选项正确地识别了变量 c 的值？
+
+分析 generate 函数：
+generate 函数接受一个 seed 参数，并在其内部定义了一个局部变量 private，其初始值为 seed。
+generate 返回一个函数，这个函数接受一个参数 param。
+在返回的函数内部，private 变量（闭包内的变量）被更新为 private += seed，然后返回 private + param 的值。
+分析 a 和 b 函数的调用：
+a = generate(1)：此时 private（在闭包内）初始化为 1。
+a(1)：调用时，private 变为 1 + 1 = 2，返回 2 + 1 = 3。
+再次调用 a(2)：private 现在是 2，更新为 2 + 1 = 3，返回 3 + 2 = 5。
+b = generate(2)：此时另一个闭包内的 private 初始化为 2。
+b(3)：调用时，private 变为 2 + 2 = 4，返回 4 + 3 = 7。
+b(4)：调用时，private 现在是 4，更新为 4 + 2 = 6，返回 6 + 4 = 10。
+计算 c 的值：
+c = a(1) + a(2) + b(3) + b(4)
+代入上面的结果：c = 3 + 5 + 7 + 10 = 25
+
+#### 9
+
+Which of the following are valid results of executing the JavaScript code snippet below?
+
+```javascript
+var x = 9;
+x = x >> 2;
+x = x << 2;
+x = x ^ 3;
+console.log(x);
+```
+
+A. 512
+
+B. 729
+
+C. 11
+
+D. 8
+
+E. 27
+
+C
+
+执行下面的 JavaScript 代码片段后，哪些是有效的结果？
+
+解释：
+
+首先，我们需要理解 JavaScript 中的位运算符：
+
+> > 是无符号右移运算符。它将数的各二进制位全部右移若干位，对左边数符号位不处理，右边多出的位用 0 填充。
+> > << 是左移运算符。数的各二进制位全部左移若干位，由右边空出的位用 0 填充，高位左移溢出则舍弃该高位。
+> > ^ 是异或运算符。它对二进制位进行异或操作，即两个比较的位，如果相同则结果为 0，不同则结果为 1。
+> > 接下来，我们逐步执行代码：
+
+var x = 9; 此时，x 的二进制表示为 1001（十进制中的 9）。
+x = x >> 2; 执行无符号右移 2 位操作。1001 右移 2 位后变为 0010，即十进制中的 2。
+x = x << 2; 执行左移 2 位操作。0010 左移 2 位后变为 1000，即十进制中的 8。
+x = x ^ 3; 执行异或操作。1000（十进制的 8）与 0011（十进制的 3）进行异或操作，结果为 1011，即十进制中的 11。
+所以，最终 x 的值为 11。
+
+#### 10
+
+Which of the following JavaScript code snippets can be used to ensure the variable inPutVar passed into
+the newFunction(inPutVar) is defined as a string; is not empty; and contains no white space at the end of the string?
+
+A.
+
+```javascript
+if (
+  typeof inPutVar != "undefined" &&
+  typeof inPutVar.valueOf() == "string" &&
+  inPutVar.length > 0 &&
+  inPutVar != " "
+) {
+  if (inPutVar.length > 0) newFunction(inPutVar);
+}
+```
+
+B.
+
+```javascript
+if (
+  typeof inPutVar != "undefined" &&
+  typeof inPutVar.valueOf() == "string" &&
+  inPutVar.length > 0
+) {
+  inPutVar.replace(/(^\s*)|(\s*$)/g, "");
+  newFunction(inPutVar);
+}
+```
+
+C.
+
+```javascript
+if (
+  typeof inPutVar != "undefined" &&
+  typeof inPutVar.valueOf() == "string" &&
+  inPutVar.length > 0
+) {
+  inPutVar.replace(/(^\s*)|(\s*$)/g, "");
+  if (inPutVar.length > 0) newFunction(inPutVar);
+}
+```
+
+D.
+
+```javascript
+if (
+  typeof inPutVar != "undefined" &&
+  typeof inPutVar.valueOf() == "string" &&
+  inPutVar.length > 0
+) {
+  inPutVar = inPutVar.replace(/(^\s*)|(\s*$)/g, "");
+  if (inPutVar.length > 0) newFunction(inPutVar);
+}
+```
+
+E.
+
+```javascript
+if (typeof inPutVar != "undefined" && typeof inPutVar.valueOf() == "string") {
+  inPutVar = inPutVar.replace(/(^\s*)|(\s*$)/g, "");
+  if (inPutVar.length > 0) newFunction(inPutVar);
+}
+```
+
+D
+
+以下哪些 JavaScript 代码片段可以用来确保传递给 newFunction(inPutVar) 的变量 inPutVar 被定义为字符串；非空；且字符串末尾不包含空格？
+
+为了确保传递给 newFunction(inPutVar) 的变量 inPutVar 是一个已定义的字符串、非空且字符串末尾不包含空格，我们需要对每个选项进行详细分析。
+
+replace 不会改变原字符串
+
+分析
+A. 这个选项首先检查 inPutVar 是否未定义，是否为字符串类型，长度是否大于 0，并且是否不等于单个空格（" "）。然而，它错误地再次检查了 inPutVar.length > 0，这是多余的，因为前面的条件已经涵盖了这一点。此外，它没有去除字符串末尾的空格。
+
+B. 这个选项正确地检查了 inPutVar 是否未定义，是否为字符串类型，且长度大于 0。然而，它试图通过 replace 方法去除空格，但没有将结果赋值回 inPutVar。因此，replace 方法的调用实际上对 inPutVar 的值没有影响。
+
+C. 与 B 选项类似，这个选项也试图去除空格但没有将结果赋值回 inPutVar。此外，它再次检查了 inPutVar.length > 0，这也是多余的，因为去除空格后的长度检查应该在赋值之后进行。
+
+D. 这个选项首先检查 inPutVar 是否未定义，是否为字符串类型，且长度大于 0。然后，它使用 replace 方法去除字符串开头和结尾的空格，并将结果赋值回 inPutVar。最后，它检查处理后的 inPutVar 是否仍然非空，并据此调用 newFunction。这个选项满足了所有要求。
+
+E. 这个选项去除了 inPutVar 开头和结尾的空格，并检查了 inPutVar 是否未定义且为字符串类型。然而，它没有直接检查原始 inPutVar 的长度是否大于 0（尽管去除空格后的长度检查隐含了这一点）。虽然这个选项在大多数情况下会工作，但不如 D 选项明确和完整。
+选择
+由于题目要求最多选 3 个答案，并且希望选择最准确、最全面的选项，我们应该选择 D。然而，从严格意义上讲，E 也是正确的，只是不如 D 完整。但在这里，我们将遵循题目的限制并优先选择最全面的答案。
+
+如果必须选择一个额外的答案（尽管题目要求最多 3 个），E 会是一个不错的选择，因为它也确保了字符串的定义、类型和空格的去除，只是没有直接检查原始字符串的长度（这通常不是必需的，因为去除空格后的长度检查已经足够）。
+
+#### 11
+
+Which of the following statements are correct regarding JavaScript Maps and weakMaps?
+
+A. The size of maps can easily be retrieved, but the size of a weakMap must be manually recorded.
+
+B. WeakMaps are a simpler implementation of Maps used for small and short-lived Maps.
+
+C. мap object keys are enumerable, weakMaps keys are not.
+
+D. weakMaps are subject to garbage collection, Maps are not.
+
+E. weakMaps can hold string values, Maps can hold values of any type.
+
+A C
+
+关于 JavaScript 中的 Map 和 WeakMap，以下哪些陈述是正确的？
+
+A. 可以很容易地获取 Map 的大小，但 WeakMap 的大小必须手动记录。
+
+B. WeakMap 是 Map 的简单实现，用于小型和短生命周期的映射。
+
+C. Map 对象的键是可枚举的，而 WeakMap 的键不是。
+
+D. WeakMap 受垃圾回收机制影响，但 Map 不受影响。
+
+E. WeakMap 可以持有字符串值，而 Map 可以持有任何类型的值。
+
+WeakMap 和 Map 都是 JavaScript 中的对象，它们本身都是垃圾回收的目标。但是，它们对键的处理方式不同：WeakMap 对键进行弱引用，允许垃圾回收机制回收那些不再被其他引用所持有的键所指向的对象；而 Map 则对键进行强引用，即使键所指向的对象不再被其他引用所持有，这些对象也不会被垃圾回收机制回收，直到 Map 本身被销毁或键被显式地从 Map 中删除。
+
+WeakMap 和 Map 都可以持有任何类型的值，包括字符串、数字、对象等。但是，它们的键类型有所不同：WeakMap 的键必须是对象（在 ES6 规范中，原始数据类型如字符串或数字会被隐式地封装为对象），而 Map 的键可以是任何类型，包括原始数据类型和对象。
+
+#### 12
+
+When the javaScript snippet below is executed, the message "undefined undefined" is written to the console.log
+(line numbers are for reference purposes only).
+Which of the following steps must be taken so the message written to the console.log reads "MustangRed"?
+
+```javascript
+function Cars(car, color) {
+  var car = car; //2
+  var color = color; // 3
+} //4
+var MyCar = new Array();
+MyCar[0] = new Cars("Mustang", "Red"); // 6
+try {
+  console.log(MyCar[0].car + " " + MyCar[0].color); // 8
+} catch (e) {
+  console.log(e);
+}
+```
+
+A. Replace Line 8 with:
+
+```javascript
+console.log(MyCar[0].carInfo());
+```
+
+B. Add after Line 3:
+
+```javascript
+this.CarInfo = function () {
+  return car + " " + color;
+};
+```
+
+C. Add before Line 4:
+
+```javascript
+this.__defineGetter__("car", function () {
+  return car;
+});
+this.__defineSetter__("car", function (val) {
+  car = val;
+});
+this.__defineGetter__("color", function () {
+  return color;
+});
+this.__defineSetter__("color", function (val) {
+  car = val;
+});
+```
+
+D. Replace Lines 2 and 3 with
+
+```javascript
+this.car = car;
+this.color = color;
+```
+
+E.Add after Line 6
+
+```javascript
+Cars.prototype.CarInfo = function (Car, color) {
+  return this.car + " " + this.color;
+};
+```
+
+D
+
+当执行下面的 JavaScript 代码片段时，控制台输出了 "undefined undefined"。（行号仅供参考）
+为了使得控制台输出的消息为 "MustangRed"，必须采取以下哪些步骤？
+
+#### 13
+
+Given the object definition below:
+
+```javascript
+let car = {
+  make: "Ford",
+  model: "Explorer",
+  year: "2019",
+};
+```
+
+Which of the following JavaScript code snippets will output the below to the browser console window?
+
+Ford
+
+Explorer
+
+2019
+
+A.
+
+```javascript
+for (let key of car) {
+  console.log(key);
+}
+```
+
+B.
+
+```javascript
+for (let key in car) {
+  console.log(car[key]);
+}
+```
+
+C.
+
+```javascript
+for(let key of car){
+console.1og(key.value);
+}
+```
+
+D.
+
+```javascript
+for (let key in car) {
+  console.log(key);
+}
+```
+
+E.
+
+```javascript
+for (let key in car) {
+  console.log(key.value);
+}
+```
+
+B
+
+以下哪个 JavaScript 代码片段会将以下内容输出到浏览器控制台窗口？
+
+#### 14
+
+Which of the following are JavaScript reserved words?
+
+A. break
+
+B. function
+
+C. method
+
+D. sub
+
+E. return
+
+A B E
+
+以下哪些是JavaScript的保留字？
+
+reserved words  [rɪˈzɜːrvd] 保留字
+
+在JavaScript中，保留字（reserved words）是不能用作变量名、函数名、属性名或任何其他标识符的词汇，因为它们已经被JavaScript语言本身赋予了特殊的意义。
+
+对于给定的选项，我们可以分析如下：
+
+A. break - 这是一个保留字，用于在循环（如for或while循环）或switch语句中终止当前循环或退出当前switch块。
+
+B. function - 这也是一个保留字，用于声明一个函数。
+
+C. method - 这不是一个保留字。在JavaScript中，method通常指的是对象上定义的函数，但“method”本身并不被保留为语言的一部分，可以用作变量名或属性名。
+
+D. sub - 这不是一个保留字。它可以用作变量名、函数名或任何其他标识符。
+
+E. return - 这是一个保留字，用于从函数中返回值
+
+
+#### 15
+
+A developer must create a function incrementing the number of records processed within a JavaScript application,
+and also retun the total number of records processed.
+in addition, the number of records processed must be changed without the function being called.
+Which of the following JavaScript functions will meet these requirements?
+
+A.
+
+```javascript
+function incRecordsProcessed() {
+  var counter = 0;
+  function plus() {
+    counter += 1;
+    plus();
+    return counter;
+  }
+}
+```
+
+B.
+
+```javascript
+
+```
+
+C.
+
+```javascript
+
+```
+
+D.
+
+```javascript
+
+```
+
+E.
+
+```javascript
+
+```
+
+
+#### 16
+
+Which of the following are valid rules for construction JavaScript variable names?
+
+A. Names are case sensitive.
+
+B. Names can contain letters,digits,underscores, and dollar signs.
+
+C. Names can contain the full stop character.
+
+D. Names are limited to 16 characters in length.
+
+E. Names can begin with underscores and dollar signs.
+
+
+A B E
+
+以下哪些是构造JavaScript变量名的有效规则？
+
+A. 名称是区分大小写的。
+
+B. 名称可以包含字母、数字、下划线和美元符号。
+
+C. 名称可以包含句号字符
+
+D. 名称的长度限于16个字符
+
+E. 名称可以以下划线和美元符号开始。
+
+
+在JavaScript中，变量名的构造遵循特定的规则。对于给定的选项，我们可以分析如下：
+
+A. Names are case sensitive.（名称是区分大小写的。）
+
+这是正确的。JavaScript中的变量名是区分大小写的，意味着variable、Variable和VARIABLE会被视为三个不同的变量。
+B. Names can contain letters, digits, underscores, and dollar signs.（名称可以包含字母、数字、下划线和美元符号。）
+
+这也是正确的。JavaScript变量名可以由字母、数字、下划线（_）或美元符号（$）开始和组成。
+C. Names can contain the full stop character.（名称可以包含句号字符。）
+
+这是错误的。句号（.）在JavaScript中有特殊的用途，主要用于对象属性的访问，因此不能用作变量名的一部分。
+D. Names are limited to 16 characters in length.（名称的长度限于16个字符。）
+
+这是错误的。JavaScript变量名的长度实际上没有限制，只要它们遵循命名规则，就可以包含任意数量的字符。
+E. Names can begin with underscores and dollar signs.（名称可以以下划线和美元符号开始。）
+
+这是正确的。如前面所述，JavaScript变量名可以以字母、下划线（_）或美元符号（$）开始。
+
+#### 65
+
+```javascript
+
+```
+
+A.
+
+```javascript
+
+```
+
+B.
+
+```javascript
+
+```
+
+C.
+
+```javascript
+
+```
+
+D.
+
+```javascript
+
+```
+
+E.
+
+```javascript
+
+```
+
+#### 65
+
+```javascript
+
+```
+
+A.
+
+```javascript
+
+```
+
+B.
+
+```javascript
+
+```
+
+C.
+
+```javascript
+
+```
+
+D.
+
+```javascript
+
+```
+
+E.
+
+```javascript
+
+```
+
+#### 65
+
+```javascript
+
+```
+
+A.
+
+```javascript
+
+```
+
+B.
+
+```javascript
+
+```
+
+C.
+
+```javascript
+
+```
+
+D.
+
+```javascript
+
+```
+
+E.
+
+```javascript
+
+```
+
+#### 65
+
+```javascript
+
+```
+
+A.
+
+```javascript
+
+```
+
+B.
+
+```javascript
+
+```
+
+C.
+
+```javascript
+
+```
+
+D.
+
+```javascript
+
+```
+
+E.
+
+```javascript
+
+```
+
+#### 65
+
+```javascript
+
+```
+
+A.
+
+```javascript
+
+```
+
+B.
+
+```javascript
+
+```
+
+C.
+
+```javascript
+
+```
+
+D.
+
+```javascript
+
+```
+
+E.
+
+```javascript
+
+```
+
+#### 65
+
+```javascript
+
+```
+
+A.
+
+```javascript
+
+```
+
+B.
+
+```javascript
+
+```
+
+C.
+
+```javascript
+
+```
+
+D.
+
+```javascript
+
+```
+
+E.
+
+```javascript
+
+```
+
+#### 65
+
+```javascript
+
+```
+
+A.
+
+```javascript
+
+```
+
+B.
+
+```javascript
+
+```
+
+C.
+
+```javascript
+
+```
+
+D.
+
+```javascript
+
+```
+
+E.
+
+```javascript
+
+```
+
+#### 65
+
+```javascript
+
+```
+
+A.
+
+```javascript
+
+```
+
+B.
+
+```javascript
+
+```
+
+C.
+
+```javascript
+
+```
+
+D.
+
+```javascript
+
+```
+
+E.
+
+```javascript
+
+```
+
+#### 65
+
+```javascript
+
+```
+
+A.
+
+```javascript
+
+```
+
+B.
+
+```javascript
+
+```
+
+C.
+
+```javascript
+
+```
+
+D.
+
+```javascript
+
+```
+
+E.
+
+```javascript
+
+```
+
+#### 65
+
+```javascript
+
+```
+
+A.
+
+```javascript
+
+```
+
+B.
+
+```javascript
+
+```
+
+C.
+
+```javascript
+
+```
+
+D.
+
+```javascript
+
+```
+
+E.
+
+```javascript
+
+```
+
+#### 65
+
+```javascript
+
+```
+
+A.
+
+```javascript
+
+```
+
+B.
+
+```javascript
+
+```
+
+C.
+
+```javascript
+
+```
+
+D.
+
+```javascript
+
+```
+
+E.
+
+```javascript
+
+```
+
+#### 65
+
+```javascript
+
+```
+
+A.
+
+```javascript
+
+```
+
+B.
+
+```javascript
+
+```
+
+C.
+
+```javascript
+
+```
+
+D.
+
+```javascript
+
+```
+
+E.
+
+```javascript
+
+```
+
+#### 65
+
+```javascript
+
+```
+
+A.
+
+```javascript
+
+```
+
+B.
+
+```javascript
+
+```
+
+C.
+
+```javascript
+
+```
+
+D.
+
+```javascript
+
+```
+
+E.
+
+```javascript
+
+```
+
+#### 65
+
+```javascript
+
+```
+
+A.
+
+```javascript
+
+```
+
+B.
+
+```javascript
+
+```
+
+C.
+
+```javascript
+
+```
+
+D.
+
+```javascript
+
+```
+
+E.
+
+```javascript
+
+```
+
+#### 65
+
+```javascript
+
+```
+
+A.
+
+```javascript
+
+```
+
+B.
+
+```javascript
+
+```
+
+C.
+
+```javascript
+
+```
+
+D.
+
+```javascript
+
+```
+
+E.
+
+```javascript
+
+```
+
+#### 65
+
+```javascript
+
+```
+
+A.
+
+```javascript
+
+```
+
+B.
+
+```javascript
+
+```
+
+C.
+
+```javascript
+
+```
+
+D.
+
+```javascript
+
+```
+
+E.
+
+```javascript
+
+```
+
+#### 65
+
+```javascript
+
+```
+
+A.
+
+```javascript
+
+```
+
+B.
+
+```javascript
+
+```
+
+C.
+
+```javascript
+
+```
+
+D.
+
+```javascript
+
+```
+
+E.
+
+```javascript
+
+```
+
+#### 65
+
+```javascript
+
+```
+
+A.
+
+```javascript
+
+```
+
+B.
+
+```javascript
+
+```
+
+C.
+
+```javascript
+
+```
+
+D.
+
+```javascript
+
+```
+
+E.
+
+```javascript
+
+```
+
+#### 65
+
+```javascript
+
+```
+
+A.
+
+```javascript
+
+```
+
+B.
+
+```javascript
+
+```
+
+C.
+
+```javascript
+
+```
+
+D.
+
+```javascript
+
+```
+
+E.
+
+```javascript
+
+```
+
+#### 65
+
+```javascript
+
+```
+
+A.
+
+```javascript
+
+```
+
+B.
+
+```javascript
+
+```
+
+C.
+
+```javascript
+
+```
+
+D.
+
+```javascript
+
+```
+
+E.
+
+```javascript
+
+```
+
+#### 65
+
+```javascript
+
+```
+
+A.
+
+```javascript
+
+```
+
+B.
+
+```javascript
+
+```
+
+C.
+
+```javascript
+
+```
+
+D.
+
+```javascript
+
+```
+
+E.
+
+```javascript
+
+```
+
+#### 65
+
+```javascript
+
+```
+
+A.
+
+```javascript
+
+```
+
+B.
+
+```javascript
+
+```
+
+C.
+
+```javascript
+
+```
+
+D.
+
+```javascript
+
+```
+
+E.
+
+```javascript
+
+```
+
+#### 65
+
+```javascript
+
+```
+
+A.
+
+```javascript
+
+```
+
+B.
+
+```javascript
+
+```
+
+C.
+
+```javascript
+
+```
+
+D.
+
+```javascript
+
+```
+
+E.
+
+```javascript
+
+```
+
+#### 65
+
+```javascript
+
+```
+
+A.
+
+```javascript
+
+```
+
+B.
+
+```javascript
+
+```
+
+C.
+
+```javascript
+
+```
+
+D.
+
+```javascript
+
+```
+
+E.
+
+```javascript
+
+```
+
+#### 65
+
+```javascript
+
+```
+
+A.
+
+```javascript
+
+```
+
+B.
+
+```javascript
+
+```
+
+C.
+
+```javascript
+
+```
+
+D.
+
+```javascript
+
+```
+
+E.
+
+```javascript
+
+```
+
+#### 65
+
+```javascript
+
+```
+
+A.
+
+```javascript
+
+```
+
+B.
+
+```javascript
+
+```
+
+C.
+
+```javascript
+
+```
+
+D.
+
+```javascript
+
+```
+
+E.
+
+```javascript
+
+```
+
+#### 65
+
+```javascript
+
+```
+
+A.
+
+```javascript
+
+```
+
+B.
+
+```javascript
+
+```
+
+C.
+
+```javascript
+
+```
+
+D.
+
+```javascript
+
+```
+
+E.
+
+```javascript
+
+```
+
+A.
+
+```tsx
+
+```
+
+B.
+
+```tsx
+
+```
+
+C.
+
+```tsx
+
+```
+
+D.
+
+```tsx
+
+```
+
+E.
+
+```tsx
+
+```
