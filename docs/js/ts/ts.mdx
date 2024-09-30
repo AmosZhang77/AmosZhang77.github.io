@@ -48,6 +48,36 @@ const componentProps = {
 const Menu: React.FC<componentProps>= (props)=>{}
 ```
 
+### typeof
+
+在js语法上扩展了取ts类型。可以从类型中取类型
+
+```typescript
+interface Point {
+    x: number;
+    y: number;
+}
+
+let point: Point = { x: 1, y: 2 };
+
+type PointType = typeof point; // PointType 是 Point 接口的别名
+
+let anotherPoint: PointType = { x: 3, y: 4 }; // 正确
+```
+
+可取react组件的整体类型，下面给组件增加了静态属性，使得'<'Swiper.Item'>'子组件能被使用
+```typescript
+import InternalSwiper from '@/bases/swiper/swiper';
+import SwiperItem from '@/bases/swiper/swiper-item';
+
+type InternalSwiperType = typeof InternalSwiper;
+export interface SwiperInterface extends InternalSwiperType {Item: typeof SwiperItem}
+
+const Swiper =InternalSwiper as SwiperInterface;
+Swiper.Item = SwiperItem;
+export default Swiper;
+```
+
 ### 剩余参数定义，其他没有设定属性，设定一个类型，[propName: string]
 
 ```typescript
@@ -213,6 +243,34 @@ type Age = ArrayElementType<Person['ages']>;
 const name: Name = 'Alice'; // 正确
 const age: Age = 25; // 正确
 ```
+
+### 从一个对象中提取一些属性到一个对象 Pick
+
+在TypeScript中，Pick 是一个内置的条件类型（Conditional Type），它用于从一个类型中挑选出某些属性来组成一个新的类型。Pick 并不是一个关键词（keyword）
+
+```typescript
+interface Person {
+    name: string;
+    age: number;
+    address: string;
+}
+
+// 使用 Pick 挑选 name 和 age 属性
+type PersonNameAge = Pick<Person, "name" | "age">;
+
+// 现在 PersonNameAge 是这样一个类型：{ name: string; age: number; }
+
+let personNameAge: PersonNameAge = {
+    name: "Alice",
+    age: 30,
+    // address: "123 Street" // 这会报错，因为 address 不在 PersonNameAge 中
+};
+```
+注意事项:
+
+Pick 是在类型层面工作的，它不会改变运行时的行为或对象的实际结构。
+
+你必须确保 K 中的所有键都是 T 中的有效键，否则TypeScript编译器会报错。
 
 ### 从一个类型对象中去掉一些属性
 

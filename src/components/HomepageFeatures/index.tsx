@@ -19,21 +19,21 @@ const FeatureList: FeatureItem[] = [
     ),
   },
   {
-    title: "由爱驱动",
+    title: "由爱驱动，适合人群",
     Svg: require("@site/static/img/undraw_docusaurus_tree.svg").default,
     description: (
       <>
-        无聊时整理，擅长停更挂机。理论上不答疑。内容有问题，或者有更好的方法，欢迎指教。下一个爱人又何必是人。
+        无聊时整理，擅长停更挂机。内容有问题，或者有更好的方法，欢迎指教。联系方式：moonyellow@126.com
       </>
     ),
   },
   {
-    title: "适合人群",
+    title: "",
     Svg: require("@site/static/img/undraw_docusaurus_react.svg").default,
     description: (
       <>
-        水平和本文作者差不多差的。欢迎菜鸡互啄，共同进步。联系方式：
-        moonyellow@126.com
+        本人正在找一份前端工作，一份能好好写代码，不用写PPT的前端工作。
+
       </>
     ),
   },
