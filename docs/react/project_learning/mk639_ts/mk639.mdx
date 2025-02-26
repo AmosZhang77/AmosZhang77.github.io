@@ -21,14 +21,27 @@ Warning: To load an ES module, set "type": "module" in the package.json or use t
 
 可以将 js 后缀改成 mjs，让 node 正确识别 esm
 
-vite.config.ts 中加入
+vite.config.ts 中加入alias
+
+注意:如果报Cannot find module path or its corresponding type declarations
+
+TypeScript 编译器无法识别 Node.js 的内置模块 path。这通常发生在 TypeScript 项目中，尤其是当 TypeScript 配置不正确或缺少必要的类型声明时。
+
+在 Vite 项目中，尽管 Vite 本身是基于 ES Module 的，但你可能仍然需要在 TypeScript 配置中包括 Node.js 的类型声明，以便能够使用 Node.js 的内置模块，如 path。
+
+可以安装types/node解决
+npm install --save-dev @types/node
 
 ```javascript
-resolve:{
+import path from 'path';
+export default defineConfig({
+  plugins: [react()],
+  resolve:{
     alias:{
-      '@': resolve('src')
+      '@': path.resolve('src')
     }
-}
+  }
+})
 ```
 
 ### 配置 postcss

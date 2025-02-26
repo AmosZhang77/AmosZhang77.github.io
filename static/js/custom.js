@@ -12,4 +12,4 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 });
-console.log('custom static')
+// console.log('custom static')
